@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Empleá · Encontrá trabajo en una charla</title>
+  <meta name="description" content="Contanos qué buscás y en qué provincia: te mostramos las vacantes de consultoras y empresas y te postulás con tu CV en segundos.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M9 4h22a7 7 0 0 1 7 7v13a7 7 0 0 1-7 7H19l-7 6v-6H9a7 7 0 0 1-7-7V11a7 7 0 0 1 7-7Z' fill='%233B5BFD'/%3E%3Ccircle cx='13.5' cy='17.5' r='2.6' fill='%23fff'/%3E%3Ccircle cx='20' cy='17.5' r='2.6' fill='%23fff'/%3E%3Ccircle cx='26.5' cy='17.5' r='2.6' fill='%23FFC93C'/%3E%3C/svg%3E">
+
+  <!-- Tipografía (estilo Meta: sans geométrica-humanista, pesos fuertes en títulos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Swiper (carruseles) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+  <!-- Phosphor Icons (librería de íconos profesional) -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <!-- Tailwind CSS (Play CDN para el prototipo; ver README para build de producción) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#3B5BFD', dark: '#2A44D6', soft: '#ECEEFF' },
+            ink: { DEFAULT: '#14123A', soft: '#4A4868', mute: '#64627C' },
+            surface: '#F6F5FB',
+            line: '#E3E1EF',
+            lilac: '#E7E3FF',
+            peach: { DEFAULT: '#FFE9DB', line: '#FFD3B8' },
+            sun: { DEFAULT: '#FFC93C', soft: '#FFF3CF' },
+            mint: '#D8F3E6',
+            ok: '#11946A',
+            warn: '#8F5B0F',
+            bad: '#D9415E'
+          },
+          fontFamily: {
+            sans: ['Figtree', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+            display: ['"Bricolage Grotesque"', 'Figtree', 'system-ui', 'sans-serif']
+          },
+          boxShadow: {
+            card: '0 1px 0 rgba(20,18,58,.04), 0 10px 28px -18px rgba(20,18,58,.28)',
+            lift: '0 22px 44px -20px rgba(59,91,253,.45)'
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer components {
+      .btn { @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold h-12 px-6 text-base transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none select-none whitespace-nowrap; }
+      .btn-primary { @apply bg-brand text-white hover:bg-brand-dark; }
+      .btn-outline { @apply bg-white text-ink border border-line hover:bg-surface; }
+      .btn-soft { @apply bg-brand-soft text-brand hover:bg-[#d8e7ff]; }
+      .btn-sm { @apply h-10 px-4 text-[0.95rem]; }
+      .chip { @apply inline-flex items-center gap-1.5 h-10 px-4 rounded-full border border-line bg-white text-ink font-semibold text-[0.95rem] whitespace-nowrap transition hover:border-brand hover:text-brand; }
+      .chip-on { @apply bg-ink text-white border-ink hover:text-white; }
+      .card { @apply bg-white rounded-[22px] border border-line shadow-card; }
+      .input { @apply w-full h-12 rounded-2xl border border-line bg-white px-4 text-base text-ink placeholder:text-ink-mute/80 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/15; }
+      .label { @apply block font-semibold mb-2; }
+      .icon-btn { @apply w-11 h-11 shrink-0 grid place-items-center rounded-full hover:bg-surface transition text-ink-soft; }
+      .err { @apply text-bad text-[0.95rem] mt-2 font-medium; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-surface text-ink font-sans antialiased">
+  <div id="app" class="min-h-[100dvh] flex flex-col">
+    <header id="topbar"></header>
+    <main id="view" class="flex-1"></main>
+    <nav id="bottombar"></nav>
+  </div>
+  <div id="sheet-root"></div>
+  <div id="toast-root" aria-live="polite"></div>
+
+  <!-- Librerías -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+  <!-- SortableJS (arrastrar y soltar en el tablero) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+
+  <!-- App -->
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

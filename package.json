@@ -1,0 +1,13 @@
+{
+  "name": "emplea",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prototipo mobile first de búsqueda de empleo",
+  "scripts": {
+    "dev": "npx serve .",
+    "build:css": "tailwindcss -i ./src/input.css -o ./assets/css/tailwind.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}
