@@ -901,7 +901,7 @@
   ];
   const INFO_PATHS = ['/nosotros', '/faqs', '/terminos', '/privacidad', '/cafe', '/cafe/nota'];
   function siteFooter() {
-    const col = (t, links) => `<div><p class="font-display font-bold text-ink">${t}</p><ul class="mt-3 space-y-1">${links.map(([h, l]) => `<li><a href="#${h}" class="inline-flex items-center min-h-[44px] text-ink-soft font-semibold hover:text-brand">${l}</a></li>`).join('')}</ul></div>`;
+    const col = (t, links) => `<div><p class="font-display font-bold text-ink">${t}</p><ul class="mt-3 space-y-1">${links.map(([h, l, ic]) => `<li><a href="#${h}" class="inline-flex items-center gap-2 min-h-[44px] text-ink-soft font-semibold hover:text-brand"><i class="ph-fill ${ic} text-brand text-[1.15rem] shrink-0" aria-hidden="true"></i>${l}</a></li>`).join('')}</ul></div>`;
     return `<footer class="border-t border-line bg-white">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-8">
           <div class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">
@@ -910,8 +910,8 @@
               <p class="mt-3 text-ink-soft max-w-xs">El portal de gestión para consultoras: publicá, calificá y presentá candidatos en un solo lugar.</p>
               <ul class="mt-5 flex gap-2" aria-label="Redes sociales">${SOCIAL.map(([n, ic, u]) => `<li><a href="${u}" target="_blank" rel="noopener" aria-label="${n} de empleá" title="${n}" class="w-11 h-11 rounded-full bg-surface text-ink grid place-items-center hover:bg-brand hover:text-white transition"><i class="ph-fill ${ic} text-[1.35rem]"></i></a></li>`).join('')}</ul>
             </div>
-            ${col('empleá', [['/nosotros', 'Nosotros'], ['/empresas', 'Empresas adheridas'], ['/cafe', '<i class="ph-fill ph-coffee text-brand mr-1.5"></i>Charla de café'], ['/faqs', 'Preguntas frecuentes']])}
-            ${col('Legal', [['/terminos', 'Términos y condiciones'], ['/privacidad', 'Política de privacidad']])}
+            ${col('empleá', [['/nosotros', 'Nosotros', 'ph-hand-heart'], ['/empresas', 'Empresas adheridas', 'ph-buildings'], ['/cafe', 'Charla de café', 'ph-coffee'], ['/faqs', 'Preguntas frecuentes', 'ph-question']])}
+            ${col('Legal', [['/terminos', 'Términos y condiciones', 'ph-scroll'], ['/privacidad', 'Política de privacidad', 'ph-shield-check']])}
           </div>
           <div class="mt-10 pt-6 border-t border-line flex flex-col sm:flex-row gap-2 sm:items-center justify-between text-ink-mute text-[0.92rem]">
             <p>© ${new Date().getFullYear()} empleá · Desarrollado por <b class="font-semibold text-ink-soft">Clutch! Estudio</b></p>
