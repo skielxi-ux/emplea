@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold h-12 px-6 text-base transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none select-none whitespace-nowrap; }
+  .btn-primary { @apply bg-brand text-white hover:bg-brand-dark; }
+  .btn-outline { @apply bg-white text-ink border border-line hover:bg-surface; }
+  .btn-soft { @apply bg-brand-soft text-brand hover:bg-[#d8e7ff]; }
+  .btn-sm { @apply h-10 px-4 text-[0.95rem]; }
+  .chip { @apply inline-flex items-center gap-1.5 h-10 px-4 rounded-full border border-line bg-white text-ink font-semibold text-[0.95rem] whitespace-nowrap transition hover:border-brand hover:text-brand; }
+  .chip-on { @apply bg-ink text-white border-ink hover:text-white; }
+  .card { @apply bg-white rounded-[22px] border border-line shadow-card; }
+  .input { @apply w-full h-12 rounded-2xl border border-line bg-white px-4 text-base text-ink placeholder:text-ink-mute/80 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/15; }
+  .label { @apply block font-semibold mb-2; }
+  .icon-btn { @apply w-11 h-11 shrink-0 grid place-items-center rounded-full hover:bg-surface transition text-ink-soft; }
+  .err { @apply text-bad text-[0.95rem] mt-2 font-medium; }
+}
