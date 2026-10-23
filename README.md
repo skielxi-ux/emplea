@@ -1,4 +1,4 @@
-# Empleá · prototipo
+# +Humanos · prototipo
 
 Sitio mobile first para candidatos y para consultoras/empresas. Es un **prototipo navegable**: funciona completo en el navegador y guarda todo en el dispositivo (sin servidor ni base de datos todavía).
 
@@ -19,7 +19,7 @@ Para probar en el celular, abrí la IP de tu computadora en la misma red Wi‑Fi
 **Portada**
 - Slider (Swiper) a pantalla completa debajo del menú: 4 destacados con autoplay, barras de progreso, pausa y flechas. Fotos de Unsplash (licencia libre); si no cargan, cada slide muestra un color de la marca.
 - Debajo, la pregunta de Fedfu fija: escribir o tocar un área empieza la charla.
-- "Confían en empleá": carrusel de logos en loop continuo (se pausa al pasar el mouse) con las empresas que tienen vacantes activas.
+- "Confían en +Humanos": carrusel de logos en loop continuo (se pausa al pasar el mouse) con las empresas que tienen vacantes activas.
 - "Del primer mensaje a la entrevista": 3 tarjetas con Swiper (las 3 visibles en escritorio, carrusel deslizable en celular y tablet).
 
 **Candidatos**
@@ -47,11 +47,11 @@ Para probar en el celular, abrí la IP de tu computadora en la misma red Wi‑Fi
 - **Análisis de CV de Fedfu** en cada postulante: % de afinidad con la vacante, resumen de 3 líneas y cada requisito marcado como cumple (✓), no cumple (✗) o sin datos en el CV (?). Ordenado por afinidad, con opción "Más recientes". Corre en el navegador leyendo el texto del PDF (sin IA): para pasar a IA, reemplazar `analyzeCv()` en `app.js` por una llamada al backend que devuelva el mismo formato. Lo ve solo la empresa.
 - **Buscar talento** con dos pestañas:
   - **Mis candidatos**: todas las personas que se postularon a tus búsquedas (en cualquier etapa) y las que guardaste desde la plataforma. Etiquetas, notas internas con fecha, favoritos e historial (a qué búsquedas se postularon, hasta qué etapa llegaron y qué respondió el cliente). Buscador por nombre, puesto, etiqueta o nota y "Comparar con una búsqueda" para ordenarlas por afinidad y sumarlas con un toque.
-  - **Buscar en empleá**: perfiles de personas que aceptaron ser contactadas, con "Guardar en Mis candidatos". Buscador y provincia.
+  - **Buscar en +Humanos**: perfiles de personas que aceptaron ser contactadas, con "Guardar en Mis candidatos". Buscador y provincia.
   - **Filtro por profesión** en las dos pestañas: botones rápidos con cantidad (Contables, Abogados, Marketing, Médicos, Ingenieros, Sistemas/IT, Administrativos, Ventas…). Solo aparecen las profesiones que tienen personas; se detectan por área y por palabras clave del título y las skills.
 - **Sugerencias del banco**: al publicar una vacante, Fedfu revisa el banco y propone a quienes encajan (afinidad ≥ 60% o misma área; excluye la etiqueta "No recontratar"). Se suman a la búsqueda como postulantes ("Del banco") o se las invita por WhatsApp con el link de la vacante. También desde Postulantes y el tablero de cada búsqueda.
 - **Tablero por etapas** (pestaña Tablero de cada búsqueda; en computadora entra completo, sin scroll lateral: 6 columnas en pantallas grandes y 3 × 2 en notebooks chicas o tablets): una búsqueda por vez en columnas Nuevos, En revisión, Entrevista, Terna (en consultoras, "Terna enviada al cliente"), Contratado y Descartados. Se arrastra con SortableJS (mouse o dedo); tocar una tarjeta abre el detalle con "Mover a otra etapa". Pasar a Terna suma a la terna; al compartirla, sus candidatos pasan solos a esa etapa.
-- **Avisar a los no seleccionados**: con un toque avisa dentro de empleá (el candidato ve el mensaje en Mis postulaciones) y abre un único email con todos en copia oculta. Opción "Cerrar la búsqueda" para avisar también a quienes siguen en proceso. WhatsApp, uno por uno con el mensaje ya escrito (no permite envíos masivos sin su API paga). El texto se edita en Mi perfil.
+- **Avisar a los no seleccionados**: con un toque avisa dentro de +Humanos (el candidato ve el mensaje en Mis postulaciones) y abre un único email con todos en copia oculta. Opción "Cerrar la búsqueda" para avisar también a quienes siguen en proceso. WhatsApp, uno por uno con el mensaje ya escrito (no permite envíos masivos sin su API paga). El texto se edita en Mi perfil.
 - **Terna para el cliente**: en el detalle de cada postulante, "Sumar a terna"; en la pestaña Terna, "Revisar y compartir" genera un link privado. El cliente, sin cuenta, ve nombre, afinidad, comentario de la consultora, resumen de Fedfu, requisitos y CV (sin teléfono ni email), marca 👍/👎 y comenta. Su respuesta vuelve por WhatsApp o email con un link que, al abrirlo, la carga en cada postulante. El link es autocontenido (los datos van comprimidos dentro del link, sin servidor); para que lo abra un cliente real, el sitio tiene que estar publicado. Con Supabase se puede pasar a un link corto con respuestas en tiempo real.
 - **Perfil** en pestañas: **Empresa** (logo, datos, ubicación, redes y contacto), **Clientes** (solo consultoras), **Mensajes** (WhatsApp, email y aviso a no seleccionados) y **Plan y pagos** (uso del plan, vacantes destacadas e historial de pagos). Los cambios sin guardar se mantienen al cambiar de pestaña. Detalle: logo, descripción, rubro, tamaño, ubicación y provincias donde opera, web y redes, contacto para candidatos y mensajes predeterminados de WhatsApp/email (con variables como `{nombre}` o `{puesto}`).
 - Consultoras: fichas de **empresas cliente** (logo, rubro, contacto interno y si su nombre es público o confidencial). Cada búsqueda se asocia a un cliente.
@@ -117,8 +117,8 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 5. **Privacidad**: agregar consentimiento explícito del candidato para aparecer en "Buscar candidatos" y una política de datos personales (Ley 25.326).
 
 ## Pie y páginas institucionales
-- Pie en columnas (portada y páginas institucionales): marca, frase y redes (Instagram, Facebook, WhatsApp: links de ejemplo en `SOCIAL`, en app.js); columna *empleá* (Nosotros, Preguntas frecuentes) y *Legal* (Términos y condiciones, Política de privacidad).
-- **Nosotros** (`#/nosotros`): franja celeste con título y migas (Inicio / Nosotros), collage de 6 fotos (4 columnas; 3 fotos en celular; fotos de ejemplo de Unsplash en `ABOUT_PHOTOS`), cifras calculadas del sitio (vacantes activas, provincias con vacantes, empresas que buscan) y el texto "Sobre empleá" con tarjetas y botones.
+- Pie en columnas (portada y páginas institucionales): marca, frase y redes (Instagram, Facebook, WhatsApp: links de ejemplo en `SOCIAL`, en app.js); columna *+Humanos* (Nosotros, Preguntas frecuentes) y *Legal* (Términos y condiciones, Política de privacidad).
+- **Nosotros** (`#/nosotros`): franja celeste con título y migas (Inicio / Nosotros), collage de 6 fotos (4 columnas; 3 fotos en celular; fotos de ejemplo de Unsplash en `ABOUT_PHOTOS`), cifras calculadas del sitio (vacantes activas, provincias con vacantes, empresas que buscan) y el texto "Sobre +Humanos" con tarjetas y botones.
 - Páginas `#/faqs` (preguntas desplegables para candidatos y empresas, con precios tomados de los planes), `#/terminos` y `#/privacidad`. Son textos base: revisar los legales con un abogado antes de publicar.
 - "Restablecer demo" pasó del pie a Perfil de empresa (abajo, junto a Cerrar sesión).
 
@@ -133,12 +133,12 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 - Se guarda en cada postulación (`interview`). La cuenta demo arranca con algunas entrevistas en los próximos días.
 
 ## Portada (en rediseño)
-- Por ahora la portada tiene el hero (carrusel), el buscador, "Empresas que confían en empleá", "Anuncios destacados", el bloque para consultoras y el pie. Las secciones de abajo (Confían en empleá, pasos, bloque para consultoras, vacantes destacadas y demás) se quitaron para rearmarla paso a paso.
+- Por ahora la portada tiene el hero (carrusel), el buscador, "Empresas que confían en +Humanos", "Anuncios destacados", el bloque para consultoras y el pie. Las secciones de abajo (Confían en +Humanos, pasos, bloque para consultoras, vacantes destacadas y demás) se quitaron para rearmarla paso a paso.
 
 ## Enviar CV
 - Botón **Enviar CV** en la barra superior (portada y lado candidato; no en el panel de empresas). Abre una hoja para subir el CV **solo en PDF o Word (.doc, .docx)**, hasta 5 MB: se valida la extensión y el tipo de archivo, y cualquier otro formato se rechaza con un aviso.
 - Datos: nombre, celular (obligatorios), email, provincia y área (opcionales), y consentimiento para que las empresas vean el CV. Con PDF, Fedfu completa nombre, email, celular y área desde el CV; con Word no hay lectura automática.
-- El CV queda en "Buscar en empleá" (Talento de empresas) como "Envió su CV", con su área para el filtro por profesión. El PDF se abre en otra pestaña; el Word se descarga.
+- El CV queda en "Buscar en +Humanos" (Talento de empresas) como "Envió su CV", con su área para el filtro por profesión. El PDF se abre en otra pestaña; el Word se descarga.
 
 ## Buscador de la portada
 - Barra clásica sobre el borde del hero: puesto o palabra clave, Provincia (solo las que tienen vacantes), Modalidad (Presencial, Híbrido, Remoto), Rubro y botón Buscar. Lleva a Vacantes con esos filtros aplicados. En pantallas chicas los campos se apilan.
@@ -146,7 +146,7 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 - La portada ya no menciona a Fedfu: el primer slide del hero es "Tu próximo trabajo está acá" con "Ver todas las vacantes".
 - **Desplegables propios** (buscador de la portada, filtros de Vacantes y de Empresas adheridas): la lista se abre siempre hacia abajo, con el estilo del sitio (tarjeta blanca redondeada, sombra, opción elegida en azul con tilde). Funcionan con teclado (flechas, Enter, Escape y tipeo de la primera letra) y se cierran al tocar afuera. Por debajo sigue el `<select>` nativo, así que los filtros no cambiaron. Para usarlo en otro select, agregarle `data-dd`.
 
-## Empresas que confían en empleá
+## Empresas que confían en +Humanos
 - Bloque debajo del buscador: título centrado y una pasarela de logos que corre sola y sin cortes (CSS, sin librerías), se frena al pasar el mouse y respeta "reducir movimiento". Los logos van en gris y toman color al pasar el mouse; cada uno lleva a la página de la empresa.
 - Los logos se cargan en `TRUSTED` (data.js). Sin `src` se muestra el nombre con su ícono; para usar imágenes, agregá `src: 'assets/img/logos/archivo.svg'` (o PNG) a cada uno.
 
@@ -163,7 +163,7 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 - El panel de empresas mantiene su propia barra (Inicio · Búsquedas · Entrevistas · Talento · Perfil).
 
 ## Base de datos (antes "Talento")
-- Pestaña **Base de datos** del panel de empresas (`#/empresa/candidatos`), con franja de título y migas. Dos pestañas arriba de la lista: **Mis candidatos** (quienes pasaron por tus búsquedas o guardaste) y **Buscar en empleá** (perfiles que aceptaron ser contactados y CVs enviados).
+- Pestaña **Base de datos** del panel de empresas (`#/empresa/candidatos`), con franja de título y migas. Dos pestañas arriba de la lista: **Mis candidatos** (quienes pasaron por tus búsquedas o guardaste) y **Buscar en +Humanos** (perfiles que aceptaron ser contactados y CVs enviados).
 - Filtros en una columna a la izquierda: palabra clave (nombre, puesto, skill, etiqueta o nota), Provincia, Profesión (con cantidad por profesión), Experiencia y, en Mis candidatos, Comparar con una búsqueda (ordena por afinidad y permite Sumar). En celular los filtros se abren con el botón "Filtros".
 - Lista en filas: avatar, nombre (estrella si es favorito), profesión, ubicación, experiencia, hasta 4 skills en pastillas grises y las búsquedas a las que se postuló. Arriba: "Mostrando 1 – 9 de N resultados", orden (más recientes, A a Z, afinidad) y 9/18/36 por página con "Ver más".
 - **Ver perfil** abre la página del candidato (`#/empresa/candidato?k=…`):
@@ -197,7 +197,7 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 ## Planes (en dólares)
 - Prueba gratis de 14 días del plan Pro para toda cuenta nueva (`TRIAL_DAYS`). Al vencer, la cuenta queda "Sin plan": ve todo, pero no puede publicar ni reactivar búsquedas.
 - **Básico US$20/mes**: hasta 5 búsquedas activas, postulantes sin límite y todas las herramientas de gestión.
-- **Pro US$30/mes**: búsquedas ilimitadas, 5 anuncios destacados a la vez y acceso a la base de datos de empleá (pestaña "Buscar en empleá", con CV y contacto). Con Básico esa pestaña muestra la invitación a pasar a Pro.
+- **Pro US$30/mes**: búsquedas ilimitadas, 5 anuncios destacados a la vez y acceso a la base de datos de +Humanos (pestaña "Buscar en +Humanos", con CV y contacto). Con Básico esa pestaña muestra la invitación a pasar a Pro.
 - **Sitio web**: +US$150 pago único, con cualquier plan; dominio y hosting a cargo de la consultora. El botón abre WhatsApp de ventas (`SALES_WA`).
 - Se quitaron el plan Gratis, el pago anual, la destacada suelta, el pack de contactos, el plan Corporativo y la tabla comparativa. Todo editable en `data.js` (`PLANS`, `WEBSITE_PRICE`, `TRIAL_DAYS`).
 
@@ -206,11 +206,11 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 
 ## Nosotros y textos sin Fedfu
 - Los números de Nosotros arrancan en 0 y suben (1,5 s) cuando el bloque entra en pantalla; respetan "reducir movimiento".
-- "Sobre empleá" presenta el sitio como portal de gestión para consultoras (tarjetas: Todos los CVs en un lugar · Terna con link · Tu banco de candidatos).
-- Se quitaron las menciones a Fedfu y al chat con IA de todos los textos. El ícono del asistente se reemplazó por la marca de empleá. La pantalla `#/chat` queda solo como "Armá tu alerta" (desde Notificaciones).
+- "Sobre +Humanos" presenta el sitio como portal de gestión para consultoras (tarjetas: Todos los CVs en un lugar · Terna con link · Tu banco de candidatos).
+- Se quitaron las menciones a Fedfu y al chat con IA de todos los textos. El ícono del asistente se reemplazó por la marca de +Humanos. La pantalla `#/chat` queda solo como "Armá tu alerta" (desde Notificaciones).
 
 ## Avisar a todos los descartados
-- En cada búsqueda, arriba de la lista aparece un aviso "N descartados sin avisar" con el botón "Avisar a los N". Abre el envío masivo: se avisa a todos dentro de empleá (lo ven en "Mis postulaciones"), se abre un único email con todos en copia oculta y queda un botón de WhatsApp por persona (WhatsApp no permite envíos masivos sin su API paga).
+- En cada búsqueda, arriba de la lista aparece un aviso "N descartados sin avisar" con el botón "Avisar a los N". Abre el envío masivo: se avisa a todos dentro de +Humanos (lo ven en "Mis postulaciones"), se abre un único email con todos en copia oculta y queda un botón de WhatsApp por persona (WhatsApp no permite envíos masivos sin su API paga).
 - Si ya hay un contratado y quedan personas en proceso, el aviso propone cerrar la búsqueda y avisarles a todos.
 - Cada descartado muestra "Sin avisar" o "Avisado" en la lista.
 
@@ -227,7 +227,7 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 - **El candidato borra sus datos:** con cuenta, desde Mis postulaciones → Borrar mis datos (se borran al instante sus postulaciones, CVs, alertas y contacto, también para las consultoras). Sin cuenta, desde Política de privacidad → "Pedir que borren mis datos" (formulario).
 - **Panel de admin → Pedidos de datos:** pedidos pendientes con el plazo de 5 días hábiles, qué datos se encontraron (postulaciones por consultora y CVs enviados), botón Borrar sus datos y registro de cada borrado como constancia.
 - **La consultora borra a una persona:** en la ficha del candidato (Mis candidatos) → "Borrar sus datos de mi base": postulaciones a sus búsquedas, CV, notas, etiquetas y lugar en ternas. Queda en el registro.
-- `Store.erasePerson(match, jobIds)` hace el borrado; las personas borradas de toda la plataforma dejan de aparecer en "Buscar en empleá".
+- `Store.erasePerson(match, jobIds)` hace el borrado; las personas borradas de toda la plataforma dejan de aparecer en "Buscar en +Humanos".
 
 ## Logo en el informe PDF
 - Si la consultora subió su logo (Mi perfil), el informe PDF lo incluye (se convierte a JPEG sobre fondo blanco). Si no, van las iniciales en su color.
@@ -251,7 +251,7 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 ## El Hub de Tucumán
 - Texto institucional ("Somos el Hub de Consultoras de RRHH y Empresas de Tucumán…") en un bloque propio debajo del buscador de la portada (con 4 pilares: avisos, networking, tendencias y recomendaciones) y como introducción de la página Empresas adheridas. Se edita en `HUB_TITLE`, `HUB_TEXT` y `HUB_CLOSE`.
 - Botón "Sumate al Hub": crear la cuenta de la consultora o empresa, o escribir por WhatsApp para entrar a la comunidad.
-- Nosotros: "empleá nació en Tucumán… y está abierto a búsquedas de todo el país".
+- Nosotros: "+Humanos nació en Tucumán… y está abierto a búsquedas de todo el país".
 
 ## Charla de café (blog)
 - Link "Charla de café" en el pie → `#/cafe`: encabezado, filtro por categoría (Mitos y verdades · Tendencias · Preguntas frecuentes · Entrevistas a consultoras), la última nota destacada grande y el resto en grilla de 3.
@@ -267,7 +267,7 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 - Prototipo: el análisis corre en el navegador con reglas (`aiRecommend()` usa `analyzeCv()`). En producción se reemplaza por una llamada a un modelo de IA con el mismo formato.
 
 ## Cobros apagados (por ahora)
-- `BILLING = false` en data.js: no se muestran planes, precios, pruebas ni pagos. Todas las cuentas usan todo gratis: búsquedas ilimitadas y la base de datos de empleá. Los avisos destacados (función premium) quedan apagados: la portada muestra "Últimos avisos" y la FAQ aclara que por ahora no hay destacados.
+- `BILLING = false` en data.js: no se muestran planes, precios, pruebas ni pagos. Todas las cuentas usan todo gratis: búsquedas ilimitadas y la base de datos de +Humanos. Los avisos destacados (función premium) quedan apagados: la portada muestra "Últimos avisos" y la FAQ aclara que por ahora no hay destacados.
 - Se quitaron el botón "Probá gratis 14 días", la página de planes (`#/empresa/planes` lleva al inicio), "Plan y pagos" en el perfil, el medidor del plan en el inicio (ahora "Accesos rápidos") y los textos de precios en FAQ y Términos (sección 5 "Costos").
 - Para volver a cobrar, poner `BILLING = true`: todo lo de planes sigue en el código.
 

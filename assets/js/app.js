@@ -1,4 +1,4 @@
-/* Empleá · prototipo SPA (sin build). Rutas por hash:
+/* +Humanos · prototipo SPA (sin build). Rutas por hash:
    #/                     Inicio
    #/chat                 Asistente (preguntas iniciales)
    #/vacantes             Vacantes para vos (?job=ID abre una)
@@ -475,9 +475,11 @@
   const swiperOf = cards => `<div class="swiper js-swiper !overflow-visible md:!overflow-hidden"><div class="swiper-wrapper">${cards.map(c => `<div class="swiper-slide">${c}</div>`).join('')}</div><div class="swiper-pagination"></div></div>`;
 
   /* ---------------- Barra superior e inferior ---------------- */
-  const MARK = (cls = 'w-9 h-9') => `<svg viewBox="0 0 40 40" class="${cls} shrink-0" aria-hidden="true"><path d="M9 4h22a7 7 0 0 1 7 7v13a7 7 0 0 1-7 7H19l-7 6v-6H9a7 7 0 0 1-7-7V11a7 7 0 0 1 7-7Z" fill="#3B5BFD"/><circle cx="13.5" cy="17.5" r="2.6" fill="#fff"/><circle cx="20" cy="17.5" r="2.6" fill="#fff"/><circle cx="26.5" cy="17.5" r="2.6" fill="#FFC93C"/></svg>`;
-  const BRAND = `<a href="#/" class="flex items-center gap-2" aria-label="Empleá, inicio">${MARK()}<span class="font-display text-[1.45rem] font-extrabold tracking-tight leading-none">empleá</span></a>`;
-  // Ícono de empleá para avisos y sugerencias del sistema (antes, avatar del asistente Fedfu)
+  // Marca +Humanos: el "+" del logo (barra azul marino y barra coral)
+  const MARK = (cls = 'w-9 h-9') => `<svg viewBox="0 0 40 40" class="${cls} shrink-0" aria-hidden="true"><path d="M6 20h28" stroke="#1B2550" stroke-width="5.5" stroke-linecap="round"/><path d="M20 6v28" stroke="#F2715A" stroke-width="5.5" stroke-linecap="round"/></svg>`;
+  const LOGO_SRC = 'assets/img/logo-humanos.webp';
+  const BRAND = `<a href="#/" class="flex items-center shrink-0" aria-label="+Humanos, Hub de RRHH, inicio"><img src="${LOGO_SRC}" alt="+Humanos · Hub de RRHH" class="h-7 min-[400px]:h-8 sm:h-10 w-auto max-w-none" width="198" height="40"></a>`;
+  // Ícono de +Humanos para avisos y sugerencias del sistema (antes, avatar del asistente Fedfu)
   const fedfu = (cls = 'w-10 h-10') => `<span class="${cls} shrink-0 rounded-full bg-white border border-line grid place-items-center" aria-hidden="true">${MARK('w-3/5 h-3/5')}</span>`;
 
   function navItems(mode) {
@@ -739,7 +741,7 @@
 
       <section class="pt-16 md:pt-24 pb-14 md:pb-20" aria-labelledby="trust-t">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <h2 id="trust-t" class="text-[1.75rem] sm:text-[2.2rem] leading-tight font-extrabold">Empresas que confían en empleá</h2>
+          <h2 id="trust-t" class="text-[1.75rem] sm:text-[2.2rem] leading-tight font-extrabold">Empresas que confían en +Humanos</h2>
           <p class="mt-2 text-ink-soft text-[1.08rem]">Consultoras y empresas que ya publican sus búsquedas acá.</p>
         </div>
         ${(() => {
@@ -792,12 +794,12 @@
       </section>
 
       ${(() => {
-        // Slider para candidatos: problemas comunes al postularse y cómo los resuelve empleá
+        // Slider para candidatos: problemas comunes al postularse y cómo los resuelve +Humanos
         const P = [
           { label: 'Seguimiento', img: LOCAL_IMG.p1, pos: '60% 50%', tint: '#3B5BFD', tag: ['ph-eye', 'Transparencia'],
-            title: 'Mirá cada paso de tu postulación', text: 'Con empleá ves cada punto de contacto con la consultora o empresa: cuándo leyeron tu CV, si seguís en proceso y cuándo es tu entrevista.', cta: ['Ver mis postulaciones', 'href="#/postulaciones"'] },
+            title: 'Mirá cada paso de tu postulación', text: 'Con +Humanos ves cada punto de contacto con la consultora o empresa: cuándo leyeron tu CV, si seguís en proceso y cuándo es tu entrevista.', cta: ['Ver mis postulaciones', 'href="#/postulaciones"'] },
           { label: 'Devolución', img: LOCAL_IMG.p2, pos: '62% 40%', tint: '#7B3FE4', tag: ['ph-chat-circle-text', 'Feedback'],
-            title: 'Recibí siempre una devolución', text: 'Avances o no, te enterás: la consultora te avisa el resultado por empleá y por WhatsApp.', cta: ['Ver vacantes', 'data-hs-jobs'] },
+            title: 'Recibí siempre una devolución', text: 'Avances o no, te enterás: la consultora te avisa el resultado por +Humanos y por WhatsApp.', cta: ['Ver vacantes', 'data-hs-jobs'] },
           { label: 'Chau ghosting', img: LOCAL_IMG.p3, pos: '50% 30%', tint: '#14123A', tag: ['ph-hand-waving', 'Chau ghosting'],
             title: 'Siempre sabés en qué etapa estás', text: 'Enviada, CV leído, en proceso, finalista o resultado: tu postulación nunca queda en silencio.', cta: ['Ver mis postulaciones', 'href="#/postulaciones"'] },
           { label: 'Un solo clic', img: LOCAL_IMG.p4, pos: '60% 35%', tint: '#11946A', tag: ['ph-cursor-click', 'Sin formularios'],
@@ -812,7 +814,7 @@
             <p class="font-bold text-brand uppercase tracking-wide text-[0.85rem]">Para quienes buscan trabajo</p>
             <h2 id="pain-t" class="mt-2 text-[1.9rem] sm:text-[2.5rem] leading-[1.08] font-extrabold max-w-3xl">Postularte ya no es tirar CVs al vacío</h2>
           </div>
-          <div class="relative bg-ink js-pain-wrap" aria-roledescription="carrusel" aria-label="Lo que resuelve empleá para candidatos">
+          <div class="relative bg-ink js-pain-wrap" aria-roledescription="carrusel" aria-label="Lo que resuelve +Humanos para candidatos">
             <div class="swiper js-pain h-[520px] sm:h-[540px] lg:h-[600px] !pb-0">
               <div class="swiper-wrapper">
                 ${P.map((sl, i) => `<div class="swiper-slide relative overflow-hidden" style="background:${sl.tint}" aria-label="${i + 1} de ${P.length}">
@@ -908,13 +910,13 @@
             <div class="col-span-2 md:col-span-1">
               ${BRAND}
               <p class="mt-3 text-ink-soft max-w-xs">El portal de gestión para consultoras: publicá, calificá y presentá candidatos en un solo lugar.</p>
-              <ul class="mt-5 flex gap-2" aria-label="Redes sociales">${SOCIAL.map(([n, ic, u]) => `<li><a href="${u}" target="_blank" rel="noopener" aria-label="${n} de empleá" title="${n}" class="w-11 h-11 rounded-full bg-surface text-ink grid place-items-center hover:bg-brand hover:text-white transition"><i class="ph-fill ${ic} text-[1.35rem]"></i></a></li>`).join('')}</ul>
+              <ul class="mt-5 flex gap-2" aria-label="Redes sociales">${SOCIAL.map(([n, ic, u]) => `<li><a href="${u}" target="_blank" rel="noopener" aria-label="${n} de +Humanos" title="${n}" class="w-11 h-11 rounded-full bg-surface text-ink grid place-items-center hover:bg-brand hover:text-white transition"><i class="ph-fill ${ic} text-[1.35rem]"></i></a></li>`).join('')}</ul>
             </div>
-            ${col('empleá', [['/nosotros', 'Nosotros', 'ph-hand-heart'], ['/empresas', 'Empresas adheridas', 'ph-buildings'], ['/cafe', 'Charla de café', 'ph-coffee'], ['/faqs', 'Preguntas frecuentes', 'ph-question']])}
+            ${col('+Humanos', [['/nosotros', 'Nosotros', 'ph-hand-heart'], ['/empresas', 'Empresas adheridas', 'ph-buildings'], ['/cafe', 'Charla de café', 'ph-coffee'], ['/faqs', 'Preguntas frecuentes', 'ph-question']])}
             ${col('Legal', [['/terminos', 'Términos y condiciones', 'ph-scroll'], ['/privacidad', 'Política de privacidad', 'ph-shield-check']])}
           </div>
           <div class="mt-10 pt-6 border-t border-line flex flex-col sm:flex-row gap-2 sm:items-center justify-between text-ink-mute text-[0.92rem]">
-            <p>© ${new Date().getFullYear()} empleá · Desarrollado por <b class="font-semibold text-ink-soft">Clutch! Estudio</b></p>
+            <p>© ${new Date().getFullYear()} +Humanos · Desarrollado por <b class="font-semibold text-ink-soft">Clutch! Estudio</b></p>
             <a href="#/admin" class="text-[0.72rem] text-ink-mute/70 hover:text-brand hover:underline w-fit">Admin</a>
           </div>
         </div>
@@ -925,15 +927,15 @@
     nosotros: {
       title: 'Nosotros', icon: 'ph-hand-heart', lead: 'Ayudamos a las consultoras a seleccionar mejores candidatos, en menos tiempo.',
       body: () => `
-        <p>empleá nació en Tucumán como el Hub de Consultoras de RRHH y Empresas de la provincia, y está abierto a búsquedas de todo el país. Es el portal de gestión para consultoras de selección: publicás tus búsquedas, recibís todos los CVs en un solo lugar, los leés y calificás, y le presentás la terna a tu cliente con un link. Sin planillas, carpetas de mails ni cadenas de WhatsApp.</p>
-        <p>Cada candidato que pasa por tus búsquedas queda en tu propia base, con tus notas, etiquetas y su historial, para que la próxima búsqueda arranque con gente que ya conocés. Y si necesitás perfiles nuevos, buscás en la base de empleá por provincia, profesión y experiencia.</p>
-        <p>Para quienes buscan trabajo, empleá es gratis: ven las vacantes de todo el país y se postulan con su CV desde el celular.</p>
+        <p>+Humanos nació en Tucumán como el Hub de Consultoras de RRHH y Empresas de la provincia, y está abierto a búsquedas de todo el país. Es el portal de gestión para consultoras de selección: publicás tus búsquedas, recibís todos los CVs en un solo lugar, los leés y calificás, y le presentás la terna a tu cliente con un link. Sin planillas, carpetas de mails ni cadenas de WhatsApp.</p>
+        <p>Cada candidato que pasa por tus búsquedas queda en tu propia base, con tus notas, etiquetas y su historial, para que la próxima búsqueda arranque con gente que ya conocés. Y si necesitás perfiles nuevos, buscás en la base de +Humanos por provincia, profesión y experiencia.</p>
+        <p>Para quienes buscan trabajo, +Humanos es gratis: ven las vacantes de todo el país y se postulan con su CV desde el celular.</p>
         <div class="not-prose grid sm:grid-cols-3 gap-3 my-8">
           ${[['ph-tray', 'Todos los CVs en un lugar', 'Cada postulante con su CV, tu calificación y la etapa en la que está.'], ['ph-link', 'Terna con link para tu cliente', 'Tu cliente ve los finalistas, tus comentarios y los CVs, y te responde desde ahí.'], ['ph-address-book', 'Tu base de candidatos', 'Quienes se postularon quedan guardados con notas y etiquetas para la próxima búsqueda.']]
             .map(([ic, t, d]) => `<div class="rounded-[22px] bg-white border border-line p-5"><i class="ph-fill ${ic} text-3xl text-brand"></i><p class="mt-3 font-bold text-lg leading-snug">${t}</p><p class="mt-1 text-ink-soft">${d}</p></div>`).join('')}
         </div>
         <h2>Cómo trabajamos</h2>
-        <p>Las decisiones las toma tu equipo: empleá ordena la información, pero cada CV lo lee y lo califica una persona. Pedimos solo los datos necesarios, y los candidatos aparecen en la base únicamente si se postularon o aceptaron ser contactados.</p>
+        <p>Las decisiones las toma tu equipo: +Humanos ordena la información, pero cada CV lo lee y lo califica una persona. Pedimos solo los datos necesarios, y los candidatos aparecen en la base únicamente si se postularon o aceptaron ser contactados.</p>
         <h2>Hablemos</h2>
         <p>¿Tenés una consultora y querés probarlo con tu equipo? Escribinos por WhatsApp o creá tu cuenta.</p>
         <div class="not-prose mt-5 flex flex-wrap gap-2"><a href="#/empresa?crear=1" class="btn btn-primary"><i class="ph ph-buildings"></i>Crear mi cuenta</a><button type="button" data-hub-join class="btn btn-outline"><i class="ph ph-users-three"></i>Sumate al Hub</button></div>`
@@ -954,29 +956,29 @@
           ['¿Me pueden recomendar a otra consultora?', 'Sí, pero solo con tu permiso. Si una consultora del Hub cree que encajás en una búsqueda de otra, te manda un link por WhatsApp. Ahí ves quién te quiere conocer y para qué puesto, y decidís. Si no aceptás, no le pasamos nada.'],
           ['¿Quién ve mis datos?', 'Solo las empresas y consultoras a las que te postulás. Tu perfil aparece en búsquedas de talento únicamente si aceptaste ser contactado, y lo podés cambiar cuando quieras.']
         ]) + grp('Si sos empresa o consultora', 'ph-buildings', [
-          ['¿Tiene costo para consultoras y empresas?', 'Por ahora no: publicar búsquedas y usar todas las herramientas de empleá es gratis.'],
+          ['¿Tiene costo para consultoras y empresas?', 'Por ahora no: publicar búsquedas y usar todas las herramientas de +Humanos es gratis.'],
           ['¿Hay avisos destacados?', 'Por ahora no: todas las búsquedas se muestran por igual, de la más nueva a la más vieja. Los avisos destacados van a ser parte de un plan premium más adelante.'],
           ['¿Cómo funcionan las recomendaciones entre selectores?', 'En <b>Hub → Busco perfil</b> ves lo que buscan otros selectores. Si alguien de tus candidatos encaja, se lo recomendás con una nota. El candidato recibe un link y da permiso; recién ahí llega a esa búsqueda como postulante. Para tus búsquedas difíciles, tocá <b>Pedir recomendaciones</b>.'],
           ['¿Qué es una terna?', 'Es la selección final, normalmente de 3 personas, que compartís con tu cliente o con quien decide mediante un link. Desde ahí responde a quién quiere entrevistar.'],
-          ['¿empleá descarta candidatos?', 'No. Cada empresa o consultora lee los CVs, los califica del 10% al 100% y decide a quién avanzar.'],
+          ['¿+Humanos descarta candidatos?', 'No. Cada empresa o consultora lee los CVs, los califica del 10% al 100% y decide a quién avanzar.'],
           ['¿Mi cliente ve a todos los postulantes?', 'No. Solo ve a las personas que pusiste en la terna, con el resumen que vos elegís mostrar.'],
           ['¿Puedo pausar o borrar una búsqueda?', 'Sí, desde la búsqueda. Pausada no ocupa lugar en tu plan y la reactivás cuando quieras.']
         ]);
       }
     },
     terminos: {
-      title: 'Términos y condiciones', icon: 'ph-scroll', lead: 'Las reglas para usar empleá, escritas lo más claro posible.', legal: true,
+      title: 'Términos y condiciones', icon: 'ph-scroll', lead: 'Las reglas para usar +Humanos, escritas lo más claro posible.', legal: true,
       body: () => `
-        <h2>1. Qué es empleá</h2>
-        <p>empleá es una plataforma que conecta a personas que buscan trabajo con empresas y consultoras que publican búsquedas. empleá no es empleador ni agencia de colocación: no participa de la relación laboral que pueda surgir entre las partes.</p>
+        <h2>1. Qué es +Humanos</h2>
+        <p>+Humanos es una plataforma que conecta a personas que buscan trabajo con empresas y consultoras que publican búsquedas. +Humanos no es empleador ni agencia de colocación: no participa de la relación laboral que pueda surgir entre las partes.</p>
         <h2>2. Cuentas</h2>
         <p>Las personas ingresan con su número de celular y un código que se envía por WhatsApp. Las empresas y consultoras, con email y contraseña. Cada usuario es responsable de que sus datos sean verdaderos y de cuidar el acceso a su cuenta.</p>
         <h2>3. Uso permitido</h2>
         <ul><li>Publicar solo búsquedas reales, con información veraz sobre el puesto.</li><li>No pedir pagos a los candidatos para postularse ni para ser contratados.</li><li>No publicar contenido discriminatorio por género, edad, origen, religión, discapacidad u otra condición.</li><li>Usar los datos de los candidatos solo para el proceso de selección para el que se postularon.</li></ul>
         <h2>4. Calificación de candidatos</h2>
-        <p>Cada empresa o consultora califica a sus postulantes después de leer el CV. Las decisiones de selección son siempre suyas; empleá no descarta candidatos.</p>
+        <p>Cada empresa o consultora califica a sus postulantes después de leer el CV. Las decisiones de selección son siempre suyas; +Humanos no descarta candidatos.</p>
         <h2>5. Costos</h2>
-        <p>Por ahora, usar empleá no tiene costo para candidatos, consultoras ni empresas. Si en el futuro sumamos planes pagos, lo vamos a avisar con anticipación y nada se va a cobrar sin tu aceptación.</p>
+        <p>Por ahora, usar +Humanos no tiene costo para candidatos, consultoras ni empresas. Si en el futuro sumamos planes pagos, lo vamos a avisar con anticipación y nada se va a cobrar sin tu aceptación.</p>
         <h2>6. Suspensión</h2>
         <p>Podemos pausar búsquedas o suspender cuentas que incumplan estos términos, avisándote el motivo.</p>
         <h2>7. Cambios y jurisdicción</h2>
@@ -1043,7 +1045,7 @@
         </div>
         <div class="max-w-3xl mx-auto px-4 sm:px-6 pt-16 md:pt-24 pb-20">
           <article class="info-prose">
-            <h2 class="!text-[2rem] sm:!text-[2.3rem]">Sobre empleá</h2>
+            <h2 class="!text-[2rem] sm:!text-[2.3rem]">Sobre +Humanos</h2>
             ${INFO.nosotros.body()}
           </article>
         </div>
@@ -1656,7 +1658,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const optP = PROVINCES.map(p => `<option ${p === (Store.profile() || {}).province ? 'selected' : ''}>${esc(p)}</option>`).join('');
     const optA = AREAS.map(a => `<option value="${a.id}" ${a.id === (Store.profile() || {}).area ? 'selected' : ''}>${esc(a.label)}</option>`).join('');
     const body = `<h2 class="text-[1.65rem] font-extrabold tracking-tight leading-tight pr-10">Enviá tu CV</h2>
-      <p class="text-ink-soft mt-1">Lo recibe el equipo de empleá, lo revisa y lo suma a la base de empleá. Las empresas y consultoras que buscan tu perfil te contactan por WhatsApp.</p>
+      <p class="text-ink-soft mt-1">Lo recibe el equipo de +Humanos, lo revisa y lo suma a la base de +Humanos. Las empresas y consultoras que buscan tu perfil te contactan por WhatsApp.</p>
       <div class="mt-6">
         <p class="label flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-ink text-white text-[0.8rem] grid place-items-center">1</span>Tu CV</p>
         <div id="sc-zone">${dropzone}</div>
@@ -1677,7 +1679,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         </div>
         <label class="mt-5 flex gap-3 items-start cursor-pointer">
           <input type="checkbox" id="sc-ok" class="w-5 h-5 mt-0.5 accent-[#0866FF] shrink-0">
-          <span class="text-ink-soft">Acepto que las empresas y consultoras de empleá vean mi CV y me contacten. Puedo pedir que lo borren cuando quiera (<a href="#/privacidad" class="text-brand font-semibold underline underline-offset-2" data-close-sheet>Privacidad</a>).</span>
+          <span class="text-ink-soft">Acepto que las empresas y consultoras de +Humanos vean mi CV y me contacten. Puedo pedir que lo borren cuando quiera (<a href="#/privacidad" class="text-brand font-semibold underline underline-offset-2" data-close-sheet>Privacidad</a>).</span>
         </label>
         <p id="sc-err2" class="err hidden"></p>
       </div>`;
@@ -1724,7 +1726,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         setSheet(`<div class="px-5 sm:px-7 pt-8 pb-7 text-center">
           <span class="mx-auto w-16 h-16 rounded-full bg-mint text-ok grid place-items-center"><i class="ph-fill ph-check-circle text-[2rem]"></i></span>
           <h2 class="mt-4 text-[1.5rem] font-extrabold leading-tight">¡Listo, ${esc(name.split(' ')[0])}! Recibimos tu CV</h2>
-          <p class="mt-2 text-ink-soft">Lo revisamos y lo sumamos a la base de empleá. Si una empresa o consultora busca tu perfil, te escribe al ${esc(phone)}.</p>
+          <p class="mt-2 text-ink-soft">Lo revisamos y lo sumamos a la base de +Humanos. Si una empresa o consultora busca tu perfil, te escribe al ${esc(phone)}.</p>
           <div class="mt-6 grid gap-2">
             <a href="#/vacantes" class="btn btn-primary justify-center" data-close-sheet><i class="ph-bold ph-magnifying-glass"></i>Ver vacantes abiertas</a>
             <button type="button" class="btn btn-outline justify-center" data-close-sheet>Cerrar</button>
@@ -2226,7 +2228,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       return `<li class="flex gap-3">
         <span class="hidden sm:block">${fedfu('w-10 h-10 mt-0.5')}</span>
         <div class="min-w-0 flex-1 rounded-[20px] rounded-tl-md p-3.5 sm:p-4 ${unread ? 'bg-brand-soft/60 ring-1 ring-brand/25' : 'bg-white border border-line'}">
-          <div class="flex items-center gap-1.5 text-[0.85rem] text-ink-mute mb-1 whitespace-nowrap"><span class="sm:hidden">${fedfu('w-6 h-6')}</span><span class="font-semibold text-ink">empleá</span><span>· ${ago(n.at)}</span>${n.type !== 'info' ? '<span class="inline-flex items-center gap-1" title="También te avisamos por WhatsApp"><i class="ph-fill ph-whatsapp-logo text-[#25D366]"></i><span class="hidden sm:inline">también por WhatsApp</span></span>' : ''}${unread ? '<span class="ml-auto w-2 h-2 rounded-full bg-brand" aria-label="Sin leer"></span>' : ''}</div>
+          <div class="flex items-center gap-1.5 text-[0.85rem] text-ink-mute mb-1 whitespace-nowrap"><span class="sm:hidden">${fedfu('w-6 h-6')}</span><span class="font-semibold text-ink">+Humanos</span><span>· ${ago(n.at)}</span>${n.type !== 'info' ? '<span class="inline-flex items-center gap-1" title="También te avisamos por WhatsApp"><i class="ph-fill ph-whatsapp-logo text-[#25D366]"></i><span class="hidden sm:inline">también por WhatsApp</span></span>' : ''}${unread ? '<span class="ml-auto w-2 h-2 rounded-full bg-brand" aria-label="Sin leer"></span>' : ''}</div>
           ${body}
         </div></li>`;
     };
@@ -2378,7 +2380,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   };
 
   /* ================= PLANES Y VACANTES DESTACADAS =================
-     Dos planes en dólares: Básico (hasta 5 búsquedas activas) y Pro (ilimitadas, 5 destacadas y base de datos de empleá).
+     Dos planes en dólares: Básico (hasta 5 búsquedas activas) y Pro (ilimitadas, 5 destacadas y base de datos de +Humanos).
      Las cuentas nuevas arrancan con TRIAL_DAYS días de prueba de Pro. Sitio web opcional: pago único.
      El pago es simulado (en producción: checkout de Mercado Pago o Stripe). */
   const ars = n => '$' + (n || 0).toLocaleString('es-AR');
@@ -2416,7 +2418,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const pl = planOf(co), u = usageOf(co), expired = pl.id === 'vencido';
     const opt = p => `<button type="button" data-lim-plan="${p.id}" class="w-full text-left rounded-[22px] ${p.color} p-5 hover:brightness-[.98]">
         <span class="flex items-baseline justify-between gap-3"><span class="font-display text-[1.35rem] font-extrabold">Plan ${p.name}</span><span class="font-display text-[1.35rem] font-extrabold whitespace-nowrap">${usd(p.price)}<span class="text-[0.9rem] font-semibold text-ink-soft"> /mes</span></span></span>
-        <span class="block mt-1 text-ink-soft">${activeLabel(p)}${p.feat ? ` · ${p.feat} destacadas · base de datos de empleá` : ''}</span></button>`;
+        <span class="block mt-1 text-ink-soft">${activeLabel(p)}${p.feat ? ` · ${p.feat} destacadas · base de datos de +Humanos` : ''}</span></button>`;
     const body = expired ? `
       <div class="w-14 h-14 rounded-full bg-sun-soft text-warn grid place-items-center"><i class="ph-fill ph-hourglass-low text-3xl"></i></div>
       <h2 class="mt-4 text-[1.6rem] leading-tight font-extrabold pr-10">Tu prueba gratis terminó</h2>
@@ -2480,25 +2482,25 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     if (u.active > pl.active) { toast(`Pausá ${u.active - pl.active} ${plural(u.active - pl.active, 'búsqueda', 'búsquedas')} para pasar a ${pl.name}`, 'ph-info'); return; }
     const apply = () => { Store.setPlan(co.name, pl.id); trimPlanFeatured(co); };
     openCheckout({
-      title: `Plan ${pl.name}`, sub: `${activeLabel(pl)}${pl.feat ? ` · ${pl.feat} destacadas · base de datos de empleá` : ''}`, amount: pl.price, period: 'por mes',
-      onPaid: () => { apply(); return { title: `¡Ya tenés el plan ${pl.name}!`, text: pl.base ? 'Publicá sin límite, destacá hasta 5 búsquedas y buscá candidatos en la base de datos de empleá.' : `Podés tener hasta ${pl.active} búsquedas activas a la vez.` }; }
+      title: `Plan ${pl.name}`, sub: `${activeLabel(pl)}${pl.feat ? ` · ${pl.feat} destacadas · base de datos de +Humanos` : ''}`, amount: pl.price, period: 'por mes',
+      onPaid: () => { apply(); return { title: `¡Ya tenés el plan ${pl.name}!`, text: pl.base ? 'Publicá sin límite, destacá hasta 5 búsquedas y buscá candidatos en la base de datos de +Humanos.' : `Podés tener hasta ${pl.active} búsquedas activas a la vez.` }; }
     });
   }
   function openWebsite(co) {
     const text = `Hola, quiero el sitio web para mi consultora${co ? ` (${co.name})` : ''}.`;
     window.open(waLink(SALES_WA, text), '_blank', 'noopener');
   }
-  // La base de datos de empleá ("Buscar en empleá") viene con Pro y con la prueba
+  // La base de datos de +Humanos ("Buscar en +Humanos") viene con Pro y con la prueba
   const hasBase = co => !!planOf(co).base;
   function openBaseUpsell(co) {
     const pro = PLANS.find(p => p.id === 'pro');
     const body = `
       <div class="w-14 h-14 rounded-full bg-brand-soft text-brand grid place-items-center"><i class="ph-fill ph-database text-3xl"></i></div>
-      <h2 class="mt-4 text-[1.6rem] leading-tight font-extrabold pr-10">La base de datos de empleá está en el plan Pro</h2>
-      <p class="mt-2 text-ink-soft">Con Pro ves a toda la gente registrada en empleá, aunque no se haya postulado a tus búsquedas, con su CV completo, celular y email. Además tenés búsquedas ilimitadas y 5 anuncios destacados.</p>
+      <h2 class="mt-4 text-[1.6rem] leading-tight font-extrabold pr-10">La base de datos de +Humanos está en el plan Pro</h2>
+      <p class="mt-2 text-ink-soft">Con Pro ves a toda la gente registrada en +Humanos, aunque no se haya postulado a tus búsquedas, con su CV completo, celular y email. Además tenés búsquedas ilimitadas y 5 anuncios destacados.</p>
       <div class="mt-5"><button type="button" data-lim-plan="pro" class="w-full text-left rounded-[22px] ${pro.color} p-5 hover:brightness-[.98]">
         <span class="flex items-baseline justify-between gap-3"><span class="font-display text-[1.35rem] font-extrabold">Plan Pro</span><span class="font-display text-[1.35rem] font-extrabold whitespace-nowrap">${usd(pro.price)}<span class="text-[0.9rem] font-semibold text-ink-soft"> /mes</span></span></span>
-        <span class="block mt-1 text-ink-soft">Búsquedas ilimitadas · 5 destacadas · base de datos de empleá</span></button></div>`;
+        <span class="block mt-1 text-ink-soft">Búsquedas ilimitadas · 5 destacadas · base de datos de +Humanos</span></button></div>`;
     openSheet(sheetScroll(body) + sheetFoot('<button data-lim-plan="pro" class="btn btn-primary h-14 w-full">Pasar a Pro</button>'), c => {
       $$('[data-lim-plan]', c).forEach(b => b.onclick = () => choosePlan('pro'));
     });
@@ -2523,7 +2525,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     } else if (!pl.feat) {
       body = `<h2 class="text-[1.6rem] leading-tight font-extrabold pr-10">Destacá esta búsqueda</h2><p class="text-ink-soft mt-1">${esc(j.title)}${j.client ? ` · ${esc(j.client)}` : ''}</p>
         ${where}
-        <div class="mt-5 rounded-2xl border border-brand bg-brand-soft/50 p-4 flex gap-3"><i class="ph-fill ph-crown-simple text-2xl text-brand shrink-0"></i><p class="text-ink-soft">Los anuncios destacados están en el <b class="text-ink">plan Pro</b> (${usd(PLANS.find(p => p.id === 'pro').price)} por mes): hasta 5 a la vez, búsquedas ilimitadas y la base de datos de empleá.</p></div>
+        <div class="mt-5 rounded-2xl border border-brand bg-brand-soft/50 p-4 flex gap-3"><i class="ph-fill ph-crown-simple text-2xl text-brand shrink-0"></i><p class="text-ink-soft">Los anuncios destacados están en el <b class="text-ink">plan Pro</b> (${usd(PLANS.find(p => p.id === 'pro').price)} por mes): hasta 5 a la vez, búsquedas ilimitadas y la base de datos de +Humanos.</p></div>
         ${preview}`;
       foot = `<button data-lim-plan="pro" class="btn btn-primary w-full h-14"><i class="ph-fill ph-crown-simple text-xl"></i>Pasar a Pro</button>`;
     } else {
@@ -2592,8 +2594,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       ['¿Cómo funciona la prueba gratis?', `Al crear tu cuenta usás el plan Pro completo durante ${TRIAL_DAYS} días, sin cargar tarjeta. Después elegís Básico o Pro. Si no elegís ninguno, no se borra nada, pero no podés publicar ni reactivar búsquedas.`],
       ['¿Qué cuenta como búsqueda activa?', 'Las búsquedas publicadas y visibles para los candidatos. Las pausadas o eliminadas no cuentan, y sus postulantes siguen disponibles.'],
       ['¿Qué son los anuncios destacados?', 'Aparecen primeros en la lista de vacantes y en “Anuncios destacados” de la portada, con la etiqueta “Destacada”. Con Pro tenés hasta 5 a la vez y los movés de una búsqueda a otra cuando quieras.'],
-      ['¿Qué es la base de datos de empleá?', 'Es toda la gente registrada en empleá, aunque no se haya postulado a tus búsquedas. Con Pro la buscás por provincia, profesión y experiencia, y ves su CV, celular y email. Con Básico tenés Mis candidatos: las personas que se postularon a tus búsquedas.'],
-      ['¿Qué incluye el sitio web?', `El diseño y desarrollo de un sitio para tu consultora, con tus búsquedas de empleá publicadas y un formulario para recibir CVs. Cuesta ${usd(WEBSITE_PRICE)} una sola vez y el plan mensual no cambia. El dominio (por ejemplo, tuconsultora.com.ar) y el hosting se contratan aparte y corren por tu cuenta.`],
+      ['¿Qué es la base de datos de +Humanos?', 'Es toda la gente registrada en +Humanos, aunque no se haya postulado a tus búsquedas. Con Pro la buscás por provincia, profesión y experiencia, y ves su CV, celular y email. Con Básico tenés Mis candidatos: las personas que se postularon a tus búsquedas.'],
+      ['¿Qué incluye el sitio web?', `El diseño y desarrollo de un sitio para tu consultora, con tus búsquedas de +Humanos publicadas y un formulario para recibir CVs. Cuesta ${usd(WEBSITE_PRICE)} una sola vez y el plan mensual no cambia. El dominio (por ejemplo, tuconsultora.com.ar) y el hosting se contratan aparte y corren por tu cuenta.`],
       ['¿Cómo pago?', 'Los precios están en dólares. Pagás con Mercado Pago (en pesos al tipo de cambio del día), tarjeta o transferencia. El plan se renueva cada mes y lo cancelás cuando quieras. En este prototipo los pagos son de prueba.']
     ];
     const pays = info ? (info.payments || []) : [];
@@ -2610,7 +2612,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <div>
           <span class="inline-flex items-center gap-1.5 font-bold text-sun"><i class="ph-fill ph-browser"></i>Servicio opcional</span>
           <h2 id="pl-web" class="text-[1.8rem] sm:text-[2.2rem] leading-[1.05] font-extrabold mt-2">¿Tu consultora no tiene sitio web?</h2>
-          <p class="mt-3 text-white/80 text-[1.05rem] max-w-xl">Te lo diseñamos y desarrollamos, con tus búsquedas de empleá publicadas y un formulario para recibir CVs. Se suma a cualquier plan y el precio mensual sigue igual.</p>
+          <p class="mt-3 text-white/80 text-[1.05rem] max-w-xl">Te lo diseñamos y desarrollamos, con tus búsquedas de +Humanos publicadas y un formulario para recibir CVs. Se suma a cualquier plan y el precio mensual sigue igual.</p>
           <p class="mt-3 text-white/60 text-[0.95rem]">No incluye dominio ni hosting: corren por cuenta de la consultora.</p>
         </div>
         <div class="md:text-right">
@@ -4051,7 +4053,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         const resp = { v: 1, id: T.id, co: T.co, jobId: T.jobId, job: T.job.t, by: st.name, at: new Date().toISOString(), r: T.items.map(it => { const v = st.votes[it.k] || {}; return [it.k, v.v || null, (v.c || '').trim(), it.n]; }) };
         const link = `${baseUrl()}#/terna-respuesta?d=${await packData(resp)}`;
         const lines = T.items.map(it => { const v = st.votes[it.k] || {}; return `${v.v === 'up' ? '👍' : v.v === 'down' ? '👎' : '—'} ${it.n}${v.c ? `: ${v.c.trim()}` : ''}`; }).join('\n');
-        const text = `Hola ${T.reply.name.split(' ')[0]}, te paso mi respuesta sobre la terna de ${T.job.t}:\n\n${lines}\n\n${st.name ? st.name + '\n\n' : ''}Para cargarla en empleá: ${link}`;
+        const text = `Hola ${T.reply.name.split(' ')[0]}, te paso mi respuesta sobre la terna de ${T.job.t}:\n\n${lines}\n\n${st.name ? st.name + '\n\n' : ''}Para cargarla en +Humanos: ${link}`;
         const wa = T.reply.phone ? waLink(T.reply.phone, text) : `https://wa.me/?text=${encodeURIComponent(text)}`;
         $('#cr-actions', c).innerHTML = `
           <a class="btn btn-primary h-14 text-[1.05rem]" href="${esc(wa)}" target="_blank" rel="noopener"><i class="ph-fill ph-whatsapp-logo text-xl"></i>Enviar por WhatsApp</a>
@@ -4094,7 +4096,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   }
 
   /* ================= AVISAR A LOS NO SELECCIONADOS =================
-     Un toque: avisa dentro de empleá (el candidato lo ve en "Mis postulaciones") y abre un único email
+     Un toque: avisa dentro de +Humanos (el candidato lo ve en "Mis postulaciones") y abre un único email
      con todos en copia oculta. WhatsApp no permite envíos masivos sin la API paga: queda un botón por persona. */
   const OPEN_STAGES = ['Nuevo', 'En revisión', 'Entrevista', 'Terna'];
   function openRejectSheet(jobId, opts = {}) {
@@ -4147,7 +4149,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <div class="success-pop w-16 h-16 rounded-full bg-ok text-white grid place-items-center"><i class="ph-bold ph-check text-3xl"></i></div>
         <h2 class="mt-4 text-[1.6rem] font-extrabold tracking-tight leading-tight">Listo: avisaste a ${list.length} persona${list.length === 1 ? '' : 's'}</h2>
         <ul class="mt-3 space-y-1.5 text-ink-soft">
-          <li class="flex gap-2"><i class="ph-fill ph-check-circle text-ok text-xl shrink-0"></i>Lo ven en empleá, en "Mis postulaciones".</li>
+          <li class="flex gap-2"><i class="ph-fill ph-check-circle text-ok text-xl shrink-0"></i>Lo ven en +Humanos, en "Mis postulaciones".</li>
           ${withMail.length ? `<li class="flex gap-2"><i class="ph-fill ph-check-circle text-ok text-xl shrink-0"></i>Se abrió tu email con ${withMail.length} destinatario${withMail.length === 1 ? '' : 's'} en copia oculta. Revisalo y envialo.</li>` : ''}
         </ul>
         ${withMail.length ? `<a class="btn btn-outline btn-sm mt-3" href="${esc(st.mailto)}"><i class="ph ph-envelope-simple"></i>Abrir el email de nuevo</a>` : ''}
@@ -4461,7 +4463,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             const hired = all.some(a => a.status === 'Contratado'), open = all.filter(a => OPEN_STAGES.includes(a.status)).length;
             const box = (tone, ic, t, sub, btn) => `<div class="mt-4 rounded-[18px] ${tone} p-4 flex flex-wrap items-center gap-3"><i class="ph-fill ${ic} text-2xl shrink-0"></i><div class="min-w-0 flex-1"><p class="font-semibold leading-tight text-ink">${t}</p><p class="text-ink-soft text-[0.92rem]">${sub}</p></div>${btn}</div>`;
             if (hired && open) return box('bg-mint text-ok', 'ph-confetti', `¿Cerrás la búsqueda? ${open} ${open === 1 ? 'persona sigue' : 'personas siguen'} en proceso`, 'Avisales a todos de una vez que la búsqueda terminó.', `<button type="button" class="btn btn-primary btn-sm w-full sm:w-auto" data-notify="${j.id}" data-close-all="1"><i class="ph-bold ph-paper-plane-tilt"></i>Avisar a todos</button>`);
-            if (pend) return box('bg-sun-soft text-warn', 'ph-hand-heart', `${pend} ${pend === 1 ? 'descartado sin avisar' : 'descartados sin avisar'}`, 'Mandales un mensaje a todos juntos: lo ven en empleá y por email, y por WhatsApp uno por uno.', `<button type="button" class="btn btn-primary btn-sm w-full sm:w-auto" data-notify="${j.id}"><i class="ph-bold ph-paper-plane-tilt"></i>Avisar a ${pend === 1 ? 'esa persona' : `los ${pend}`}</button>`);
+            if (pend) return box('bg-sun-soft text-warn', 'ph-hand-heart', `${pend} ${pend === 1 ? 'descartado sin avisar' : 'descartados sin avisar'}`, 'Mandales un mensaje a todos juntos: lo ven en +Humanos y por email, y por WhatsApp uno por uno.', `<button type="button" class="btn btn-primary btn-sm w-full sm:w-auto" data-notify="${j.id}"><i class="ph-bold ph-paper-plane-tilt"></i>Avisar a ${pend === 1 ? 'esa persona' : `los ${pend}`}</button>`);
             if (S.appGroup === 'out' && out) return box('bg-surface text-ok', 'ph-check-circle', 'Ya les avisaste a todos los descartados', 'Gracias por cerrar el círculo: los candidatos lo valoran mucho.', '');
             return '';
           })()}
@@ -4846,7 +4848,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
 
   /* ================= BANCO DE TALENTO =================
      Todas las personas que se postularon a las búsquedas de la empresa (en cualquier etapa) + las que se
-     guardaron desde "Buscar en empleá". Cada una con etiquetas, notas internas, favoritos e historial.
+     guardaron desde "Buscar en +Humanos". Cada una con etiquetas, notas internas, favoritos e historial.
      Cuando se abre una búsqueda nueva, Fedfu sugiere las que encajan. */
   const STAGE_RANK = { 'Nuevo': 1, 'En revisión': 2, 'Entrevista': 3, 'Terna': 4, 'Contratado': 5, 'Descartado': 0 };
   const personKey = a => a.cand ? 'c:' + a.cand : a.email ? 'e:' + norm(a.email) : 'n:' + norm(a.name);
@@ -5025,7 +5027,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     openSheet(draw(), mount, { side: true });
   }
 
-  /* ----- Filtro por profesión (Base de datos: Mis candidatos y Buscar en empleá) ----- */
+  /* ----- Filtro por profesión (Base de datos: Mis candidatos y Buscar en +Humanos) ----- */
   const inProf = (pr, p) => !(pr.excl || []).some(id => inProf(PROFESSIONS.find(x => x.id === id), p)) &&
     (pr.areas.includes(p.area) || pr.kw.some(k => norm(`${p.headline || ''} ${(p.skills || []).join(' ')}`).includes(k)));
   // Botones rápidos con la cantidad de personas por profesión (solo las que tienen alguien)
@@ -5042,7 +5044,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const byProf = list => { const pr = PROFESSIONS.find(x => x.id === S.prof); return pr ? list.filter(p => inProf(pr, p)) : list; };
 
   /* ================= BASE DE DATOS (antes "Talento") =================
-     Una sola página con dos pestañas: Mis candidatos (quienes pasaron por tus búsquedas o guardaste) y Buscar en empleá (el resto de la plataforma).
+     Una sola página con dos pestañas: Mis candidatos (quienes pasaron por tus búsquedas o guardaste) y Buscar en +Humanos (el resto de la plataforma).
      Filtros al costado (palabra clave, provincia, profesión, experiencia) y lista en filas con "Ver perfil". */
   function platformPool(co) {
     const ids = new Set(myJobs(co).map(j => j.id));
@@ -5102,12 +5104,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const loc = [r.city, r.province].filter(Boolean).join(', ');
     const phone = ref.phone || sc.phone || '', email = ref.email || sc.email || '';
     const tx = contactTexts(co.name, r.name, null), wa = waLink(phone, tx.wa);
-    // Contacto bloqueado: personas de la base de empleá que no se postularon a tus búsquedas
+    // Contacto bloqueado: personas de la base de +Humanos que no se postularon a tus búsquedas
     const locked = !(isBank && ((ref.apps && ref.apps.length) || ref.imported)) && !hasBase(co);
     const lockedVal = `<span class="text-ink-mute tracking-widest select-none" aria-label="Oculto">••• ••• ••••</span>`;
     const js = r.jobs.map(id => Store.job(id)).filter(Boolean);
     const origin = isBank ? (ref.apps && ref.apps.length ? `Se postuló a ${ref.apps.length === 1 ? 'una búsqueda tuya' : `${ref.apps.length} búsquedas tuyas`}` : ref.imported ? `Importado por tu equipo ${ago(ref.imported).toLowerCase()}` : 'Guardado desde la plataforma')
-      : ref.sp ? `Envió su CV a empleá ${ago(ref.sp.date).toLowerCase()}` : ref.app ? 'Se postuló desde la web' : 'Perfil de la plataforma (acepta ser contactado)';
+      : ref.sp ? `Envió su CV a +Humanos ${ago(ref.sp.date).toLowerCase()}` : ref.app ? 'Se postuló desde la web' : 'Perfil de la plataforma (acepta ser contactado)';
     const pret = (text.match(/pretensi[oó]n[^\n:]*:?\s*([^\n]+)/i) || [])[1];
     const edad = (text.match(/(\d{2})\s*a[nñ]os/i) || [])[1];
     const avail = myJobs(co).filter(j => j.status === 'activa' && !r.jobs.includes(j.id));
@@ -5181,7 +5183,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             ${(() => {
               const cs = [...(ref.apps || []), ...(ref.app ? [ref.app] : [])].map(a => a.consent ? a.consent.at : a.date).filter(Boolean).sort();
               const sp = ref.sp && (ref.sp.consent ? ref.sp.consent.at : ref.sp.date);
-              const txt = cs.length ? `Aceptó el uso de sus datos al postularse, el ${fmtDT(cs[cs.length - 1])}.` : sp ? `Aceptó aparecer en la base de empleá al enviar su CV, el ${fmtDT(sp)}.` : 'Aceptó ser contactado/a por empresas de empleá al registrarse.';
+              const txt = cs.length ? `Aceptó el uso de sus datos al postularse, el ${fmtDT(cs[cs.length - 1])}.` : sp ? `Aceptó aparecer en la base de +Humanos al enviar su CV, el ${fmtDT(sp)}.` : 'Aceptó ser contactado/a por empresas de +Humanos al registrarse.';
               return info('ph-shield-check', 'Consentimiento', esc(txt));
             })()}
           </ul>
@@ -5249,11 +5251,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <section class="min-w-0">
           <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="inline-flex rounded-full bg-white border border-line p-1" role="tablist" aria-label="Dónde buscar">
-            ${[['bank', 'ph-address-book', 'Mis candidatos'], ['platform', 'ph-magnifying-glass', 'Buscar en empleá']].map(([v, ic, l]) => `<button type="button" role="tab" data-ttab="${v}" aria-selected="${F.tab === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${F.tab === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}</button>`).join('')}
+            ${[['bank', 'ph-address-book', 'Mis candidatos'], ['platform', 'ph-magnifying-glass', 'Buscar en +Humanos']].map(([v, ic, l]) => `<button type="button" role="tab" data-ttab="${v}" aria-selected="${F.tab === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${F.tab === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}</button>`).join('')}
           </div>
           <button type="button" id="db-import" class="btn btn-outline bg-white h-12 px-5"><i class="ph-bold ph-upload-simple text-lg"></i>Importar candidatos</button>
           </div>
-          <p class="mt-3 text-ink-soft max-w-2xl">${F.tab === 'bank' ? 'Personas que se postularon a tus búsquedas o que guardaste. Ya tenés su historial y tus notas.' : (hasBase(co) ? 'Toda la gente registrada en empleá, aunque nunca se haya postulado a tus búsquedas, con su CV y contacto.' : 'Toda la gente registrada en empleá, aunque nunca se haya postulado a tus búsquedas. Está incluida en el plan Pro.')}</p>
+          <p class="mt-3 text-ink-soft max-w-2xl">${F.tab === 'bank' ? 'Personas que se postularon a tus búsquedas o que guardaste. Ya tenés su historial y tus notas.' : (hasBase(co) ? 'Toda la gente registrada en +Humanos, aunque nunca se haya postulado a tus búsquedas, con su CV y contacto.' : 'Toda la gente registrada en +Humanos, aunque nunca se haya postulado a tus búsquedas. Está incluida en el plan Pro.')}</p>
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
             <p id="db-count" class="font-semibold text-ink" aria-live="polite"></p>
             <div class="flex gap-2">
@@ -5271,7 +5273,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         $('#db-count').textContent = ''; $('#db-more').innerHTML = '';
         $('#db-list').innerHTML = `<li class="rounded-[22px] bg-white border border-line p-6 sm:p-8 text-center">
           <span class="mx-auto w-16 h-16 rounded-full bg-brand-soft text-brand grid place-items-center"><i class="ph-fill ph-database text-3xl"></i></span>
-          <h2 class="mt-4 text-[1.4rem] font-extrabold">La base de datos de empleá está en el plan Pro</h2>
+          <h2 class="mt-4 text-[1.4rem] font-extrabold">La base de datos de +Humanos está en el plan Pro</h2>
           <p class="mt-2 text-ink-soft max-w-md mx-auto">Buscá entre ${platformPool(co).length} personas registradas por provincia, profesión y experiencia, y mirá su CV y contacto. Pro también suma búsquedas ilimitadas y 5 destacadas.</p>
           <button type="button" id="db-upsell" class="mt-5 btn btn-primary h-12 px-6"><i class="ph-fill ph-crown-simple"></i>Pasar a Pro · ${usd(PLANS.find(p => p.id === 'pro').price)}/mes</button></li>`;
         $('#db-upsell').onclick = () => choosePlan('pro');
@@ -5737,7 +5739,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   function CompanyPage(params) {
     const name = params.get('n') || '';
     if (!name || !Store.companyExists(name)) {
-      return { html: `<div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 grid">${emptyState('ph-buildings', 'No encontramos esta empresa', 'Puede que haya cambiado de nombre o ya no publique en Empleá.', '<a href="#/vacantes" class="btn btn-primary">Ver vacantes</a>')}</div>` };
+      return { html: `<div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 grid">${emptyState('ph-buildings', 'No encontramos esta empresa', 'Puede que haya cambiado de nombre o ya no publique en +Humanos.', '<a href="#/vacantes" class="btn btn-primary">Ver vacantes</a>')}</div>` };
     }
     const p = Store.coProfile(name), cmp = companyOf(name);
     const all = Store.jobs().filter(j => j.company === name);
@@ -5747,7 +5749,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const own = (Store.company() || {}).name === name;
     const pubClients = [...new Set(jobs.filter(j => j.client && j.showClient).map(j => j.client))];
     const links = [[toUrl(p.website), 'ph-globe', 'Sitio web'], [toUrl(p.linkedin, LINKEDIN), 'ph-linkedin-logo', 'LinkedIn'], [toUrl(p.instagram, INSTAGRAM), 'ph-instagram-logo', 'Instagram']].filter(l => l[0]);
-    const wa = waLink(p.contactPhone, `Hola, vi el perfil de ${name} en Empleá y quería consultar por sus búsquedas.`);
+    const wa = waLink(p.contactPhone, `Hola, vi el perfil de ${name} en +Humanos y quería consultar por sus búsquedas.`);
     const meta = [type, p.industry, p.size ? `${p.size} empleados` : '', [p.city, p.province].filter(Boolean).join(', ')].filter(Boolean);
     const html = `
       ${own ? `<div class="bg-ink text-white"><div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-3 text-[0.95rem]">
@@ -5829,7 +5831,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         else if (/^[A-ZÁÉÍÓÚÑ ]{5,}$/.test(t)) { y -= 8; text(t, 12, true, 8); }
         else wrap(t).forEach(l => text(l, 11, false, 6));
       });
-      y -= 24; ops.push('0.42 0.49 0.55 rg'); text('CV de demostración del prototipo de empleá.', 9, false);
+      y -= 24; ops.push('0.42 0.49 0.55 rg'); text('CV de demostración del prototipo de +Humanos.', 9, false);
     } else {
     text(c.name || 'Candidato/a', 26, true, 8);
     text(c.headline || 'Postulante', 14, false, 8);
@@ -5843,7 +5845,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     ['2022 - actualidad   ' + (c.headline || 'Puesto actual') + ' - Empresa del sector', '2019 - 2022   Puesto anterior - Empresa regional'].forEach(l => text(l, 11, false, 6));
     y -= 30;
     ops.push('0.42 0.49 0.55 rg');
-    text('CV de demostración generado por el prototipo de Empleá.', 9, false);
+    text('CV de demostración generado por el prototipo de +Humanos.', 9, false);
     }
     const content = ops.join('\n');
     const objs = [
@@ -6039,7 +6041,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const tw = (t, size) => lat(t).length * size * 0.5;
     const text = (x, yy, t, size, bold, color = C.ink) => ops.push(`${rgb(color)} rg BT /${bold ? 'F1' : 'F2'} ${size} Tf ${x.toFixed(1)} ${yy.toFixed(1)} Td (${lat(t)}) Tj ET`);
     const rect = (x, yy, w, h, color) => ops.push(`${rgb(color)} rg ${x.toFixed(1)} ${yy.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)} re f`);
-    const footer = () => { text(M, 28, `Informe generado con empleá · ${co.name}`, 8.5, false, C.mute); text(W - M - 40, 28, `Página ${pages.length}`, 8.5, false, C.mute); };
+    const footer = () => { text(M, 28, `Informe generado con +Humanos · ${co.name}`, 8.5, false, C.mute); text(W - M - 40, 28, `Página ${pages.length}`, 8.5, false, C.mute); };
     const newPage = () => { if (ops) { footer(); } ops = []; pages.push(ops); y = H - M; };
     const need = h => { if (y - h < 60) { newPage(); } };
     const fit = (t, size, maxW) => { let s2 = String(t); while (s2.length > 3 && tw(s2, size) > maxW) s2 = s2.slice(0, -2); return s2 === String(t) ? s2 : s2.trim() + '...'; };
@@ -6157,8 +6159,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
      El consentimiento queda registrado en cada postulación y CV enviado (fecha y texto aceptado).
      El candidato puede borrar sus datos (con cuenta) o pedirlo con un formulario; la consultora borra
      a una persona de su base. La ley da 5 días hábiles para la supresión (art. 16). */
-  const CONSENT_APPLY = co => `Acepto que ${co} use mis datos y mi CV para este proceso de selección y que empleá los guarde, según la Política de privacidad. Puedo pedir que los borren cuando quiera.`;
-  const CONSENT_SPONT = 'Acepto que las empresas y consultoras de empleá vean mi CV y me contacten. Puedo pedir que lo borren cuando quiera.';
+  const CONSENT_APPLY = co => `Acepto que ${co} use mis datos y mi CV para este proceso de selección y que +Humanos los guarde, según la Política de privacidad. Puedo pedir que los borren cuando quiera.`;
+  const CONSENT_SPONT = 'Acepto que las empresas y consultoras de +Humanos vean mi CV y me contacten. Puedo pedir que lo borren cuando quiera.';
   const fmtDT = iso => new Date(iso).toLocaleString('es-AR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) + ' h';
   function addBizDays(iso, n) { const d = new Date(iso); while (n > 0) { d.setDate(d.getDate() + 1); if (d.getDay() % 6) n--; } return d; }
   const bizDaysLeft = iso => { let n = 0; const d = new Date(); d.setHours(0, 0, 0, 0); const end = new Date(iso); end.setHours(0, 0, 0, 0); while (d < end) { d.setDate(d.getDate() + 1); if (d.getDay() % 6) n++; } return n; };
@@ -6172,7 +6174,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   function openDeleteRequest() {
     const c0 = Store.candidate() || Store.contact() || {};
     const body = `<h2 class="text-[1.6rem] font-extrabold pr-10 leading-tight">Pedir que borren mis datos</h2>
-      <p class="mt-2 text-ink-soft">Borramos tu CV, tus postulaciones y tus datos de contacto de empleá y de las consultoras a las que te postulaste. Lo resolvemos dentro de los <b class="text-ink">5 días hábiles</b> que fija la Ley 25.326.</p>
+      <p class="mt-2 text-ink-soft">Borramos tu CV, tus postulaciones y tus datos de contacto de +Humanos y de las consultoras a las que te postulaste. Lo resolvemos dentro de los <b class="text-ink">5 días hábiles</b> que fija la Ley 25.326.</p>
       <div class="mt-5 space-y-3">
         <input id="dr-name" class="input" placeholder="Nombre y apellido" autocomplete="name" value="${esc(c0.name || '')}" aria-label="Nombre y apellido">
         <input id="dr-phone" type="tel" inputmode="tel" class="input" placeholder="Celular con el que te postulaste" autocomplete="tel" value="${esc(c0.phone || '')}" aria-label="Celular">
@@ -6221,7 +6223,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const livePosts = () => Store.posts().filter(p => p.published).sort((a, b) => new Date(b.date) - new Date(a.date));
   const postImg = (p, cls) => `<div class="${cls} overflow-hidden bg-brand-soft">${p.img ? `<img src="${esc(imgSrc(p.img, 1200))}" alt="" class="w-full h-full object-cover transition duration-500 group-hover:scale-[1.03]" loading="lazy" onerror="this.remove()">` : `<div class="w-full h-full grid place-items-center text-brand/40"><i class="ph-fill ph-coffee text-6xl"></i></div>`}</div>`;
   const catPill = (id, light) => { const c = catOf(id); return `<span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[0.82rem] font-bold ${light ? 'bg-white/90 text-ink' : 'bg-brand-soft text-brand'}"><i class="ph-fill ${c[2]}"></i>${esc(c[1])}</span>`; };
-  const byline = p => `<span class="flex items-center gap-2.5 min-w-0">${logo(p.consultora || 'empleá', 'w-9 h-9 text-[0.7rem]')}<span class="min-w-0 leading-tight"><span class="block font-semibold text-ink truncate">${esc(p.consultora || '')}</span><span class="block text-[0.85rem] text-ink-mute truncate">${fmtDate(p.date)} · ${readMins(p)} min de lectura</span></span></span>`;
+  const byline = p => `<span class="flex items-center gap-2.5 min-w-0">${p.consultora ? logo(p.consultora, 'w-9 h-9 text-[0.7rem]') : `<span class="w-9 h-9 rounded-xl bg-white border border-line grid place-items-center shrink-0">${MARK('w-6 h-6')}</span>`}<span class="min-w-0 leading-tight"><span class="block font-semibold text-ink truncate">${esc(p.consultora || '')}</span><span class="block text-[0.85rem] text-ink-mute truncate">${fmtDate(p.date)} · ${readMins(p)} min de lectura</span></span></span>`;
   const postCard = p => `<li><a href="#/cafe/nota?id=${encodeURIComponent(p.id)}" class="group h-full flex flex-col rounded-[22px] bg-white border border-line overflow-hidden hover:shadow-lift hover:border-brand/30 transition">
       ${postImg(p, 'aspect-[16/10]')}
       <div class="p-5 flex flex-col flex-1">
@@ -6280,7 +6282,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <h1 class="mt-4 text-[2rem] sm:text-[2.8rem] leading-[1.08] font-extrabold tracking-tight">${esc(p.title)}</h1>
         <p class="mt-4 text-[1.15rem] text-ink-soft leading-relaxed">${esc(p.excerpt)}</p>
         <div class="mt-6 flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-line">
-          <span class="flex items-center gap-3">${logo(p.consultora || 'empleá', 'w-12 h-12 text-sm')}<span class="leading-tight"><span class="block font-bold">${esc(p.person || p.consultora)}</span><span class="block text-ink-mute text-[0.92rem]">${esc([p.role, p.consultora].filter(Boolean).join(' · '))}</span><span class="block text-ink-mute text-[0.85rem] mt-0.5">${fmtLong(p.date)} · ${readMins(p)} min de lectura</span></span></span>
+          <span class="flex items-center gap-3">${p.consultora ? logo(p.consultora, 'w-12 h-12 text-sm') : `<span class="w-12 h-12 rounded-xl bg-white border border-line grid place-items-center shrink-0">${MARK('w-8 h-8')}</span>`}<span class="leading-tight"><span class="block font-bold">${esc(p.person || p.consultora)}</span><span class="block text-ink-mute text-[0.92rem]">${esc([p.role, p.consultora].filter(Boolean).join(' · '))}</span><span class="block text-ink-mute text-[0.85rem] mt-0.5">${fmtLong(p.date)} · ${readMins(p)} min de lectura</span></span></span>
           <span class="flex gap-2">${share.map(([l, ic, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener" aria-label="Compartir en ${l}" title="Compartir en ${l}" class="w-10 h-10 rounded-full bg-surface grid place-items-center hover:bg-brand hover:text-white"><i class="ph-fill ${ic} text-lg"></i></a>`).join('')}<button type="button" id="cafe-copy" aria-label="Copiar link" title="Copiar link" class="w-10 h-10 rounded-full bg-surface grid place-items-center hover:bg-brand hover:text-white"><i class="ph-bold ph-link text-lg"></i></button></span>
         </div>
       </div>
@@ -6593,7 +6595,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           if (job && !Store.apps().some(a => a.jobId === job.id && personKey(a) === key)) {
             const id = 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
             if (p.file) await Store.putCv(id, p.file);
-            Store.addApp({ id, jobId: job.id, name: p.name, email: p.email, phone: p.phone, cvName: p.file ? p.file.name : `CV ${p.name}.pdf`, cvSize: p.file ? p.file.size : 0, cvType: p.file ? (p.file.name.split('.').pop() || '').toLowerCase() : 'pdf', cvText: p.cvText || '', date: now, status: 'Nuevo', mine: false, source: 'importado', consent: { at: now, text: 'CV importado por la consultora (enviado por el candidato fuera de empleá).' } });
+            Store.addApp({ id, jobId: job.id, name: p.name, email: p.email, phone: p.phone, cvName: p.file ? p.file.name : `CV ${p.name}.pdf`, cvSize: p.file ? p.file.size : 0, cvType: p.file ? (p.file.name.split('.').pop() || '').toLowerCase() : 'pdf', cvText: p.cvText || '', date: now, status: 'Nuevo', mine: false, source: 'importado', consent: { at: now, text: 'CV importado por la consultora (enviado por el candidato fuera de +Humanos).' } });
           }
         }
         st.done = { n, dup, job: job ? job.title : '' };
@@ -6893,7 +6895,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <form id="adm-login" class="w-full max-w-sm bg-white rounded-[24px] border border-line p-6 sm:p-7 shadow-lift">
           <span class="w-14 h-14 rounded-2xl bg-ink text-white grid place-items-center"><i class="ph-fill ph-lock-simple text-2xl"></i></span>
           <h1 class="mt-4 text-[1.6rem] font-extrabold tracking-tight leading-tight">Panel de administración</h1>
-          <p class="mt-1 text-ink-soft">Acceso solo para el equipo de empleá.</p>
+          <p class="mt-1 text-ink-soft">Acceso solo para el equipo de +Humanos.</p>
           <label class="label mt-5 block" for="adm-pass">Clave</label>
           <div class="relative"><i class="ph ph-key absolute left-4 top-1/2 -translate-y-1/2 text-xl text-ink-mute"></i>
             <input id="adm-pass" type="password" class="input pl-12" autocomplete="current-password" placeholder="Tu clave" required></div>
@@ -6938,7 +6940,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           <p class="text-ink-soft">${m.apps.length || m.sp.length ? `${m.apps.length} ${plural(m.apps.length, 'postulación', 'postulaciones')}${m.companies.length ? ` (en ${m.companies.map(esc).join(', ')})` : ''}${m.sp.length ? ` y ${m.sp.length} CV enviado al sitio` : ''}.` : 'No hay datos con ese celular o email.'}</p></div>
         <div class="mt-4 flex flex-wrap gap-2">
           <button type="button" data-dr-erase="${r.id}" class="btn btn-primary btn-sm"><i class="ph-bold ph-trash"></i>${m.apps.length || m.sp.length ? 'Borrar sus datos' : 'Marcar como resuelto'}</button>
-          ${r.phone ? `<a href="${waLink(r.phone, `Hola ${r.name.split(' ')[0]}, te escribimos de empleá por tu pedido de borrar tus datos.`)}" target="_blank" rel="noopener" class="btn btn-outline btn-sm"><i class="ph-fill ph-whatsapp-logo text-ok"></i>Escribirle</a>` : ''}
+          ${r.phone ? `<a href="${waLink(r.phone, `Hola ${r.name.split(' ')[0]}, te escribimos de +Humanos por tu pedido de borrar tus datos.`)}" target="_blank" rel="noopener" class="btn btn-outline btn-sm"><i class="ph-fill ph-whatsapp-logo text-ok"></i>Escribirle</a>` : ''}
         </div></li>`;
     };
     return {
@@ -7028,7 +7030,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
                 <div class="flex items-center gap-2 lg:justify-end flex-wrap">
                   <button type="button" data-adm-view="${x.id}" class="btn btn-outline h-10 px-3.5"><i class="ph-bold ph-file-text"></i>Ver CV</button>
                   ${st !== 'aprobado' ? `<button type="button" data-adm-ok="${x.id}" class="btn btn-primary h-10 px-3.5"><i class="ph-bold ph-check"></i>Aprobar</button>` : ibtn(`data-adm-undo="${x.id}"`, 'ph-arrow-counter-clockwise', 'Quitar de la Base de datos')}
-                  <a href="${waLink(x.phone, `Hola ${x.name.split(' ')[0]}, te escribimos de empleá por el CV que nos enviaste.`)}" target="_blank" rel="noopener" title="WhatsApp" aria-label="Escribir por WhatsApp" class="icon-btn w-10 h-10 border border-line hover:bg-surface text-ok"><i class="ph-fill ph-whatsapp-logo text-lg"></i></a>
+                  <a href="${waLink(x.phone, `Hola ${x.name.split(' ')[0]}, te escribimos de +Humanos por el CV que nos enviaste.`)}" target="_blank" rel="noopener" title="WhatsApp" aria-label="Escribir por WhatsApp" class="icon-btn w-10 h-10 border border-line hover:bg-surface text-ok"><i class="ph-fill ph-whatsapp-logo text-lg"></i></a>
                   ${st !== 'descartado' ? ibtn(`data-adm-no="${x.id}"`, 'ph-x', 'Descartar') : ''}
                   ${ibtn(`data-adm-del="${x.id}"`, 'ph-trash', 'Eliminar', 'text-[#C62828]')}
                 </div></li>`; }).join('')}</ul>`;
@@ -7096,7 +7098,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     if (ddOpen) ddOpen.close();
     if (out.mount) out.mount();
     enhanceSelects(view);
-    document.title = (out.title ? out.title + ' · ' : TITLES[path] ? TITLES[path] + ' · ' : '') + 'Empleá';
+    document.title = (out.title ? out.title + ' · ' : TITLES[path] ? TITLES[path] + ' · ' : '') + '+Humanos';
     if (!opts.keep) window.scrollTo({ top: 0, behavior: 'instant' });
   }
   function refresh() { const y = window.scrollY; render({ keep: true }); window.scrollTo({ top: y, behavior: 'instant' }); }

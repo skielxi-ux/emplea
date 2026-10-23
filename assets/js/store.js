@@ -144,7 +144,7 @@ const Store = (() => {
       if (!extra.trialUntil) delete plans[co].trialUntil;
       savePl();
     },
-    // Contactos desbloqueados de la base de empleá: cupo mensual del plan + packs extra que no vencen
+    // Contactos desbloqueados de la base de +Humanos: cupo mensual del plan + packs extra que no vencen
     unlockInfo(co) {
       const all = read(KUL, {}), m = new Date().toISOString().slice(0, 7);
       const u = { keys: {}, used: 0, extra: 0, month: m, ...(all[co] || {}) };

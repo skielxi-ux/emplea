@@ -622,22 +622,22 @@ const SEED_CAND_COMPS = {
 SEED_CANDIDATES.forEach(c => { c.comps = SEED_CAND_COMPS[c.id] || []; });
 
 /* ---------- Monetización: dos planes en dólares + sitio web opcional ----------
-   Básico: gestionar hasta 5 búsquedas activas. Pro: búsquedas ilimitadas, 5 anuncios destacados y la base de datos de empleá.
+   Básico: gestionar hasta 5 búsquedas activas. Pro: búsquedas ilimitadas, 5 anuncios destacados y la base de datos de +Humanos.
    Las cuentas nuevas arrancan con TRIAL_DAYS días de prueba del plan Pro. Precios por mes, en US$ (editables acá). */
 // Cobros apagados por ahora: todas las cuentas usan todo gratis (sin planes, precios ni pagos). Poner true para volver a mostrarlos.
 const BILLING = false;
-const FREE_PLAN = { id: 'libre', name: 'empleá', price: 0, active: Infinity, feat: 0, base: true, color: 'bg-brand-soft', highlights: [] };
+const FREE_PLAN = { id: 'libre', name: '+Humanos', price: 0, active: Infinity, feat: 0, base: true, color: 'bg-brand-soft', highlights: [] };
 const PLANS = [
   { id: 'basico', name: 'Básico', price: 20, active: 5, feat: 0, base: false, tag: 'Para gestionar tus búsquedas en un solo lugar', color: 'bg-lilac',
     highlights: ['Hasta 5 búsquedas activas a la vez', 'Postulantes y CVs sin límite', 'Visor de CV, calificación y notas', 'Terna con link para tu cliente', 'Calendario de entrevistas', 'Mis candidatos: tu base con notas e historial'] },
   { id: 'pro', name: 'Pro', price: 30, active: Infinity, feat: 5, base: true, tag: 'Para destacar tus búsquedas y encontrar candidatos nuevos', color: 'bg-sun-soft', popular: true,
-    highlights: ['Búsquedas activas ilimitadas', '5 anuncios destacados a la vez', 'Acceso a la base de datos de empleá, con CV y contacto', 'Todo lo del plan Básico'] }
+    highlights: ['Búsquedas activas ilimitadas', '5 anuncios destacados a la vez', 'Acceso a la base de datos de +Humanos, con CV y contacto', 'Todo lo del plan Básico'] }
 ];
 // Cuenta sin plan (prueba vencida): puede ver todo, pero no publicar ni reactivar búsquedas
 const EXPIRED_PLAN = { id: 'vencido', name: 'Sin plan', price: 0, active: 0, feat: 0, base: false, color: 'bg-surface', highlights: [] };
 // Canales de origen de los postulantes (links por canal y pregunta al postularse)
 const CHANNELS = [
-  ['emplea', 'empleá', 'ph-globe-simple'], ['linkedin', 'LinkedIn', 'ph-linkedin-logo'], ['whatsapp', 'WhatsApp', 'ph-whatsapp-logo'],
+  ['emplea', '+Humanos', 'ph-globe-simple'], ['linkedin', 'LinkedIn', 'ph-linkedin-logo'], ['whatsapp', 'WhatsApp', 'ph-whatsapp-logo'],
   ['instagram', 'Instagram', 'ph-instagram-logo'], ['facebook', 'Facebook', 'ph-facebook-logo'], ['computrabajo', 'Computrabajo', 'ph-briefcase'],
   ['zonajobs', 'ZonaJobs', 'ph-briefcase'], ['referido', 'Me lo recomendaron', 'ph-users'], ['banco', 'Sumado desde Mis candidatos', 'ph-address-book'], ['importado', 'Importado por la consultora', 'ph-upload-simple'], ['hub', 'Recomendado por el Hub', 'ph-users-three'], ['otro', 'Otro', 'ph-dots-three-circle']
 ];
@@ -688,7 +688,7 @@ Object.assign(SEED_CV, {
 });
 SEED_CANDIDATES.forEach(c => { c.comps = c.comps || []; });
 
-/* Logos de "Empresas que confían en empleá" (pasarela de la portada).
+/* Logos de "Empresas que confían en +Humanos" (pasarela de la portada).
    Para usar una imagen, agregá src (ruta dentro de assets/img o URL), por ejemplo { name: 'Agro Pampa', src: 'assets/img/logos/agro-pampa.svg' }.
    Sin src se muestra el nombre con su ícono. */
 const TRUSTED = [
@@ -755,8 +755,8 @@ const SEED_POSTS = [
     quote: 'Que no te llamen en una semana no quiere decir que quedaste afuera.',
     qa: [
       ['¿Cuánto dura un proceso de selección?', 'Entre dos y cuatro semanas en promedio. Depende mucho del cliente: algunos deciden rápido y otros necesitan varias entrevistas.'],
-      ['¿Cuándo leen mi CV?', 'En los primeros días después de cerrar la recepción. En empleá ves el momento exacto en que lo abrimos.'],
-      ['Si no me eligen, ¿me avisan?', 'Debería ser siempre así. Con empleá avisamos a todos los descartados juntos, y lo ves en tus postulaciones.'],
+      ['¿Cuándo leen mi CV?', 'En los primeros días después de cerrar la recepción. En +Humanos ves el momento exacto en que lo abrimos.'],
+      ['Si no me eligen, ¿me avisan?', 'Debería ser siempre así. Con +Humanos avisamos a todos los descartados juntos, y lo ves en tus postulaciones.'],
       ['¿Puedo escribir para preguntar cómo va?', 'Sí, una vez y con tranquilidad. Un mensaje corto por WhatsApp está perfecto.']
     ] },
   { id: 'n5', cat: 'mitos', title: '¿Las consultoras le cobran al candidato?', excerpt: 'Un mito que se repite y que conviene aclarar: quién paga un proceso de selección y cómo detectar avisos falsos.',
@@ -766,7 +766,7 @@ const SEED_POSTS = [
     qa: [
       ['¿El candidato paga algo?', 'Nunca. Las consultoras cobran a la empresa que las contrata. Postularte, hacer entrevistas y quedar seleccionado no te cuesta nada.'],
       ['¿Cómo detecto un aviso falso?', 'Desconfiá si te piden pagar un curso obligatorio, un “material de trabajo” o datos de tu tarjeta. Una consultora seria nunca te pide eso.'],
-      ['¿Qué hago si me pasa?', 'No pagues, guardá la conversación y denunciá el aviso. En empleá podés escribirnos desde la página de Privacidad o por WhatsApp.']
+      ['¿Qué hago si me pasa?', 'No pagues, guardá la conversación y denunciá el aviso. En +Humanos podés escribirnos desde la página de Privacidad o por WhatsApp.']
     ] },
   { id: 'n6', cat: 'tendencias', title: 'Entrevistas por videollamada: llegaron para quedarse', excerpt: 'Cómo prepararte para una entrevista desde el celular o la compu, y los errores más comunes.',
     consultora: 'Selecta RRHH', person: 'Martín Ríos', role: 'Consultor senior', img: 'lib:p6', daysAgo: 30, published: true,
