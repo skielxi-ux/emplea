@@ -291,6 +291,7 @@ En el prototipo el pedido y la respuesta viven en el navegador. Con servidor, el
 
 ## Avisos externos con IA
 Para que el sitio tenga ofertas aunque las empresas todavía no publiquen: **Admin → Avisos externos**.
+- **Foto del aviso:** si el post es una imagen, se sube la foto o se pega la captura (Ctrl+V) y se lee el texto solo. En el prototipo lo hace Tesseract.js en el navegador; se carga recién cuando se usa. La foto queda guardada y el candidato la ve en el aviso ("Ver la foto del aviso").
 - **Cargar desde un post:** se pega el texto de un post de Instagram, Facebook o un grupo de WhatsApp. La IA arma el aviso: puesto, empresa, rubro, ciudad de Tucumán, modalidad, jornada, sueldo, requisitos y contacto (WhatsApp, email o link).
 - **Alertas:** posible estafa (pide pagar, promete mucha plata), sin forma de postularse, sin nombre de empresa, jornada a confirmar, posible repetido.
 - **Para revisar:** nada se publica solo. El admin revisa, corrige y publica, o descarta. Hay 4 posts de ejemplo, uno de ellos una estafa.

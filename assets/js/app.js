@@ -1576,7 +1576,8 @@
       </a>`}
       ${Store.isFeatured(j) ? `<div class="mt-4 -mb-2">${featPill()}</div>` : ''}
       <h2 class="mt-4 text-[1.75rem] leading-tight font-extrabold tracking-tight">${esc(j.title)}</h2>
-      ${j.external ? `<p class="mt-3 rounded-[16px] bg-surface px-4 py-3 text-ink-soft flex gap-2.5"><i class="ph ${xs[2]} text-xl text-ink shrink-0"></i><span>Lo encontramos en <b class="text-ink">${esc(xs[1])}</b>${j.external.author ? ` (${esc(j.external.author)})` : ''}. La búsqueda la maneja la empresa: te postulás directo con ellos.${j.external.url ? ` <a href="${esc(j.external.url)}" target="_blank" rel="noopener" class="font-semibold text-brand hover:underline">Ver original</a>` : ''}</span></p>` : ''}
+      ${j.external ? `<p class="mt-3 rounded-[16px] bg-surface px-4 py-3 text-ink-soft flex gap-2.5"><i class="ph ${xs[2]} text-xl text-ink shrink-0"></i><span>Lo encontramos en <b class="text-ink">${esc(xs[1])}</b>${j.external.author ? ` (${esc(j.external.author)})` : ''}. La búsqueda la maneja la empresa: te postulás directo con ellos.${j.external.url ? ` <a href="${esc(j.external.url)}" target="_blank" rel="noopener" class="font-semibold text-brand hover:underline">Ver original</a>` : ''}</span></p>
+      ${j.external.img ? `<details class="mt-3 rounded-[16px] border border-line px-4 py-3"><summary class="font-semibold cursor-pointer flex items-center gap-2"><i class="ph ph-image text-lg text-brand"></i>Ver la foto del aviso</summary><img src="${j.external.img}" alt="Foto original del aviso de ${esc(j.title)}" class="mt-3 rounded-xl w-full max-w-md" loading="lazy"></details>` : ''}` : ''}
       ${j.client ? `<p class="mt-2 text-ink-soft flex items-start gap-2"><i class="ph ph-buildings text-xl shrink-0"></i>
         <span>Búsqueda de <b class="text-ink">${esc(j.company)}</b> para <b class="text-ink">${esc(clientPublic(j))}</b>${j.showClient && j.clientIndustry ? ` (${esc(j.clientIndustry)})` : ''}.</span></p>` : ''}
       <div class="mt-5 grid grid-cols-2 gap-3">
@@ -6896,7 +6897,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     if (title) title = title.charAt(0).toUpperCase() + title.slice(1);
     // Empresa
     let company = '';
-    const mc = flat.match(/^\s*([A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚÑáéíóúñ&.'-]*(?:\s+[A-ZÁÉÍÓÚÑ"“][\wÁÉÍÓÚÑáéíóúñ&.'”"-]*){0,4})\s+(?:busca|incorpora|selecciona|necesita|contrata)\b/);
+    const CO_RX = /^\s*([A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚÑáéíóúñ&.'-]*(?:\s+[A-ZÁÉÍÓÚÑ"“][\wÁÉÍÓÚÑáéíóúñ&.'”"-]*){0,4})\s+(?:busca|incorpora|selecciona|necesita|contrata)\b/;
+    const mc = [flat, ...text.split('\n')].map(l => l.match(CO_RX)).find(m => m && !/^(se|hoy|urgente|empresa|importante|estamos|buscamos)$/i.test(m[1]));
     if (mc && !/^(se|hoy|urgente|empresa|importante)$/i.test(mc[1])) company = mc[1].trim();
     let fromAuthor = false;
     if (!company && meta.author && !/^grupo\b/i.test(meta.author)) fromAuthor = true;
@@ -6941,7 +6943,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     return { id: 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), title: f.title, company: f.company || 'Empresa de Tucumán', companyType: 'Aviso externo',
       area: f.area, seniority: f.seniority, province: f.province, city: f.city, modality: f.modality, type: f.type, salary: f.salary, description: f.description,
       requirements: f.requirements, benefits: [], postedAt: now, status: 'activa',
-      external: { src: d.src, author: d.author || '', url: f.contact.url || d.url || '', phone: f.contact.phone, email: f.contact.email, original: d.text, importedAt: now, until, foundAt: d.at || now, reports: 0 } };
+      external: { src: d.src, author: d.author || '', url: f.contact.url || d.url || '', phone: f.contact.phone, email: f.contact.email, original: d.text, img: d.img || '', importedAt: now, until, foundAt: d.at || now, reports: 0 } };
   }
 
   // Editor del borrador: lo que armó la IA, editable, con las alertas arriba
@@ -6954,7 +6956,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const body = `<p class="inline-flex items-center gap-1.5 rounded-full bg-brand-soft text-brand font-semibold px-3 py-1 text-[0.9rem]"><i class="ph-fill ph-sparkle"></i>Armado con IA · revisalo antes de publicar</p>
       <h2 class="mt-3 text-[1.5rem] font-extrabold pr-10 leading-tight">Revisar aviso</h2>
       ${f.warn.length ? `<ul class="mt-4 space-y-2">${f.warn.map(([k, w]) => `<li class="rounded-xl px-3 py-2 font-semibold text-[0.95rem] flex gap-2 ${k === 'bad' ? 'bg-bad/10 text-bad' : 'bg-sun-soft text-warn'}"><i class="ph-bold ${k === 'bad' ? 'ph-warning-octagon' : 'ph-warning'} shrink-0 mt-0.5"></i>${esc(w)}</li>`).join('')}</ul>` : '<p class="mt-4 rounded-xl px-3 py-2 font-semibold bg-mint text-ok"><i class="ph-bold ph-check"></i> No encontramos nada raro</p>'}
-      <details class="mt-4 rounded-[18px] bg-surface p-4"><summary class="font-semibold cursor-pointer flex items-center gap-2"><i class="ph ${S2[2]} text-lg"></i>Publicación original · ${esc(S2[1])}${d.author ? ` · ${esc(d.author)}` : ''}</summary><p class="mt-2 whitespace-pre-line text-ink-soft text-[0.95rem]">${esc(d.text)}</p></details>
+      <details class="mt-4 rounded-[18px] bg-surface p-4"><summary class="font-semibold cursor-pointer flex items-center gap-2"><i class="ph ${S2[2]} text-lg"></i>Publicación original · ${esc(S2[1])}${d.author ? ` · ${esc(d.author)}` : ''}</summary>${d.img ? `<img src="${d.img}" alt="Foto del aviso" class="mt-3 rounded-xl max-h-72 w-auto">` : ''}<p class="mt-2 whitespace-pre-line text-ink-soft text-[0.95rem]">${esc(d.text)}</p></details>
       ${inp('title', 'Puesto', f.title)}
       ${inp('company', 'Empresa', f.company, 'Si no lo dice, dejalo vacío')}
       <div class="grid grid-cols-2 gap-x-3">
@@ -6987,6 +6989,20 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     });
   }
 
+  /* Leer el texto de una foto del aviso. En el prototipo: Tesseract.js en el navegador (se carga recién cuando se usa).
+     En producción: mandar la imagen directo al modelo de IA, que la lee mejor (flyers con diseño, letras sobre fotos). */
+  const OCR_CDN = { lib: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js', worker: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
+    core: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1', lang: 'https://cdn.jsdelivr.net/npm/@tesseract.js-data/spa/4.0.0_best_int' };
+  let ocrLib = null;
+  const loadOcr = () => ocrLib || (ocrLib = new Promise((res, rej) => { if (window.Tesseract) return res(window.Tesseract); const sc = document.createElement('script'); sc.src = OCR_CDN.lib; sc.onload = () => window.Tesseract ? res(window.Tesseract) : rej(new Error('ocr')); sc.onerror = () => { ocrLib = null; rej(new Error('ocr')); }; document.head.appendChild(sc); }));
+  async function ocrImage(file, onProgress) {
+    const T = await loadOcr();
+    const w = await T.createWorker('spa', 1, { workerPath: OCR_CDN.worker, corePath: OCR_CDN.core, langPath: OCR_CDN.lang,
+      logger: m => { if (m.status === 'recognizing text' && onProgress) onProgress(Math.round(m.progress * 100)); } });
+    try { const { data } = await w.recognize(file); return cleanOcr(data.text || ''); } finally { w.terminate(); }
+  }
+  const cleanOcr = t => t.split('\n').map(l => l.replace(/[|_~`^]+/g, ' ').replace(/\s{2,}/g, ' ').trim()).filter(l => (l.match(/[\p{L}\d]/gu) || []).length >= 2).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
   function AdminExternal() {
     const q = Store.extQueue(), pend = q.filter(x => x.status === 'nuevo');
     const pub = Store.jobs().filter(j => j.external).sort((a, b) => b.postedAt.localeCompare(a.postedAt));
@@ -6995,7 +7011,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const pendCard = d => {
       const f = d.draft || aiParsePost(d.text, d), bad = f.warn.some(w => w[0] === 'bad');
       return `<li class="rounded-[20px] bg-white border ${bad ? 'border-bad/40' : 'border-line'} p-4 sm:p-5">
-        <div class="flex flex-wrap items-center gap-2">${chip(d.src, d.author)}<span class="text-[0.85rem] text-ink-mute">${ago(d.at)}</span></div>
+        <div class="flex flex-wrap items-center gap-2">${chip(d.src, d.author)}${d.img ? '<span class="inline-flex items-center gap-1 rounded-full bg-lilac px-2.5 py-0.5 text-[0.85rem] font-semibold text-brand"><i class="ph ph-image"></i>Desde foto</span>' : ''}<span class="text-[0.85rem] text-ink-mute">${ago(d.at)}</span></div>
         <h3 class="mt-2 text-[1.2rem] font-extrabold leading-tight">${esc(f.title || 'Sin puesto')}</h3>
         <p class="text-ink-soft">${esc(f.company || 'Empresa sin nombre')} · ${esc(f.city)}, ${esc(f.province)}${f.salary ? ` · ${esc(f.salary)}` : ''}</p>
         ${f.warn.length ? `<ul class="mt-2 flex flex-wrap gap-1.5">${f.warn.map(([k, w]) => `<li class="rounded-full px-2.5 py-0.5 text-[0.82rem] font-bold ${k === 'bad' ? 'bg-bad/10 text-bad' : 'bg-sun-soft text-warn'}">${esc(w)}</li>`).join('')}</ul>` : ''}
@@ -7019,13 +7035,19 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] items-start">
         <section class="card p-5 sm:p-6" aria-labelledby="xi-t">
           <h2 id="xi-t" class="text-[1.3rem] font-extrabold flex items-center gap-2"><i class="ph-fill ph-sparkle text-brand"></i>Cargar desde un post</h2>
-          <p class="mt-1 text-ink-soft text-[0.95rem]">Copiá el texto de un post de Instagram, Facebook o un grupo de WhatsApp y pegalo acá.</p>
+          <p class="mt-1 text-ink-soft text-[0.95rem]">Subí la foto del post o pegá su texto: de Instagram, Facebook o un grupo de WhatsApp.</p>
           <label class="label mt-4" for="xi-src">¿De dónde es?</label>
           <select id="xi-src" data-dd class="input">${EXT_SOURCES.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('')}</select>
           <div class="grid sm:grid-cols-2 gap-x-3">
             <div><label class="label mt-4" for="xi-author">¿Quién lo publicó? <span class="font-normal text-ink-mute">(opcional)</span></label><input id="xi-author" class="input" placeholder="@cuenta o nombre"></div>
             <div><label class="label mt-4" for="xi-url">Link <span class="font-normal text-ink-mute">(opcional)</span></label><input id="xi-url" class="input" placeholder="https://…"></div>
           </div>
+          <p class="label mt-4">Foto del aviso <span class="font-normal text-ink-mute">(si el post es una imagen)</span></p>
+          <label id="xi-drop" class="flex items-center gap-3 rounded-[18px] border-2 border-dashed border-line hover:border-brand/50 p-3.5 cursor-pointer transition">
+            <input id="xi-img" type="file" accept="image/*" class="sr-only">
+            <span id="xi-thumb" class="w-16 h-16 rounded-xl bg-surface grid place-items-center shrink-0 overflow-hidden"><i class="ph ph-image text-2xl text-ink-mute"></i></span>
+            <span class="min-w-0"><span id="xi-img-t" class="block font-semibold">Subir una foto o captura</span><span id="xi-ocr" class="block text-[0.9rem] text-ink-mute" aria-live="polite">La IA lee el texto y lo escribe abajo. También podés pegar la captura con Ctrl+V.</span></span>
+          </label>
           <label class="label mt-4" for="xi-text">Texto del aviso</label>
           <textarea id="xi-text" rows="6" class="input h-auto py-3" placeholder="Ej.: Se busca cajero/a para supermercado en Yerba Buena. Full time. Enviar CV a…"></textarea>
           <p id="xi-err" class="text-bad font-semibold mt-2 hidden" role="alert"></p>
@@ -7058,10 +7080,36 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       html, mount() {
         bindAdminSwitch();
         const again = () => { const y = window.scrollY; render({ keep: true }); window.scrollTo(0, y); };
+        let img = null, reading = false;
+        const setOcr = (t, cls = 'text-ink-mute') => { const o = $('#xi-ocr'); if (o) { o.className = 'block text-[0.9rem] ' + cls; o.innerHTML = t; } };
+        const takeImage = async file => {
+          if (!file || !/^image\//.test(file.type)) { toast('Elegí una imagen (JPG, PNG o captura)', 'ph-warning'); return; }
+          if (reading) return;
+          reading = true; $('#xi-go').disabled = true;
+          img = await shrinkImage(file, 1000);
+          if (img) $('#xi-thumb').innerHTML = `<img src="${img}" alt="" class="w-full h-full object-cover">`;
+          $('#xi-img-t').textContent = file.name && file.name !== 'image.png' ? file.name : 'Captura pegada';
+          setOcr('<i class="ph ph-spinner animate-spin"></i> Leyendo la foto…', 'text-brand font-semibold');
+          try {
+            const text = await ocrImage(file, pc => setOcr(`<i class="ph ph-spinner animate-spin"></i> Leyendo la foto… ${pc}%`, 'text-brand font-semibold'));
+            if (text.length < 10) setOcr('No encontramos texto en la foto. Escribilo abajo a mano.', 'text-warn font-semibold');
+            else {
+              const ta = $('#xi-text'); ta.value = (ta.value.trim() ? ta.value.trim() + '\n\n' : '') + text;
+              setOcr('<i class="ph-bold ph-check"></i> Listo: revisá el texto abajo y corregí lo que haya leído mal.', 'text-ok font-semibold');
+            }
+          } catch (er) { setOcr('No pudimos leer la foto (revisá la conexión). Escribí el texto abajo.', 'text-bad font-semibold'); }
+          reading = false; $('#xi-go').disabled = false;
+        };
+        $('#xi-img').onchange = e => { takeImage(e.target.files[0]); e.target.value = ''; };
+        const drop = $('#xi-drop');
+        drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('border-brand', 'bg-brand-soft/40'); });
+        drop.addEventListener('dragleave', () => drop.classList.remove('border-brand', 'bg-brand-soft/40'));
+        drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('border-brand', 'bg-brand-soft/40'); takeImage(e.dataTransfer.files[0]); });
+        $('#xi-text').closest('section').addEventListener('paste', e => { const f = [...(e.clipboardData && e.clipboardData.files || [])].find(x => /^image\//.test(x.type)); if (f) { e.preventDefault(); takeImage(f); } });
         $('#xi-go').onclick = () => {
           const text = $('#xi-text').value.trim(), err = $('#xi-err');
-          if (text.length < 25) { err.textContent = 'Pegá el texto completo del aviso.'; err.classList.remove('hidden'); return; }
-          const d = { id: 'xp' + Date.now().toString(36), src: $('#xi-src').value, author: $('#xi-author').value.trim(), url: $('#xi-url').value.trim(), text, at: new Date().toISOString(), status: 'nuevo' };
+          if (text.length < 25) { err.textContent = img ? 'Todavía no hay texto: esperá a que termine de leer la foto o escribilo a mano.' : 'Pegá el texto completo del aviso o subí una foto.'; err.classList.remove('hidden'); return; }
+          const d = { id: 'xp' + Date.now().toString(36), src: $('#xi-src').value, author: $('#xi-author').value.trim(), url: $('#xi-url').value.trim(), text, img, at: new Date().toISOString(), status: 'nuevo' };
           Store.saveExt(d); again(); openExtEditor(d.id, again);
         };
         $('#xs-add').onclick = () => {
