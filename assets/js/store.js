@@ -19,6 +19,12 @@ const Store = (() => {
     write(K.jobs, jobs);
   }
 
+  // Los avisos externos vencen solos (no hay una empresa que los cierre)
+  if (jobs.some(j => j.external && j.status === 'activa' && j.external.until && new Date(j.external.until) < new Date())) {
+    jobs.forEach(j => { if (j.external && j.status === 'activa' && j.external.until && new Date(j.external.until) < new Date()) j.status = 'vencida'; });
+    write(K.jobs, jobs);
+  }
+
   const seedApp = a => {
     const c = SEED_CANDIDATES.find(x => x.id === a.cand) || {};
     return { id: a.id, jobId: a.jobId, cand: a.cand, name: c.name, email: c.email, phone: c.phone, message: a.message || '',
@@ -109,6 +115,8 @@ const Store = (() => {
   const KPO = 'emplea.posts';
   // Hub: pedidos "Busco perfil" entre selectores y recomendaciones de candidatos (con permiso del candidato)
   const KHR = 'emplea.hubreqs', KRF = 'emplea.referrals';
+  // Avisos externos (cargados con IA desde posts de redes y páginas de empresas): borradores para revisar y fuentes
+  const KEQ = 'emplea.extqueue', KES = 'emplea.extsources';
   const KAL = 'emplea.alerts', KNT = 'emplea.notifs', KNS = 'emplea.notifseen', KNC = 'emplea.notifcleared';
   // Cuenta demo: talento@demo.com.ar / demo1234
   const DEMO_ACC = { 'talento@demo.com.ar': { name: 'Talento Norte', type: 'Consultora', pass: 'hbr2v10' } };
@@ -346,6 +354,15 @@ const Store = (() => {
     referrals: () => read(KRF, []),
     referral(id) { return read(KRF, []).find(r => r.id === id) || null; },
     saveReferral(r) { const l = read(KRF, []); const i = l.findIndex(x => x.id === r.id); if (i >= 0) l[i] = { ...l[i], ...r }; else l.unshift(r); write(KRF, l); },
+    extQueue() {
+      const l = read(KEQ, null); if (l) return l;
+      const seed = (typeof SEED_EXT_POSTS !== 'undefined' ? SEED_EXT_POSTS : []).map(x => ({ ...x, at: isoDaysAgo(x.daysAgo || 0, 2), status: 'nuevo' }));
+      write(KEQ, seed); return seed;
+    },
+    saveExt(d) { const l = this.extQueue(); const i = l.findIndex(x => x.id === d.id); if (i >= 0) l[i] = { ...l[i], ...d }; else l.unshift(d); write(KEQ, l); },
+    removeExt(id) { write(KEQ, this.extQueue().filter(x => x.id !== id)); },
+    extSources: () => read(KES, []),
+    saveExtSources: l => write(KES, l),
     delReqs: () => read(KDR, []),
     // Personas borradas de toda la plataforma (para ocultar perfiles de ejemplo que vienen en el código)
     isErased(o) { const d10 = x => String(x || '').replace(/\D/g, '').slice(-10), em = x => String(x || '').trim().toLowerCase(); return read(KER, []).some(e => (e.phone && e.phone === d10(o.phone)) || (e.email && e.email === em(o.email))); },
@@ -394,7 +411,7 @@ const Store = (() => {
     setCvMeta: m => write(K.cvMeta, m),
 
     async reset() {
-      [...Object.values(K), 'emplea.seedrev', KP, KC, KT, KB, KPL, KCAND, KSEEN, KACC, KAL, KNT, KNS, KNC, KSP, 'emplea.featseed', 'emplea.ternabar.hidden', 'emplea.guide.hidden', 'emplea.ivseed', 'emplea.adminseed', KUL, KDR, KER, 'emplea.candlast', KPO, KHR, KRF].forEach(k => localStorage.removeItem(k));
+      [...Object.values(K), 'emplea.seedrev', KP, KC, KT, KB, KPL, KCAND, KSEEN, KACC, KAL, KNT, KNS, KNC, KSP, 'emplea.featseed', 'emplea.ternabar.hidden', 'emplea.guide.hidden', 'emplea.ivseed', 'emplea.adminseed', KUL, KDR, KER, 'emplea.candlast', KPO, KHR, KRF, KEQ, KES].forEach(k => localStorage.removeItem(k));
       Object.keys(localStorage).filter(k => (k.startsWith('emplea.repseed.') || k.startsWith('emplea.hubseed.'))).forEach(k => localStorage.removeItem(k));
       try { if (lf) await lf.clear(); } catch (e) { /* noop */ }
       location.hash = '#/';

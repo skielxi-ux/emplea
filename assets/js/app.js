@@ -372,11 +372,12 @@
           <div class="flex items-center justify-between gap-2">
             <div class="min-w-0 text-[0.9rem] leading-tight">
               <p class="text-ink-mute">${ago(j.postedAt)}</p>
-              <p class="font-semibold mt-0.5 ${nApp < 3 ? 'text-ok' : 'text-ink-soft'} flex items-center gap-1"><i class="ph ${nApp < 3 ? 'ph-lightning' : 'ph-users'}"></i>${nApp < 3 ? 'Sé de los primeros' : `${nApp} postulantes`}</p>
+              ${j.external ? `<p class="font-semibold mt-0.5 text-ink-soft flex items-center gap-1"><i class="ph ${extSrc(j.external.src)[2]}"></i>Vía ${esc(extSrc(j.external.src)[1])}</p>` : `<p class="font-semibold mt-0.5 ${nApp < 3 ? 'text-ok' : 'text-ink-soft'} flex items-center gap-1"><i class="ph ${nApp < 3 ? 'ph-lightning' : 'ph-users'}"></i>${nApp < 3 ? 'Sé de los primeros' : `${nApp} postulantes`}</p>`}
             </div>
           </div>
           ${opts.preview ? '' : applied
             ? '<div class="btn btn-sm w-full h-11 justify-center bg-mint text-ok cursor-default"><i class="ph-bold ph-check"></i>Ya te postulaste</div>'
+            : j.external ? `<button type="button" data-apply-job="${j.id}" class="btn btn-outline btn-sm w-full h-11 justify-center"><i class="ph ph-paper-plane-tilt text-lg"></i>Cómo postularme</button>`
             : `<button type="button" data-apply-job="${j.id}" class="btn btn-primary btn-sm w-full h-11 justify-center"><i class="ph-fill ph-file-pdf text-lg"></i>Postularme</button>`}
         </div>
       </article>`;
@@ -1089,7 +1090,7 @@
   /* ----- Empresas adheridas: listado con buscador y filtros ----- */
   function employersData() {
     const by = {};
-    Store.jobs().forEach(j => {
+    Store.jobs().filter(j => !j.external).forEach(j => {
       const e = by[j.company] || (by[j.company] = { name: j.company, type: j.companyType || companyOf(j.company).type, active: 0, provs: {} });
       if (j.status === 'activa') { e.active++; e.provs[j.province] = (e.provs[j.province] || 0) + 1; }
     });
@@ -1515,7 +1516,7 @@
     const applied = Store.hasApplied(j.id), n = applicantsOf(j);
     const more = Store.activeJobs().filter(x => x.id !== j.id && (x.company === j.company || x.area === j.area)).sort((a, b) => (b.company === j.company) - (a.company === j.company) || new Date(b.postedAt) - new Date(a.postedAt)).slice(0, 4);
     const applyBtn = cls => applied ? `<div class="btn ${cls} bg-ok/10 text-ok"><i class="ph-bold ph-check"></i>Ya te postulaste</div>`
-      : `<button type="button" class="btn btn-primary ${cls}" data-apply-job="${j.id}"><i class="ph-fill ph-paper-plane-tilt text-xl"></i>Postularme</button>`;
+      : `<button type="button" class="btn btn-primary ${cls}" data-apply-job="${j.id}"><i class="ph-fill ph-paper-plane-tilt text-xl"></i>${j.external ? 'Cómo postularme' : 'Postularme'}</button>`;
     const html = `<section class="bg-brand-soft">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <nav class="text-ink-soft font-semibold text-[0.95rem] flex items-center gap-2 min-w-0" aria-label="Migas de pan"><a href="#/" class="hover:text-brand shrink-0">Inicio</a><span class="text-ink-mute">/</span><a href="#/vacantes" class="hover:text-brand shrink-0">Vacantes</a><span class="text-ink-mute">/</span><span class="text-ink truncate" aria-current="page">${esc(j.title)}</span></nav>
@@ -1525,17 +1526,21 @@
         <article class="card p-5 sm:p-8 min-w-0">${jobInfo(j)}</article>
         <aside class="space-y-4 lg:sticky lg:top-24">
           <div class="card p-5">
-            <p class="text-ink-soft"><i class="ph ph-clock"></i> Publicado ${ago(j.postedAt).toLowerCase()} · <i class="ph ph-users"></i> ${n} postulante${n === 1 ? '' : 's'}</p>
+            <p class="text-ink-soft">${j.external ? `<i class="ph ${extSrc(j.external.src)[2]}"></i> Encontrado en ${esc(extSrc(j.external.src)[1])} ${ago(j.external.foundAt || j.postedAt).toLowerCase()}` : `<i class="ph ph-clock"></i> Publicado ${ago(j.postedAt).toLowerCase()} · <i class="ph ph-users"></i> ${n} postulante${n === 1 ? '' : 's'}`}</p>
             <div class="mt-4 hidden lg:block">${applyBtn('w-full h-14 text-lg justify-center')}</div>
             <div class="mt-3 grid grid-cols-2 gap-2">
               <button type="button" id="jp-save" class="btn btn-outline btn-sm w-full justify-center" aria-pressed="${Store.isSaved(j.id)}"></button>
               <button type="button" id="jp-share" class="btn btn-outline btn-sm w-full justify-center"><i class="ph ph-share-network text-lg"></i>Compartir</button>
             </div>
           </div>
-          <a href="#/e?n=${encodeURIComponent(j.company)}" class="card p-5 flex items-center gap-3.5 hover:border-brand/40 transition group">
+          ${j.external ? `<div class="card p-5 bg-lilac/50 border-transparent">
+            <p class="font-bold leading-tight">¿Sos de ${esc(j.company)}?</p>
+            <p class="mt-1 text-ink-soft text-[0.95rem]">Publicá gratis en +Humanos y recibí los CVs ordenados en un solo lugar, en vez de por WhatsApp.</p>
+            <a href="#/empresa?crear=1" class="mt-3 btn btn-primary btn-sm"><i class="ph-bold ph-buildings"></i>Sumar mi empresa</a></div>`
+          : `<a href="#/e?n=${encodeURIComponent(j.company)}" class="card p-5 flex items-center gap-3.5 hover:border-brand/40 transition group">
             ${logo(j.company, 'w-12 h-12 text-sm')}
             <span class="min-w-0 flex-1"><span class="block font-bold leading-tight truncate group-hover:text-brand">${esc(j.company)}</span><span class="block text-ink-mute text-[0.92rem]">${esc(j.companyType || '')} · Ver todas sus búsquedas</span></span>
-            <i class="ph-bold ph-caret-right text-ink-mute"></i></a>
+            <i class="ph-bold ph-caret-right text-ink-mute"></i></a>`}
         </aside>
         ${more.length ? `<section class="lg:col-span-2" aria-labelledby="more-t"><h2 id="more-t" class="text-[1.5rem] font-extrabold">Otros avisos que te pueden interesar</h2>
           <ul class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">${more.map(adCard).join('')}</ul></section>` : ''}
@@ -1558,14 +1563,20 @@
   function jobInfo(j) {
     const p = Store.profile();
     const fact = (ic, l, v, full) => `<div class="rounded-xl bg-surface p-3 ${full ? 'col-span-2' : ''}"><p class="text-[0.9rem] text-ink-mute flex items-center gap-1.5"><i class="ph ${ic}"></i>${l}</p><p class="font-semibold mt-0.5">${esc(v)}</p></div>`;
+    const xs = j.external && extSrc(j.external.src);
     return `
-      <a href="#/e?n=${encodeURIComponent(j.company)}" class="flex items-center gap-3 pr-12 group w-fit max-w-full">
+      ${j.external ? `<div class="flex items-center gap-3 pr-12">
+        ${logo(j.company, 'w-14 h-14 text-lg')}
+        <div class="min-w-0"><p class="font-bold text-lg leading-tight truncate">${esc(j.company)}</p>
+          <p class="text-ink-mute">Aviso externo · ${ago(j.external.foundAt || j.postedAt)}</p></div>
+      </div>` : `<a href="#/e?n=${encodeURIComponent(j.company)}" class="flex items-center gap-3 pr-12 group w-fit max-w-full">
         ${logo(j.company, 'w-14 h-14 text-lg')}
         <div class="min-w-0"><p class="font-bold text-lg leading-tight group-hover:text-brand truncate">${esc(j.company)}</p>
           <p class="text-ink-mute">${esc(j.companyType)} · ${ago(j.postedAt)} · <span class="text-brand font-semibold">Ver perfil</span></p></div>
-      </a>
+      </a>`}
       ${Store.isFeatured(j) ? `<div class="mt-4 -mb-2">${featPill()}</div>` : ''}
       <h2 class="mt-4 text-[1.75rem] leading-tight font-extrabold tracking-tight">${esc(j.title)}</h2>
+      ${j.external ? `<p class="mt-3 rounded-[16px] bg-surface px-4 py-3 text-ink-soft flex gap-2.5"><i class="ph ${xs[2]} text-xl text-ink shrink-0"></i><span>Lo encontramos en <b class="text-ink">${esc(xs[1])}</b>${j.external.author ? ` (${esc(j.external.author)})` : ''}. La búsqueda la maneja la empresa: te postulás directo con ellos.${j.external.url ? ` <a href="${esc(j.external.url)}" target="_blank" rel="noopener" class="font-semibold text-brand hover:underline">Ver original</a>` : ''}</span></p>` : ''}
       ${j.client ? `<p class="mt-2 text-ink-soft flex items-start gap-2"><i class="ph ph-buildings text-xl shrink-0"></i>
         <span>Búsqueda de <b class="text-ink">${esc(j.company)}</b> para <b class="text-ink">${esc(clientPublic(j))}</b>${j.showClient && j.clientIndustry ? ` (${esc(j.clientIndustry)})` : ''}.</span></p>` : ''}
       <div class="mt-5 grid grid-cols-2 gap-3">
@@ -1600,7 +1611,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const foot = `${saveBtn(j.id, true)}
       <button id="share-job" class="icon-btn w-12 h-12 border border-line hidden min-[420px]:grid" aria-label="Compartir"><i class="ph ph-share-network text-2xl"></i></button>
       ${applied ? `<div class="btn flex-1 min-w-0 px-4 h-14 bg-ok/10 text-ok text-lg"><i class="ph-bold ph-check"></i>Ya te postulaste</div>`
-        : `<button id="apply-btn" class="btn btn-primary flex-1 min-w-0 px-4 h-14 text-lg"><i class="ph-fill ph-file-pdf text-xl"></i>Postularme con mi CV</button>`}`;
+        : `<button id="apply-btn" class="btn btn-primary flex-1 min-w-0 px-4 h-14 text-lg">${j.external ? '<i class="ph-fill ph-paper-plane-tilt text-xl"></i>Cómo postularme' : '<i class="ph-fill ph-file-pdf text-xl"></i>Postularme con mi CV'}</button>`}`;
     openSheet(sheetScroll(body) + sheetFoot(foot), c => {
       const ab = $('#apply-btn', c); if (ab) ab.onclick = () => openApply(id);
       $('#share-job', c).onclick = async () => {
@@ -1737,6 +1748,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
 
   function openApply(jobId) {
     const j = Store.job(jobId);
+    if (j && j.external) { openExternalApply(j); return; }
     if (!Store.candidate()) {
       return openCandLogin(() => openApply(jobId), { title: 'Ingresá para postularte', sub: `Es un paso solo: te mandamos un código por WhatsApp y seguís con tu CV para <b class="text-ink">${esc(j ? j.title : 'esta vacante')}</b>. Después vas a ver si lo leyeron y en qué etapa estás.` });
     }
@@ -6861,6 +6873,237 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     };
   }
 
+  /* ================= AVISOS EXTERNOS (cargados con IA) =================
+     Para que el sitio tenga avisos aunque las empresas todavía no publiquen: el admin pega un post de Instagram,
+     Facebook o un grupo de WhatsApp (o lo trae una revisión diaria de páginas de empresas y organismos) y la IA
+     arma el aviso. Pasa por la bandeja del Admin antes de publicarse. Quien se postula va al contacto original.
+     En el prototipo, aiParsePost() usa reglas en el navegador. En producción: reemplazarla por una llamada a un
+     modelo de IA que devuelva el mismo objeto (ver README: "Avisos externos con IA"). */
+  const extSrc = id => EXT_SOURCES.find(s => s[0] === id) || EXT_SOURCES[EXT_SOURCES.length - 1];
+  const TUC_CITIES = ['San Miguel de Tucumán', 'Yerba Buena', 'Tafí Viejo', 'Banda del Río Salí', 'Alderetes', 'Las Talitas', 'Lules', 'Famaillá', 'Monteros', 'Concepción', 'Aguilares', 'Simoca', 'Tafí del Valle', 'Bella Vista', 'Juan Bautista Alberdi', 'Trancas', 'El Manantial', 'San Pablo'];
+  const SCAM_RX = /(abon(a|á)r?|pag(a|á)r?|transfer(i|í)r?|deposit(a|á)r?)\s+(la\s+|una\s+|el\s+)?(inscripci|matr[ií]cula|kit|curso|seguro|cuota)|desde tu casa.{0,40}\$\s?\d|gan(a|á)\s+\$\s?[\d.]+\s+(por|al)\s+d[ií]a|inversi[oó]n inicial|sin experiencia.{0,30}gan(a|á)/i;
+  const sentence = t => { t = t.trim().replace(/\s+/g, ' '); const caps = t === t.toUpperCase(); if (caps) t = t.toLowerCase(); return t.charAt(0).toUpperCase() + t.slice(1); };
+  function aiParsePost(raw, meta = {}) {
+    const text = String(raw || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, '').replace(/[ \t]+/g, ' ').trim();
+    const flat = text.replace(/\n+/g, ' ');
+    const t = norm(flat);
+    // Puesto
+    let title = '';
+    const mt = flat.match(/(?:se\s+busca|se\s+necesita|se\s+solicita|busc(?:a|amos|o)|necesit(?:a|amos|o)|incorpor(?:a|amos)|seleccion(?:a|amos)|contrat(?:a|amos))\s+(?:a\s+|un\/a\s+|una?\s+|un\s+)?([^.,:;!\n(]{3,60}?)(?=\s+(?:para|con|en|de\s+lunes|que|full|part|turno|mayor|zona|sin|y\s+(?:con|en))\b|[.,:;!\n(]|$)/i);
+    if (mt) title = sentence(mt[1]);
+    else { const first = text.split('\n').find(l => l.trim().length > 4) || ''; title = sentence(first.replace(/^(urgente|atenci[oó]n|importante)[:!\s-]*/i, '').slice(0, 60)); }
+    title = title.replace(/^(personal|un|una)\s+(de\s+)?/i, m => /personal/i.test(m) ? m : '').replace(/\s+(urgente|ya)$/i, '');
+    if (title) title = title.charAt(0).toUpperCase() + title.slice(1);
+    // Empresa
+    let company = '';
+    const mc = flat.match(/^\s*([A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚÑáéíóúñ&.'-]*(?:\s+[A-ZÁÉÍÓÚÑ"“][\wÁÉÍÓÚÑáéíóúñ&.'”"-]*){0,4})\s+(?:busca|incorpora|selecciona|necesita|contrata)\b/);
+    if (mc && !/^(se|hoy|urgente|empresa|importante)$/i.test(mc[1])) company = mc[1].trim();
+    let fromAuthor = false;
+    if (!company && meta.author && !/^grupo\b/i.test(meta.author)) fromAuthor = true;
+    if (fromAuthor) company = meta.author.replace(/^@/, '').replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).trim();
+    // Lugar
+    let city = TUC_CITIES.find(c => t.includes(norm(c))) || (/\bcentro\b/.test(t) ? 'San Miguel de Tucumán' : '');
+    let province = detectProvince(flat) || (city ? 'Tucumán' : '');
+    if (!province) province = 'Tucumán';
+    if (!city && province === 'Tucumán') city = 'San Miguel de Tucumán';
+    // Condiciones
+    const modality = /remot|desde (tu|su) casa|home ?office/.test(t) ? 'Remoto' : /hibrid/.test(t) ? 'Híbrido' : 'Presencial';
+    const type = /part ?time|medio tiempo|media jornada|medio turno/.test(t) ? 'Part time' : /full ?time|jornada completa|tiempo completo/.test(t) ? 'Full time' : /\bturno (manana|tarde|noche)\b/.test(t) ? 'Part time' : '';
+    const seniority = /sin experiencia|experiencia no excluyente|primer empleo/.test(t) ? 'sin-exp' : /(\d+)\s*anos? de experiencia/.test(t) ? (+t.match(/(\d+)\s*anos? de experiencia/)[1] >= 3 ? 'semi' : 'junior') : /con experiencia|experiencia en|experiencia comprobable/.test(t) ? 'junior' : 'sin-exp';
+    const ms = flat.match(/\$\s?\d[\d.]*(?:\s*(?:a|-|y)\s*\$?\s?\d[\d.]*)?(?:\s*(?:\+|más)\s*[a-záéíóú ]{3,30})?/i);
+    const salary = ms ? ms[0].replace(/\s+/g, ' ').trim() : '';
+    // Requisitos: viñetas o lo que sigue a "Requisitos:"
+    let reqs = text.split('\n').map(l => l.trim()).filter(l => /^[-•*✔✓▪>]/.test(l)).map(l => sentence(l.replace(/^[-•*✔✓▪>]\s*/, '')));
+    if (!reqs.length) { const mr = flat.match(/requisitos?\s*:?\s*([^.]+)/i); if (mr) reqs = mr[1].split(/,|;|\sy\s/).map(x => sentence(x)).filter(x => x.length > 3); }
+    if (!reqs.length) { const me = flat.match(/(con experiencia[^.]*|experiencia en[^.]*|con carnet[^.]*|mayor de \d+[^.,]*)/i); if (me) reqs = me[1].split(/,|\sy\s/).map(x => sentence(x)).filter(x => x.length > 3).slice(0, 4); }
+    // Contacto
+    const mp = flat.match(/(?:\+?54\s?9?\s?)?\(?(?:0?3\d{2,3})\)?[\s-]?(?:15[\s-]?)?\d{3}[\s-]?\d{4}/);
+    const me2 = flat.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/);
+    const mu = flat.match(/https?:\/\/[^\s)]+/);
+    const contact = { phone: mp ? mp[0].trim() : '', email: me2 ? me2[0] : '', url: mu ? mu[0] : (meta.url || '') };
+    const area = detectArea(title + ' ' + flat) || 'atencion';
+    const description = text.split('\n').filter(l => !/^[-•*✔✓▪>]/.test(l.trim()) && !/^requisitos?\s*:?\s*$/i.test(l.trim())).join(' ').replace(/\s+/g, ' ').trim();
+    // Alertas para el admin
+    const warn = [];
+    if (SCAM_RX.test(flat)) warn.push(['bad', 'Puede ser una estafa: pide pagar algo o promete mucha plata']);
+    if (!contact.phone && !contact.email && !contact.url) warn.push(['warn', 'No dice cómo postularse']);
+    if (!company) warn.push(['warn', 'No dice el nombre de la empresa']);
+    else if (fromAuthor && /^@/.test(meta.author || '')) warn.push(['warn', 'Confirmá el nombre de la empresa: lo sacamos de la cuenta']);
+    if (!type) warn.push(['warn', 'Confirmá la jornada']);
+    if (!mt) warn.push(['warn', 'Revisá el puesto']);
+    const dup = Store.activeJobs().find(j => norm(j.title) === norm(title) && (!company || norm(j.company) === norm(company)));
+    if (dup) warn.push(['warn', `Parece repetido: ya está “${dup.title}” de ${dup.company}`]);
+    return { title, company, area, province, city, modality, type: type || 'Full time', seniority, salary, requirements: reqs.slice(0, 6), description, contact, warn };
+  }
+
+  function extJobFrom(d, f) {
+    const now = new Date().toISOString(), until = new Date(Date.now() + 30 * 864e5).toISOString();
+    return { id: 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), title: f.title, company: f.company || 'Empresa de Tucumán', companyType: 'Aviso externo',
+      area: f.area, seniority: f.seniority, province: f.province, city: f.city, modality: f.modality, type: f.type, salary: f.salary, description: f.description,
+      requirements: f.requirements, benefits: [], postedAt: now, status: 'activa',
+      external: { src: d.src, author: d.author || '', url: f.contact.url || d.url || '', phone: f.contact.phone, email: f.contact.email, original: d.text, importedAt: now, until, foundAt: d.at || now, reports: 0 } };
+  }
+
+  // Editor del borrador: lo que armó la IA, editable, con las alertas arriba
+  function openExtEditor(id, onDone) {
+    const d = Store.extQueue().find(x => x.id === id); if (!d) return;
+    const f = d.draft || aiParsePost(d.text, d);
+    const S2 = extSrc(d.src);
+    const inp = (k, l, v, ph = '') => `<label class="label mt-4" for="xe-${k}">${l}</label><input id="xe-${k}" class="input" value="${esc(v || '')}" placeholder="${esc(ph)}">`;
+    const sel = (k, l, opts, v) => `<div><label class="label mt-4" for="xe-${k}">${l}</label><select id="xe-${k}" data-dd class="input">${opts.map(([a, b]) => `<option value="${esc(a)}" ${a === v ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select></div>`;
+    const body = `<p class="inline-flex items-center gap-1.5 rounded-full bg-brand-soft text-brand font-semibold px-3 py-1 text-[0.9rem]"><i class="ph-fill ph-sparkle"></i>Armado con IA · revisalo antes de publicar</p>
+      <h2 class="mt-3 text-[1.5rem] font-extrabold pr-10 leading-tight">Revisar aviso</h2>
+      ${f.warn.length ? `<ul class="mt-4 space-y-2">${f.warn.map(([k, w]) => `<li class="rounded-xl px-3 py-2 font-semibold text-[0.95rem] flex gap-2 ${k === 'bad' ? 'bg-bad/10 text-bad' : 'bg-sun-soft text-warn'}"><i class="ph-bold ${k === 'bad' ? 'ph-warning-octagon' : 'ph-warning'} shrink-0 mt-0.5"></i>${esc(w)}</li>`).join('')}</ul>` : '<p class="mt-4 rounded-xl px-3 py-2 font-semibold bg-mint text-ok"><i class="ph-bold ph-check"></i> No encontramos nada raro</p>'}
+      <details class="mt-4 rounded-[18px] bg-surface p-4"><summary class="font-semibold cursor-pointer flex items-center gap-2"><i class="ph ${S2[2]} text-lg"></i>Publicación original · ${esc(S2[1])}${d.author ? ` · ${esc(d.author)}` : ''}</summary><p class="mt-2 whitespace-pre-line text-ink-soft text-[0.95rem]">${esc(d.text)}</p></details>
+      ${inp('title', 'Puesto', f.title)}
+      ${inp('company', 'Empresa', f.company, 'Si no lo dice, dejalo vacío')}
+      <div class="grid grid-cols-2 gap-x-3">
+        ${sel('area', 'Rubro', AREAS.map(a => [a.id, a.label]), f.area)}
+        ${sel('sen', 'Experiencia', SENIORITIES.map(x => [x.id, x.label]), f.seniority)}
+        ${sel('prov', 'Provincia', PROVINCES.map(p => [p, p]), f.province)}
+        <div>${inp('city', 'Ciudad', f.city)}</div>
+        ${sel('mod', 'Modalidad', MODALITIES.map(m => [m, m]), f.modality)}
+        ${sel('type', 'Jornada', JOB_TYPES.map(m => [m, m]), f.type)}
+      </div>
+      ${inp('salary', 'Sueldo', f.salary, 'Si no lo dice, dejalo vacío')}
+      <label class="label mt-4" for="xe-desc">Descripción</label><textarea id="xe-desc" rows="4" class="input h-auto py-3">${esc(f.description)}</textarea>
+      <label class="label mt-4" for="xe-reqs">Requisitos <span class="font-normal text-ink-mute">(uno por línea)</span></label><textarea id="xe-reqs" rows="3" class="input h-auto py-3">${esc(f.requirements.join('\n'))}</textarea>
+      <p class="label mt-5">Cómo postularse</p>
+      <div class="grid gap-x-3 sm:grid-cols-3">${inp('phone', 'WhatsApp', f.contact.phone)}${inp('email', 'Email', f.contact.email)}${inp('url', 'Link', f.contact.url)}</div>
+      <p class="mt-3 text-[0.9rem] text-ink-mute"><i class="ph ph-clock"></i> Se publica por 30 días y después vence solo.</p>`;
+    const foot = `<button type="button" id="xe-save" class="btn btn-outline h-14 px-5">Guardar</button><button type="button" id="xe-pub" class="btn btn-primary flex-1 h-14"><i class="ph-bold ph-check text-xl"></i>Publicar aviso</button>`;
+    openSheet(sheetScroll(body) + sheetFoot(foot), c => {
+      const v = k => $('#xe-' + k, c).value.trim();
+      const read = () => ({ ...f, title: v('title'), company: v('company'), area: v('area'), seniority: v('sen'), province: v('prov'), city: v('city'), modality: v('mod'), type: v('type'), salary: v('salary'),
+        description: v('desc'), requirements: v('reqs').split('\n').map(x => x.trim()).filter(Boolean), contact: { phone: v('phone'), email: v('email'), url: v('url') } });
+      $('#xe-save', c).onclick = () => { Store.saveExt({ id: d.id, draft: read() }); closeSheet(true); toast('Borrador guardado', 'ph-floppy-disk'); if (onDone) onDone(); };
+      $('#xe-pub', c).onclick = () => {
+        const g = read();
+        if (!g.title) { toast('Falta el puesto', 'ph-warning'); return; }
+        if (!g.contact.phone && !g.contact.email && !g.contact.url) { toast('Poné cómo postularse: WhatsApp, email o link', 'ph-warning'); return; }
+        const j = extJobFrom(d, g); Store.addJob(j); Store.saveExt({ id: d.id, status: 'publicado', jobId: j.id, draft: g });
+        closeSheet(true); toast('Aviso publicado', 'ph-check-circle'); if (onDone) onDone();
+      };
+    });
+  }
+
+  function AdminExternal() {
+    const q = Store.extQueue(), pend = q.filter(x => x.status === 'nuevo');
+    const pub = Store.jobs().filter(j => j.external).sort((a, b) => b.postedAt.localeCompare(a.postedAt));
+    const srcs = Store.extSources();
+    const chip = (src, author) => { const s = extSrc(src); return `<span class="inline-flex items-center gap-1 rounded-full bg-surface px-2.5 py-0.5 text-[0.85rem] font-semibold text-ink-soft"><i class="ph ${s[2]}"></i>${esc(s[1])}${author ? ` · ${esc(author)}` : ''}</span>`; };
+    const pendCard = d => {
+      const f = d.draft || aiParsePost(d.text, d), bad = f.warn.some(w => w[0] === 'bad');
+      return `<li class="rounded-[20px] bg-white border ${bad ? 'border-bad/40' : 'border-line'} p-4 sm:p-5">
+        <div class="flex flex-wrap items-center gap-2">${chip(d.src, d.author)}<span class="text-[0.85rem] text-ink-mute">${ago(d.at)}</span></div>
+        <h3 class="mt-2 text-[1.2rem] font-extrabold leading-tight">${esc(f.title || 'Sin puesto')}</h3>
+        <p class="text-ink-soft">${esc(f.company || 'Empresa sin nombre')} · ${esc(f.city)}, ${esc(f.province)}${f.salary ? ` · ${esc(f.salary)}` : ''}</p>
+        ${f.warn.length ? `<ul class="mt-2 flex flex-wrap gap-1.5">${f.warn.map(([k, w]) => `<li class="rounded-full px-2.5 py-0.5 text-[0.82rem] font-bold ${k === 'bad' ? 'bg-bad/10 text-bad' : 'bg-sun-soft text-warn'}">${esc(w)}</li>`).join('')}</ul>` : ''}
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button type="button" data-xe-open="${d.id}" class="btn btn-primary btn-sm"><i class="ph-bold ph-pencil-simple"></i>Revisar y publicar</button>
+          <button type="button" data-xe-drop="${d.id}" class="btn btn-outline btn-sm ${bad ? 'text-bad' : ''}"><i class="ph ph-trash"></i>Descartar</button>
+        </div></li>`;
+    };
+    const pubRow = j => {
+      const x = j.external, left = Math.ceil((new Date(x.until) - Date.now()) / 864e5), on = j.status === 'activa';
+      return `<li class="py-3 flex flex-wrap items-center gap-3">
+        <div class="min-w-0 flex-1"><a href="#/vacante?id=${j.id}" class="font-semibold hover:text-brand">${esc(j.title)}</a>
+          <p class="text-[0.9rem] text-ink-mute">${esc(j.company)} · ${esc(extSrc(x.src)[1])} · ${on ? `vence en ${left} día${left === 1 ? '' : 's'}` : j.status === 'vencida' ? 'vencido' : 'despublicado'}${x.reports ? ` · <b class="text-bad">${x.reports} reporte${x.reports === 1 ? '' : 's'}</b>` : ''}</p></div>
+        ${on ? `<button type="button" data-xe-off="${j.id}" class="btn btn-outline btn-sm">Despublicar</button>` : `<button type="button" data-xe-on="${j.id}" class="btn btn-outline btn-sm">Volver a publicar</button>`}
+      </li>`;
+    };
+    const html = `<div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+      ${adminSwitch()}
+      <h1 class="text-[2rem] font-extrabold leading-tight">Avisos externos</h1>
+      <p class="mt-1 text-ink-soft max-w-2xl">Avisos que circulan en redes y en páginas de empresas de Tucumán, para que el sitio tenga ofertas aunque esas empresas todavía no publiquen acá. La IA arma el aviso; vos lo revisás. Quien se postula va directo al contacto original.</p>
+      <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] items-start">
+        <section class="card p-5 sm:p-6" aria-labelledby="xi-t">
+          <h2 id="xi-t" class="text-[1.3rem] font-extrabold flex items-center gap-2"><i class="ph-fill ph-sparkle text-brand"></i>Cargar desde un post</h2>
+          <p class="mt-1 text-ink-soft text-[0.95rem]">Copiá el texto de un post de Instagram, Facebook o un grupo de WhatsApp y pegalo acá.</p>
+          <label class="label mt-4" for="xi-src">¿De dónde es?</label>
+          <select id="xi-src" data-dd class="input">${EXT_SOURCES.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('')}</select>
+          <div class="grid sm:grid-cols-2 gap-x-3">
+            <div><label class="label mt-4" for="xi-author">¿Quién lo publicó? <span class="font-normal text-ink-mute">(opcional)</span></label><input id="xi-author" class="input" placeholder="@cuenta o nombre"></div>
+            <div><label class="label mt-4" for="xi-url">Link <span class="font-normal text-ink-mute">(opcional)</span></label><input id="xi-url" class="input" placeholder="https://…"></div>
+          </div>
+          <label class="label mt-4" for="xi-text">Texto del aviso</label>
+          <textarea id="xi-text" rows="6" class="input h-auto py-3" placeholder="Ej.: Se busca cajero/a para supermercado en Yerba Buena. Full time. Enviar CV a…"></textarea>
+          <p id="xi-err" class="text-bad font-semibold mt-2 hidden" role="alert"></p>
+          <button type="button" id="xi-go" class="mt-4 btn btn-primary h-12 w-full justify-center"><i class="ph-fill ph-sparkle text-lg"></i>Armar aviso con IA</button>
+        </section>
+        <section aria-labelledby="xq-t">
+          <h2 id="xq-t" class="text-[1.3rem] font-extrabold">Para revisar ${pend.length ? `<span class="text-ink-mute font-semibold">${pend.length}</span>` : ''}</h2>
+          ${pend.length ? `<ul class="mt-3 space-y-3">${pend.map(pendCard).join('')}</ul>` : '<p class="mt-3 card p-5 text-ink-soft">No hay avisos esperando. Pegá uno o sumá fuentes para revisar todos los días.</p>'}
+        </section>
+      </div>
+      <div class="mt-8 grid gap-6 lg:grid-cols-2 items-start">
+        <section class="card p-5 sm:p-6" aria-labelledby="xs-t">
+          <h2 id="xs-t" class="text-[1.3rem] font-extrabold flex items-center gap-2"><i class="ph ph-globe text-brand"></i>Fuentes que revisamos todos los días</h2>
+          <p class="mt-1 text-ink-soft text-[0.95rem]">Páginas de "Trabajá con nosotros" de empresas tucumanas y de organismos públicos. Cada mañana la IA las lee y deja lo nuevo en "Para revisar".</p>
+          ${srcs.length ? `<ul class="mt-3 divide-y divide-line">${srcs.map((s, i) => `<li class="py-2.5 flex items-center gap-3"><i class="ph ${extSrc(s.type)[2]} text-xl text-ink-soft"></i><span class="min-w-0 flex-1"><span class="block font-semibold truncate">${esc(s.name)}</span><a href="${esc(s.url)}" target="_blank" rel="noopener" class="block text-[0.88rem] text-brand truncate hover:underline">${esc(s.url)}</a></span><button type="button" data-xs-del="${i}" class="icon-btn w-9 h-9 text-ink-mute hover:text-bad" aria-label="Quitar ${esc(s.name)}"><i class="ph ph-trash"></i></button></li>`).join('')}</ul>` : '<p class="mt-3 text-ink-mute">Todavía no sumaste fuentes.</p>'}
+          <div class="mt-4 grid sm:grid-cols-[1fr_1fr_auto] gap-2">
+            <input id="xs-name" class="input" placeholder="Nombre (ej.: Oficina de Empleo)" aria-label="Nombre de la fuente">
+            <input id="xs-url" class="input" placeholder="https://…" aria-label="Link de la página">
+            <button type="button" id="xs-add" class="btn btn-outline h-12"><i class="ph-bold ph-plus"></i>Sumar</button>
+          </div>
+          <button type="button" id="xs-run" class="mt-3 btn btn-soft btn-sm"><i class="ph ph-arrows-clockwise"></i>Revisar ahora</button>
+        </section>
+        <section class="card p-5 sm:p-6" aria-labelledby="xp-t">
+          <h2 id="xp-t" class="text-[1.3rem] font-extrabold">Publicados ${pub.length ? `<span class="text-ink-mute font-semibold">${pub.length}</span>` : ''}</h2>
+          ${pub.length ? `<ul class="mt-2 divide-y divide-line">${pub.map(pubRow).join('')}</ul>` : '<p class="mt-2 text-ink-mute">Todavía no publicaste avisos externos.</p>'}
+        </section>
+      </div>
+    </div>`;
+    return {
+      html, mount() {
+        bindAdminSwitch();
+        const again = () => { const y = window.scrollY; render({ keep: true }); window.scrollTo(0, y); };
+        $('#xi-go').onclick = () => {
+          const text = $('#xi-text').value.trim(), err = $('#xi-err');
+          if (text.length < 25) { err.textContent = 'Pegá el texto completo del aviso.'; err.classList.remove('hidden'); return; }
+          const d = { id: 'xp' + Date.now().toString(36), src: $('#xi-src').value, author: $('#xi-author').value.trim(), url: $('#xi-url').value.trim(), text, at: new Date().toISOString(), status: 'nuevo' };
+          Store.saveExt(d); again(); openExtEditor(d.id, again);
+        };
+        $('#xs-add').onclick = () => {
+          const name = $('#xs-name').value.trim(), url = $('#xs-url').value.trim();
+          if (!name || !/^https?:\/\//.test(url)) { toast('Poné un nombre y un link que empiece con https://', 'ph-warning'); return; }
+          Store.saveExtSources([...Store.extSources(), { name, url, type: /gob|gov|municip|ministerio|oficina de empleo/i.test(name + url) ? 'organismo' : 'web' }]); again();
+        };
+        $('#xs-run').onclick = () => askConfirm({ title: 'La revisión automática necesita el servidor', text: 'En el sitio real, cada mañana la IA lee estas páginas y deja los avisos nuevos en "Para revisar". En este prototipo no puede entrar a otras páginas: mientras tanto, copiá el texto del aviso y pegalo en "Cargar desde un post".', ok: 'Entendido', cancel: 'Cerrar', icon: 'ph-globe' });
+        $('#view').addEventListener('click', async e => {
+          const o = e.target.closest('[data-xe-open]'); if (o) { openExtEditor(o.dataset.xeOpen, again); return; }
+          const dr = e.target.closest('[data-xe-drop]'); if (dr) { Store.saveExt({ id: dr.dataset.xeDrop, status: 'descartado' }); toast('Aviso descartado', 'ph-trash'); again(); return; }
+          const off = e.target.closest('[data-xe-off]'); if (off) { Store.updateJob(off.dataset.xeOff, { status: 'pausada' }); toast('Aviso despublicado', 'ph-eye-slash'); again(); return; }
+          const on = e.target.closest('[data-xe-on]'); if (on) { const j = Store.job(on.dataset.xeOn); Store.updateJob(j.id, { status: 'activa', external: { ...j.external, until: new Date(Date.now() + 30 * 864e5).toISOString() } }); toast('Aviso publicado otra vez por 30 días', 'ph-check-circle'); again(); return; }
+          const xd = e.target.closest('[data-xs-del]'); if (xd) { const l = Store.extSources(); l.splice(+xd.dataset.xsDel, 1); Store.saveExtSources(l); again(); }
+        });
+      }
+    };
+  }
+
+  // Candidato: un aviso externo se postula en el contacto original
+  function openExternalApply(j) {
+    const x = j.external, s = extSrc(x.src);
+    const msg = `Hola, vi en +Humanos el aviso de ${j.title}${j.company && j.company !== 'Empresa de Tucumán' ? ` de ${j.company}` : ''} y me interesa postularme. Les puedo enviar mi CV por acá.`;
+    const body = `<span class="w-14 h-14 rounded-2xl bg-brand-soft text-brand grid place-items-center"><i class="ph-fill ph-paper-plane-tilt text-3xl"></i></span>
+      <h2 class="mt-4 text-[1.5rem] font-extrabold pr-10 leading-tight">Postulate directo con ${esc(j.company)}</h2>
+      <p class="mt-2 text-ink-soft">Este aviso lo encontramos en ${esc(s[1])}${x.author ? ` (${esc(x.author)})` : ''}. La búsqueda la maneja la empresa: mandales tu CV por acá.</p>
+      <div class="mt-5 grid gap-2.5">
+        ${x.phone ? `<a href="${esc(waLink(x.phone, msg))}" target="_blank" rel="noopener" class="btn btn-primary h-14 justify-center text-[1.05rem]" data-ext-go><i class="ph-fill ph-whatsapp-logo text-xl"></i>Escribir por WhatsApp</a>` : ''}
+        ${x.email ? `<a href="mailto:${esc(x.email)}?subject=${encodeURIComponent('Postulación: ' + j.title)}&body=${encodeURIComponent(msg.replace(' por acá', ' adjunto'))}" class="btn ${x.phone ? 'btn-outline' : 'btn-primary'} h-14 justify-center" data-ext-go><i class="ph ph-envelope-simple text-xl"></i>Mandar CV por email</a>` : ''}
+        ${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener" class="btn btn-outline h-12 justify-center" data-ext-go><i class="ph ph-arrow-square-out text-lg"></i>Ver la publicación original</a>` : ''}
+      </div>
+      <p class="mt-4 text-[0.92rem] text-ink-mute"><i class="ph ph-file-pdf"></i> Tené tu CV en PDF a mano para adjuntarlo.</p>
+      <div class="mt-5 rounded-[18px] bg-surface p-4">
+        <p class="font-semibold">Cuidá tus datos</p>
+        <p class="mt-1 text-ink-soft text-[0.95rem]">Nunca pagues para conseguir un trabajo ni para una entrevista. Si te piden plata o algo te parece raro, avisanos.</p>
+        <button type="button" id="ext-report" class="mt-2 font-semibold text-bad hover:underline underline-offset-4"><i class="ph ph-flag"></i> Reportar este aviso</button>
+      </div>`;
+    openSheet(sheetScroll(body), c => {
+      $('#ext-report', c).onclick = () => { const jj = Store.job(j.id); Store.updateJob(j.id, { external: { ...jj.external, reports: (jj.external.reports || 0) + 1 } }); closeSheet(true); toast('Gracias, lo vamos a revisar', 'ph-flag'); };
+    });
+  }
+
   const ADMIN_PASS = 'admin';
   const adminOn = () => { try { return sessionStorage.getItem('emplea.admin') === '1'; } catch (e) { return !!S.admin; } };
   const adminSet = on => { S.admin = on; try { on ? sessionStorage.setItem('emplea.admin', '1') : sessionStorage.removeItem('emplea.admin'); } catch (e) { /* sin storage */ } };
@@ -6916,9 +7159,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
 
   const adminSwitch = () => {
     const pend = Store.delReqs().filter(r => r.status === 'pendiente').length;
-    return `<div class="inline-flex rounded-full bg-white border border-line p-1 mb-6" role="tablist" aria-label="Secciones del panel">
-      ${[['cvs', 'ph-tray', 'CVs recibidos', 0], ['datos', 'ph-shield-check', 'Pedidos de datos', pend], ['notas', 'ph-coffee', 'Charla de café', 0]].map(([v, ic, l, n]) => `<button type="button" role="tab" data-adm-view="${v}" aria-selected="${(S.admView || 'cvs') === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${(S.admView || 'cvs') === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}${n ? `<span class="rounded-full bg-bad text-white px-1.5 text-[0.75rem] leading-5">${n}</span>` : ''}</button>`).join('')}
-    </div>`;
+    return `<div class="-mx-4 px-4 overflow-x-auto mb-6"><div class="inline-flex rounded-full bg-white border border-line p-1 whitespace-nowrap" role="tablist" aria-label="Secciones del panel">
+      ${[['cvs', 'ph-tray', 'CVs recibidos', 0], ['datos', 'ph-shield-check', 'Pedidos de datos', pend], ['notas', 'ph-coffee', 'Charla de café', 0], ['ext', 'ph-sparkle', 'Avisos externos', Store.extQueue().filter(x => x.status === 'nuevo').length]].map(([v, ic, l, n]) => `<button type="button" role="tab" data-adm-view="${v}" aria-selected="${(S.admView || 'cvs') === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${(S.admView || 'cvs') === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}${n ? `<span class="rounded-full bg-bad text-white px-1.5 text-[0.75rem] leading-5">${n}</span>` : ''}</button>`).join('')}
+    </div></div>`;
   };
   const bindAdminSwitch = () => $$('[data-adm-view]').forEach(b => b.onclick = () => { S.admView = b.dataset.admView; render(); });
 
@@ -6976,6 +7219,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     if (!adminOn()) return AdminLogin();
     if (S.admView === 'datos') return AdminRequests();
     if (S.admView === 'notas') return AdminPosts();
+    if (S.admView === 'ext') return AdminExternal();
     seedAdminCvs();
     const F = S.adm || (S.adm = { st: 'nuevo', q: '', prov: '', area: '' });
     const all = Store.spontCvs();

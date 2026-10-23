@@ -288,3 +288,14 @@ Nueva sección **Hub** en el panel (en el celular, dentro de "Más"):
 - **Mis pedidos:** pedir recomendaciones para una búsqueda (desde el Hub o "⋯ Más → Pedir recomendaciones al Hub"), ver cuántos llegaron, cuántos esperan permiso y cuántos no aceptaron, y cerrar o reabrir el pedido.
 - **Mis recomendaciones:** estado de cada una, volver a pedir permiso, copiar el link o cancelar.
 En el prototipo el pedido y la respuesta viven en el navegador. Con servidor, el link lleva un id corto y el aviso al candidato sale por WhatsApp/email.
+
+## Avisos externos con IA
+Para que el sitio tenga ofertas aunque las empresas todavía no publiquen: **Admin → Avisos externos**.
+- **Cargar desde un post:** se pega el texto de un post de Instagram, Facebook o un grupo de WhatsApp. La IA arma el aviso: puesto, empresa, rubro, ciudad de Tucumán, modalidad, jornada, sueldo, requisitos y contacto (WhatsApp, email o link).
+- **Alertas:** posible estafa (pide pagar, promete mucha plata), sin forma de postularse, sin nombre de empresa, jornada a confirmar, posible repetido.
+- **Para revisar:** nada se publica solo. El admin revisa, corrige y publica, o descarta. Hay 4 posts de ejemplo, uno de ellos una estafa.
+- **Publicados:** vencen solos a los 30 días. Se pueden despublicar y se ven los reportes de los candidatos.
+- **Fuentes:** lista de páginas de empresas y organismos para la revisión diaria. En el prototipo "Revisar ahora" explica que necesita el servidor.
+- **Candidato:** el aviso muestra "Vía Instagram" y "Cómo postularme". El botón lleva al WhatsApp, email o link original. Tiene un "Reportar este aviso" y una invitación a la empresa a sumarse gratis.
+- No aparecen en "Empresas adheridas".
+En el prototipo, `aiParsePost()` usa reglas en el navegador. En producción se reemplaza por una llamada a un modelo de IA que devuelve el mismo objeto.
