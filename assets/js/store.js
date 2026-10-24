@@ -205,6 +205,9 @@ const Store = (() => {
 
     // Perfil de empresa / consultora
     coProfile: name => ({ ...((typeof COMPANY_PROFILES !== 'undefined' && COMPANY_PROFILES[name]) || {}), ...(coProfiles[name] || {}) }),
+    coProfilesAll: () => coProfiles,
+    removeCoProfile(name) { delete coProfiles[name]; write(KP, coProfiles); },
+    coAccounts: () => read(KACC, DEMO_ACC),
     saveCoProfile(name, data) { coProfiles[name] = { ...(coProfiles[name] || {}), ...data }; write(KP, coProfiles); },
     renameCompany(oldN, newN) {
       if (!newN || oldN === newN) return;

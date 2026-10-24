@@ -300,3 +300,12 @@ Para que el sitio tenga ofertas aunque las empresas todavía no publiquen: **Adm
 - **Candidato:** el aviso muestra "Vía Instagram" y "Cómo postularme". El botón lleva al WhatsApp, email o link original. Tiene un "Reportar este aviso" y una invitación a la empresa a sumarse gratis.
 - No aparecen en "Empresas adheridas".
 En el prototipo, `aiParsePost()` usa reglas en el navegador. En producción se reemplaza por una llamada a un modelo de IA que devuelve el mismo objeto.
+
+## Admin: empresas y consultoras
+Nueva pestaña **Admin → Empresas**:
+- Lista de todas las adheridas, con su origen: se registró (con email y fecha), cargada por el admin o de ejemplo.
+- Para cada una: tipo, rubro, ubicación y búsquedas abiertas sobre el total, más la fecha de su última publicación.
+- Contadores arriba (total, consultoras, empresas, con búsquedas abiertas), un buscador y un filtro por tipo.
+- **Agregar empresa:** tipo, nombre, logo, rubro, tamaño, provincia, ciudad, dirección, descripción, web, LinkedIn, Instagram, WhatsApp y email. Aparece en "Empresas adheridas" con su página propia, aunque no publique búsquedas.
+- **Acciones:** editar el perfil de cualquiera, ocultarla o mostrarla en "Empresas adheridas", y borrar las cargadas a mano que no tengan búsquedas.
+- "Empresas adheridas" ahora también muestra las cuentas registradas que todavía no publicaron.

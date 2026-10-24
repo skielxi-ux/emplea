@@ -1094,11 +1094,14 @@
       const e = by[j.company] || (by[j.company] = { name: j.company, type: j.companyType || companyOf(j.company).type, active: 0, provs: {} });
       if (j.status === 'activa') { e.active++; e.provs[j.province] = (e.provs[j.province] || 0) + 1; }
     });
-    return Object.values(by).map(e => {
+    // También las que se registraron o cargó el admin, aunque todavía no publiquen
+    Object.values(Store.coAccounts()).forEach(a => { if (a.name && !by[a.name]) by[a.name] = { name: a.name, type: a.type || 'Empresa', active: 0, provs: {} }; });
+    Object.entries(Store.coProfilesAll()).forEach(([n, pr]) => { if (pr.manual && !by[n]) by[n] = { name: n, type: pr.type || 'Empresa', active: 0, provs: {} }; });
+    return Object.values(by).filter(e => !Store.coProfile(e.name).hidden).map(e => {
       const p = Store.coProfile(e.name), cmp = companyOf(e.name);
       const provs = Object.entries(e.provs).sort((a, b) => b[1] - a[1]).map(x => x[0]);
       const home = p.province || provs[0] || '';
-      return { ...e, provs, industry: p.industry || cmp.industry || '', city: p.city || '', home, nProv: new Set([home, ...provs].filter(Boolean)).size };
+      return { ...e, type: p.type || e.type, provs, industry: p.industry || cmp.industry || '', city: p.city || '', home, nProv: new Set([home, ...provs].filter(Boolean)).size };
     });
   }
   function Employers() {
@@ -2276,7 +2279,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     return {
       html, mount() {
         const v = $('#view');
-        v.addEventListener('click', e => {
+        v.onclick = (e => {
           const t = e.target.closest('[data-al-toggle]'); if (t) { const a = Store.alerts().find(x => x.id === t.dataset.alToggle); Store.updateAlert(a.id, { active: a.active === false, since: a.active === false ? new Date().toISOString() : a.since }); toast(a.active === false ? 'Alerta activada' : 'Alerta pausada', 'ph-bell'); render({ keep: true }); return; }
           const d = e.target.closest('[data-al-del]'); if (d) { askConfirm({ title: '¿Borrar esta alerta?', text: 'Dejás de recibir avisos de esa búsqueda. Si solo querés frenarlos un tiempo, pausala.', ok: 'Borrar alerta', danger: true }).then(ok => { if (ok) { Store.removeAlert(d.dataset.alDel); render({ keep: true }); } }); return; }
         });
@@ -2377,7 +2380,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           if (Store.coAccount(em)) { err('#cs-err', 'Ya hay una cuenta con ese email. Ingresá desde "Ingresar".'); return; }
           if (pass.length < 8) { err('#cs-err', 'La contraseña tiene que tener al menos 8 caracteres.'); return; }
           if (!$('#cs-terms').checked) { err('#cs-err', 'Para crear la cuenta tenés que aceptar los términos.'); return; }
-          Store.addCoAccount(em, { name, type, pass: Store.passHash(pass) });
+          Store.addCoAccount(em, { name, type, pass: Store.passHash(pass), createdAt: new Date().toISOString() });
           if (!Store.coProfile(name).contactEmail) Store.saveCoProfile(name, { contactEmail: em });
           enter({ name, type, email: em });
         };
@@ -5756,7 +5759,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     }
     const p = Store.coProfile(name), cmp = companyOf(name);
     const all = Store.jobs().filter(j => j.company === name);
-    const type = (all[0] && all[0].companyType) || cmp.type;
+    const type = p.type || (all[0] && all[0].companyType) || cmp.type;
     const jobs = all.filter(j => j.status === 'activa').sort((a, b) => new Date(b.postedAt) - new Date(a.postedAt));
     const prof = Store.profile();
     const own = (Store.company() || {}).name === name;
@@ -6738,7 +6741,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       </div>`;
     return {
       html, mount() {
-        $('#view').addEventListener('click', async e => {
+        $('#view').onclick = (async e => {
           const t = e.target.closest('[data-htab]'); if (t) { S.hubTab = t.dataset.htab; if (parseHash().params.get('tab')) location.hash = '#/empresa/hub'; else refresh(); return; }
           if (e.target.closest('[data-hub-ask]')) { openHubAsk(); return; }
           const rc = e.target.closest('[data-hub-rec]'); if (rc) { openHubRecommend(rc.dataset.hubRec); return; }
@@ -7118,7 +7121,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           Store.saveExtSources([...Store.extSources(), { name, url, type: /gob|gov|municip|ministerio|oficina de empleo/i.test(name + url) ? 'organismo' : 'web' }]); again();
         };
         $('#xs-run').onclick = () => askConfirm({ title: 'La revisión automática necesita el servidor', text: 'En el sitio real, cada mañana la IA lee estas páginas y deja los avisos nuevos en "Para revisar". En este prototipo no puede entrar a otras páginas: mientras tanto, copiá el texto del aviso y pegalo en "Cargar desde un post".', ok: 'Entendido', cancel: 'Cerrar', icon: 'ph-globe' });
-        $('#view').addEventListener('click', async e => {
+        $('#view').onclick = (async e => {
           const o = e.target.closest('[data-xe-open]'); if (o) { openExtEditor(o.dataset.xeOpen, again); return; }
           const dr = e.target.closest('[data-xe-drop]'); if (dr) { Store.saveExt({ id: dr.dataset.xeDrop, status: 'descartado' }); toast('Aviso descartado', 'ph-trash'); again(); return; }
           const off = e.target.closest('[data-xe-off]'); if (off) { Store.updateJob(off.dataset.xeOff, { status: 'pausada' }); toast('Aviso despublicado', 'ph-eye-slash'); again(); return; }
@@ -7150,6 +7153,129 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     openSheet(sheetScroll(body), c => {
       $('#ext-report', c).onclick = () => { const jj = Store.job(j.id); Store.updateJob(j.id, { external: { ...jj.external, reports: (jj.external.reports || 0) + 1 } }); closeSheet(true); toast('Gracias, lo vamos a revisar', 'ph-flag'); };
     });
+  }
+
+  /* ================= ADMIN: EMPRESAS Y CONSULTORAS ADHERIDAS =================
+     Lista todo lo que aparece en "Empresas adheridas": cuentas registradas, perfiles cargados a mano por el admin
+     y las cuentas de ejemplo. Desde acá se agrega una empresa a mano, se edita su perfil o se oculta de la página. */
+  function adminCompanies() {
+    const acc = Store.coAccounts(), profs = Store.coProfilesAll();
+    const by = {};
+    const get = (name, type) => by[name] || (by[name] = { name, type: type || '', origin: 'ejemplo', email: '', since: '', active: 0, total: 0, last: '' });
+    Object.entries(acc).forEach(([email, a]) => { const e = get(a.name, a.type); e.origin = 'registro'; e.email = email; e.since = a.createdAt || ''; e.type = a.type || e.type; });
+    Object.entries(profs).forEach(([name, p]) => { if (p.manual) { const e = get(name, p.type); if (e.origin !== 'registro') { e.origin = 'manual'; e.since = p.addedAt || ''; } } });
+    Store.jobs().filter(j => !j.external).forEach(j => { const e = get(j.company, j.companyType); e.total++; if (j.status === 'activa') e.active++; if (!e.last || j.postedAt > e.last) e.last = j.postedAt; if (!e.type) e.type = j.companyType; });
+    return Object.values(by).map(e => { const p = Store.coProfile(e.name); return { ...e, type: p.type || e.type || companyOf(e.name).type, industry: p.industry || '', city: p.city || '', province: p.province || '', hidden: !!p.hidden }; });
+  }
+
+  function openCompanyEditor(name0, onDone) {
+    const p0 = name0 ? Store.coProfile(name0) : {};
+    const st = { logo: p0.logo || null };
+    const type0 = p0.type || (name0 ? companyOf(name0).type : 'Empresa');
+    const inp = (id, l, v, ph = '', t = 'text') => `<div><label class="label mt-4" for="ce-${id}">${l}</label><input id="ce-${id}" type="${t}" class="input" value="${esc(v || '')}" placeholder="${esc(ph)}"></div>`;
+    const body = `<h2 class="text-[1.6rem] font-extrabold pr-10 leading-tight">${name0 ? 'Editar empresa' : 'Agregar empresa'}</h2>
+      <p class="mt-1 text-ink-soft">${name0 ? 'Los cambios se ven en su página y en "Empresas adheridas".' : 'Aparece en "Empresas adheridas" con su página propia, aunque todavía no publique búsquedas.'}</p>
+      <p class="label mt-5">Tipo</p>
+      <div class="grid grid-cols-2 gap-2">${['Empresa', 'Consultora'].map(t => `<label class="flex items-center gap-2.5 rounded-2xl border border-line px-4 h-12 cursor-pointer has-[:checked]:border-brand has-[:checked]:bg-brand-soft/50 font-semibold"><input type="radio" name="ce-type" value="${t}" class="w-5 h-5 accent-[#3B5BFD]" ${type0 === t ? 'checked' : ''}>${t}</label>`).join('')}</div>
+      ${inp('name', 'Nombre', name0, 'Ej.: Estudio Contable Gramajo')}
+      <p class="label mt-4">Logo <span class="font-normal text-ink-mute">(opcional)</span></p>
+      ${logoPicker('ce-logo', name0, st.logo)}
+      <div class="grid sm:grid-cols-2 gap-x-3">
+        ${inp('ind', 'Rubro', p0.industry, 'Ej.: Salud, Construcción, RRHH')}
+        <div><label class="label mt-4" for="ce-size">Tamaño</label><select id="ce-size" data-dd class="input"><option value="">Sin dato</option>${SIZES.map(s => `<option ${p0.size === s ? 'selected' : ''}>${s}</option>`).join('')}</select></div>
+        <div><label class="label mt-4" for="ce-prov">Provincia</label><select id="ce-prov" data-dd class="input">${PROVINCES.map(pv => `<option ${(p0.province || 'Tucumán') === pv ? 'selected' : ''}>${pv}</option>`).join('')}</select></div>
+        ${inp('city', 'Ciudad', p0.city, 'Ej.: San Miguel de Tucumán')}
+      </div>
+      ${inp('addr', 'Dirección', p0.address, 'Opcional')}
+      <label class="label mt-4" for="ce-desc">Descripción</label><textarea id="ce-desc" rows="4" maxlength="800" class="input h-auto py-3" placeholder="A qué se dedica, hace cuánto, qué la hace un buen lugar para trabajar.">${esc(p0.description || '')}</textarea>
+      <p class="label mt-5">Contacto y redes <span class="font-normal text-ink-mute">(se ven en su página)</span></p>
+      <div class="grid sm:grid-cols-2 gap-x-3">
+        ${inp('web', 'Sitio web', p0.website, 'https://…')}
+        ${inp('li', 'LinkedIn', p0.linkedin, 'linkedin.com/company/…')}
+        ${inp('ig', 'Instagram', p0.instagram, '@cuenta')}
+        ${inp('wa', 'WhatsApp de contacto', p0.contactPhone, '381 …', 'tel')}
+      </div>
+      ${inp('mail', 'Email de contacto', p0.contactEmail, 'rrhh@…', 'email')}
+      <p id="ce-err" class="err hidden mt-3" role="alert"></p>`;
+    openSheet(sheetScroll(body) + sheetFoot(`<button type="button" id="ce-save" class="btn btn-primary w-full h-14"><i class="ph-bold ph-check text-xl"></i>${name0 ? 'Guardar cambios' : 'Agregar a Empresas adheridas'}</button>`), c => {
+      bindLogoPicker(c, 'ce-logo', () => $('#ce-name', c).value.trim(), st);
+      $('#ce-save', c).onclick = () => {
+        const v = k => $('#ce-' + k, c).value.trim(), name = v('name'), er = $('#ce-err', c);
+        if (name.length < 2) { er.textContent = 'Escribí el nombre.'; er.classList.remove('hidden'); return; }
+        if (name !== name0 && Store.companyExists(name)) { er.textContent = 'Ya hay una empresa con ese nombre.'; er.classList.remove('hidden'); return; }
+        if (name0 && name !== name0) Store.renameCompany(name0, name);
+        const data = { type: $('input[name="ce-type"]:checked', c).value, industry: v('ind'), size: v('size'), province: v('prov'), city: v('city'), address: v('addr'), description: v('desc'),
+          website: v('web'), linkedin: v('li'), instagram: v('ig'), contactPhone: v('wa'), contactEmail: v('mail'), logo: st.logo || null };
+        if (!name0) Object.assign(data, { manual: true, addedAt: new Date().toISOString() });
+        Store.saveCoProfile(name, data);
+        closeSheet(true); toast(name0 ? 'Empresa actualizada' : `${name} ya aparece en Empresas adheridas`, 'ph-buildings'); if (onDone) onDone();
+      };
+    });
+  }
+
+  function AdminCompanies() {
+    const F = S.admEmp || (S.admEmp = { q: '', type: '' });
+    const all = adminCompanies();
+    const ORIG = { registro: ['ph-user-circle-check', 'Se registró'], manual: ['ph-hand-pointing', 'Cargada por el admin'], ejemplo: ['ph-flask', 'De ejemplo'] };
+    const nC = all.filter(e => e.type === 'Consultora').length;
+    const stat = (n, l) => `<div class="rounded-[20px] bg-white border border-line p-4"><p class="font-display text-[2rem] font-extrabold leading-none text-brand">${n}</p><p class="mt-1 text-ink-soft leading-tight">${l}</p></div>`;
+    const html = `<div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+      ${adminSwitch()}
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div><h1 class="text-[2rem] font-extrabold leading-tight">Empresas y consultoras</h1>
+          <p class="mt-1 text-ink-soft">Las que se sumaron a +Humanos y las que cargaste vos. Todas aparecen en "Empresas adheridas", salvo las que ocultes.</p></div>
+        <button type="button" id="ae-add" class="btn btn-primary h-12 px-5"><i class="ph-bold ph-plus"></i>Agregar empresa</button>
+      </div>
+      <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+        ${stat(all.length, 'Adheridas en total')}${stat(nC, 'Consultoras')}${stat(all.length - nC, 'Empresas')}${stat(all.filter(e => e.active).length, 'Con búsquedas abiertas')}
+      </div>
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1"><i class="ph ph-magnifying-glass text-xl text-ink-mute absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i><input id="ae-q" type="search" class="input pl-12 bg-white" placeholder="Buscar por nombre, rubro o email" value="${esc(F.q)}" aria-label="Buscar empresas"></div>
+        <div class="inline-flex rounded-full bg-white border border-line p-1 self-start" role="tablist" aria-label="Tipo">${[['', 'Todas'], ['Consultora', 'Consultoras'], ['Empresa', 'Empresas']].map(([v, l]) => `<button type="button" role="tab" data-ae-type="${v}" aria-selected="${F.type === v}" class="h-10 px-4 rounded-full font-semibold ${F.type === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}">${l}</button>`).join('')}</div>
+      </div>
+      <ul id="ae-list" class="mt-5 space-y-3"></ul>
+    </div>`;
+    const draw = () => {
+      const q = norm(F.q.trim());
+      const list = all.filter(e => (!F.type || e.type === F.type) && (!q || norm(`${e.name} ${e.industry} ${e.email}`).includes(q)))
+        .sort((a, b) => (b.since || b.last || '').localeCompare(a.since || a.last || '') || a.name.localeCompare(b.name, 'es'));
+      $('#ae-list').innerHTML = list.length ? list.map(e => {
+        const o = ORIG[e.origin], loc = [e.city, e.province].filter(Boolean).join(', ');
+        return `<li class="rounded-[20px] bg-white border border-line p-4 sm:p-5 ${e.hidden ? 'opacity-70' : ''}">
+          <div class="flex items-start gap-3.5">
+            ${logo(e.name, 'w-14 h-14 text-base')}
+            <div class="min-w-0 flex-1">
+              <p class="flex flex-wrap items-center gap-x-2 gap-y-1"><span class="font-display font-bold text-[1.15rem] leading-tight">${esc(e.name)}</span><span class="rounded-full ${e.type === 'Consultora' ? 'bg-lilac text-brand' : 'bg-surface text-ink-soft'} px-2.5 py-0.5 text-[0.8rem] font-bold">${esc(e.type)}</span>${e.hidden ? '<span class="rounded-full bg-sun-soft text-warn px-2.5 py-0.5 text-[0.8rem] font-bold"><i class="ph-bold ph-eye-slash"></i> Oculta</span>' : ''}</p>
+              <p class="text-ink-soft text-[0.95rem] mt-0.5">${[e.industry, loc].filter(Boolean).map(esc).join(' · ') || '<span class="text-ink-mute">Sin rubro ni ubicación</span>'}</p>
+              <p class="mt-1.5 text-[0.9rem] text-ink-mute flex flex-wrap gap-x-3 gap-y-1">
+                <span><i class="ph ${o[0]}"></i> ${o[1]}${e.since ? ` ${ago(e.since).toLowerCase()}` : ''}</span>
+                ${e.email ? `<span><i class="ph ph-envelope-simple"></i> ${esc(e.email)}</span>` : ''}
+                <span><i class="ph ph-briefcase"></i> ${e.active} abierta${e.active === 1 ? '' : 's'} de ${e.total}</span>
+                ${e.last ? `<span><i class="ph ph-clock"></i> Última publicación ${ago(e.last).toLowerCase()}</span>` : ''}</p>
+            </div>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="#/e?n=${encodeURIComponent(e.name)}" class="btn btn-outline btn-sm"><i class="ph ph-eye"></i>Ver página</a>
+            <button type="button" data-ae-edit="${esc(e.name)}" class="btn btn-outline btn-sm"><i class="ph ph-pencil-simple"></i>Editar perfil</button>
+            <button type="button" data-ae-hide="${esc(e.name)}" class="btn btn-outline btn-sm">${e.hidden ? '<i class="ph ph-eye"></i>Mostrar en Empresas' : '<i class="ph ph-eye-slash"></i>Ocultar de Empresas'}</button>
+            ${e.origin === 'manual' && !e.total ? `<button type="button" data-ae-del="${esc(e.name)}" class="btn btn-outline btn-sm text-bad"><i class="ph ph-trash"></i>Borrar</button>` : ''}
+          </div></li>`;
+      }).join('') : `<li>${emptyState('ph-buildings', 'No hay empresas con ese filtro', 'Probá con otro nombre o agregá una.')}</li>`;
+    };
+    return {
+      html, mount() {
+        bindAdminSwitch(); draw();
+        const again = () => { const y = window.scrollY; render({ keep: true }); window.scrollTo(0, y); };
+        $('#ae-add').onclick = () => openCompanyEditor('', again);
+        $('#ae-q').oninput = e => { F.q = e.target.value; draw(); };
+        $('#view').onclick = (async e => {
+          const t = e.target.closest('[data-ae-type]'); if (t) { F.type = t.dataset.aeType; again(); return; }
+          const ed = e.target.closest('[data-ae-edit]'); if (ed) { openCompanyEditor(ed.dataset.aeEdit, again); return; }
+          const h = e.target.closest('[data-ae-hide]'); if (h) { const n = h.dataset.aeHide, on = !Store.coProfile(n).hidden; Store.saveCoProfile(n, { hidden: on }); toast(on ? `${n} ya no aparece en Empresas adheridas` : `${n} vuelve a aparecer en Empresas adheridas`, on ? 'ph-eye-slash' : 'ph-eye'); again(); return; }
+          const d = e.target.closest('[data-ae-del]'); if (d) { if (await askConfirm({ title: `¿Borrar ${esc(d.dataset.aeDel)}?`, text: 'Se borra su perfil y deja de aparecer en Empresas adheridas.', ok: 'Borrar', danger: true })) { Store.removeCoProfile(d.dataset.aeDel); toast('Empresa borrada', 'ph-trash'); again(); } }
+        });
+      }
+    };
   }
 
   const ADMIN_PASS = 'admin';
@@ -7208,7 +7334,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const adminSwitch = () => {
     const pend = Store.delReqs().filter(r => r.status === 'pendiente').length;
     return `<div class="-mx-4 px-4 overflow-x-auto mb-6"><div class="inline-flex rounded-full bg-white border border-line p-1 whitespace-nowrap" role="tablist" aria-label="Secciones del panel">
-      ${[['cvs', 'ph-tray', 'CVs recibidos', 0], ['datos', 'ph-shield-check', 'Pedidos de datos', pend], ['notas', 'ph-coffee', 'Charla de café', 0], ['ext', 'ph-sparkle', 'Avisos externos', Store.extQueue().filter(x => x.status === 'nuevo').length]].map(([v, ic, l, n]) => `<button type="button" role="tab" data-adm-view="${v}" aria-selected="${(S.admView || 'cvs') === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${(S.admView || 'cvs') === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}${n ? `<span class="rounded-full bg-bad text-white px-1.5 text-[0.75rem] leading-5">${n}</span>` : ''}</button>`).join('')}
+      ${[['cvs', 'ph-tray', 'CVs recibidos', 0], ['datos', 'ph-shield-check', 'Pedidos de datos', pend], ['notas', 'ph-coffee', 'Charla de café', 0], ['ext', 'ph-sparkle', 'Avisos externos', Store.extQueue().filter(x => x.status === 'nuevo').length], ['emp', 'ph-buildings', 'Empresas', 0]].map(([v, ic, l, n]) => `<button type="button" role="tab" data-adm-view="${v}" aria-selected="${(S.admView || 'cvs') === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${(S.admView || 'cvs') === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}${n ? `<span class="rounded-full bg-bad text-white px-1.5 text-[0.75rem] leading-5">${n}</span>` : ''}</button>`).join('')}
     </div></div>`;
   };
   const bindAdminSwitch = () => $$('[data-adm-view]').forEach(b => b.onclick = () => { S.admView = b.dataset.admView; render(); });
@@ -7268,6 +7394,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     if (S.admView === 'datos') return AdminRequests();
     if (S.admView === 'notas') return AdminPosts();
     if (S.admView === 'ext') return AdminExternal();
+    if (S.admView === 'emp') return AdminCompanies();
     seedAdminCvs();
     const F = S.adm || (S.adm = { st: 'nuevo', q: '', prov: '', area: '' });
     const all = Store.spontCvs();
@@ -7386,6 +7513,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     renderTop(mode, path);
     renderBottom(mode, path);
     const out = fn(params);
+    view.onclick = null; // cada página pone su propio manejador de clics
     view.innerHTML = out.html;
     if (ddOpen) ddOpen.close();
     if (out.mount) out.mount();
