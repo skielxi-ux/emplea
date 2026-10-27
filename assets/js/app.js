@@ -479,7 +479,7 @@
   // Marca +Humanos: el "+" del logo (barra azul marino y barra coral)
   const MARK = (cls = 'w-9 h-9') => `<svg viewBox="0 0 40 40" class="${cls} shrink-0" aria-hidden="true"><path d="M6 20h28" stroke="#1B2550" stroke-width="5.5" stroke-linecap="round"/><path d="M20 6v28" stroke="#F2715A" stroke-width="5.5" stroke-linecap="round"/></svg>`;
   const LOGO_SRC = 'assets/img/logo-humanos.webp';
-  const BRAND = `<a href="#/" class="flex items-center shrink-0" aria-label="+Humanos, Hub de RRHH, inicio"><img src="${LOGO_SRC}" alt="+Humanos · Hub de RRHH" class="h-7 min-[400px]:h-8 sm:h-10 w-auto max-w-none" width="198" height="40"></a>`;
+  const BRAND = `<a href="#/" class="flex items-center min-w-0 shrink" aria-label="+Humanos, Hub de RRHH, inicio"><img src="${LOGO_SRC}" alt="+Humanos · Hub de RRHH" class="h-7 min-[400px]:h-8 sm:h-10 w-auto max-w-full object-contain object-left" width="198" height="40"></a>`;
   // Ícono de +Humanos para avisos y sugerencias del sistema (antes, avatar del asistente Fedfu)
   const fedfu = (cls = 'w-10 h-10') => `<span class="${cls} shrink-0 rounded-full bg-white border border-line grid place-items-center" aria-hidden="true">${MARK('w-3/5 h-3/5')}</span>`;
 
@@ -500,10 +500,10 @@
     if (mode === 'chat') { topbar.innerHTML = ''; return; }
     if (mode === 'admin') {
       topbar.innerHTML = `<div class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-line"><div class="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center gap-3">${BRAND}
-        <span class="inline-flex items-center gap-1.5 text-[0.85rem] font-bold text-white bg-ink rounded-full px-3 py-1"><i class="ph-fill ph-shield-check"></i>Admin</span>
+        <span class="shrink-0 inline-flex items-center gap-1.5 text-[0.85rem] font-bold text-white bg-ink rounded-full px-3 py-1"><i class="ph-fill ph-shield-check"></i><span class="max-[379px]:hidden">Admin</span></span>
         <span class="ml-auto"></span>
         <a href="#/" class="hidden sm:inline-flex btn btn-ghost h-10 px-4">Ver sitio</a>
-        ${adminOn() ? '<button type="button" data-admin-out class="btn btn-outline h-10 px-4"><i class="ph-bold ph-sign-out"></i>Salir</button>' : ''}</div></div>`;
+        ${adminOn() ? '<button type="button" data-admin-out class="btn btn-outline h-10 px-3 sm:px-4 shrink-0" aria-label="Salir"><i class="ph-bold ph-sign-out"></i><span class="max-sm:hidden">Salir</span></button>' : ''}</div></div>`;
       const out = $('[data-admin-out]', topbar); if (out) out.onclick = () => { adminSet(false); toast('Saliste del panel', 'ph-sign-out'); render(); };
       return;
     }
@@ -522,9 +522,9 @@
       <div class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-line">
         <div class="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center gap-3">
           ${BRAND}
-          <span class="text-[0.8rem] font-bold uppercase tracking-wide text-brand bg-brand-soft px-2.5 py-1 rounded-full">Empresas</span>
+          <span class="max-[379px]:hidden shrink-0 whitespace-nowrap text-[0.8rem] font-bold uppercase tracking-wide text-brand bg-brand-soft px-2.5 py-1 rounded-full">Empresas</span>
           <nav class="hidden md:flex items-center gap-1 ml-6">${links}</nav>
-          <div class="ml-auto flex items-center gap-2">${right}</div>
+          <div class="ml-auto flex items-center gap-2 shrink-0">${right}</div>
         </div>
       </div>`;
   }
@@ -539,28 +539,28 @@
     const candItems = cand
       ? [['/postulaciones', 'ph-paper-plane-tilt', 'Mis postulaciones'], ['/notificaciones', 'ph-bell', 'Notificaciones', nU], ['/guardadas', 'ph-bookmark-simple', 'Guardadas'], ['/vacantes', 'ph-magnifying-glass', 'Vacantes']]
       : [['/postulaciones', 'ph-sign-in', 'Ingresar'], ['/vacantes', 'ph-magnifying-glass', 'Vacantes'], ['/guardadas', 'ph-bookmark-simple', 'Guardadas']];
-    const item = ([h, ic, l, n]) => `<a href="#${h}" class="flex items-center gap-3 px-3 h-11 rounded-xl font-semibold hover:bg-surface ${path === h ? 'text-brand' : 'text-ink'}"><i class="ph ${ic} text-xl ${path === h ? '' : 'text-ink-soft'}"></i><span class="flex-1">${l}</span>${badge(n)}</a>`;
+    const item = ([h, ic, l, n]) => `<a href="#${h}" class="flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold hover:bg-surface ${path === h ? 'text-brand' : 'text-ink'}"><i class="ph ${ic} text-xl ${path === h ? '' : 'text-ink-soft'} shrink-0"></i><span class="flex-1">${l}</span>${badge(n)}</a>`;
     const pop = 'hidden absolute right-0 top-full mt-2 z-50 w-64 bg-white rounded-2xl border border-line shadow-[0_24px_48px_-20px_rgba(20,18,58,.35)] p-1.5 dd-pop';
     const candHead = cand ? `<div class="px-3 pt-2 pb-2.5 mb-1 border-b border-line"><p class="font-bold leading-tight">${esc(cand.name || 'Mi cuenta')}</p><p class="text-ink-mute text-[0.9rem]">${esc(cand.phone || '')}</p></div>` : '';
-    const candOut = cand ? `<button type="button" data-cand-out class="w-full flex items-center gap-3 px-3 h-11 rounded-xl font-semibold text-ink-soft hover:bg-surface"><i class="ph ph-sign-out text-xl"></i>Salir</button>` : '';
+    const candOut = cand ? `<button type="button" data-cand-out class="w-full flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold text-ink-soft hover:bg-surface"><i class="ph ph-sign-out text-xl shrink-0"></i>Salir</button>` : '';
     topbar.innerHTML = `
       <div class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-line">
         <div class="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center gap-3">
           ${BRAND}
           <nav class="hidden lg:flex items-center gap-1 ml-4 xl:ml-8" aria-label="Principal">${L.map(([h, l]) => `<a href="#${h}" class="inline-flex items-center h-10 px-3 xl:px-4 rounded-full font-semibold ${on(h) ? 'bg-brand-soft text-brand' : 'text-ink-soft hover:bg-surface hover:text-ink'}" ${on(h) ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>
           <div class="ml-auto flex items-center gap-2">
-            <button type="button" data-send-cv class="btn btn-primary btn-sm justify-center shrink-0 max-[359px]:w-10 max-[359px]:px-0" aria-label="Enviar CV"><i class="ph-bold ph-upload-simple text-lg"></i><span class="max-[359px]:hidden">Enviar CV</span></button>
+            <button type="button" data-send-cv class="btn btn-primary btn-sm justify-center shrink-0 whitespace-nowrap max-[349px]:w-10 max-[349px]:px-0" aria-label="Enviar CV"><i class="ph-bold ph-upload-simple text-lg"></i><span class="max-[349px]:hidden">Enviar CV</span></button>
             <a href="#/empresa" class="hidden lg:inline-flex btn btn-outline btn-sm" title="${co ? `Panel de ${esc(co.name)}` : 'Ingresar como empresa o consultora'}"><i class="ph ph-buildings text-lg"></i>Empresa</a>
             <div class="relative hidden lg:block" data-menu-wrap>
               <button type="button" data-menu="cand" class="btn btn-outline btn-sm relative" aria-haspopup="true" aria-expanded="false">${cand ? `<span class="w-6 h-6 rounded-full bg-brand-soft text-brand grid place-items-center"><i class="ph-fill ph-user"></i></span>${esc((cand.name || '').split(' ')[0] || 'Candidato')}` : '<i class="ph ph-user text-lg"></i>Candidato'}<i class="ph-bold ph-caret-down text-ink-mute"></i>${nU ? `<span class="absolute -top-1.5 -right-1.5">${badge(nU)}</span>` : ''}</button>
               <div data-menu-panel="cand" class="${pop}">${candHead}${candItems.map(item).join('')}${candOut}</div>
             </div>
             <div class="relative lg:hidden" data-menu-wrap>
-              <button type="button" data-menu="mob" class="icon-btn border border-line relative" aria-label="Menú" aria-haspopup="true" aria-expanded="false"><i class="ph-bold ph-list text-xl"></i>${nU ? '<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-bad ring-2 ring-white"></span>' : ''}</button>
+              <button type="button" data-menu="mob" class="icon-btn border border-line relative shrink-0" aria-label="Menú" aria-haspopup="true" aria-expanded="false"><i class="ph-bold ph-list text-xl"></i>${nU ? '<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-bad ring-2 ring-white"></span>' : ''}</button>
               <div data-menu-panel="mob" class="${pop} w-72 max-w-[calc(100vw-2rem)]">
-                ${L.map(([h, l]) => `<a href="#${h}" class="flex items-center px-3 h-11 rounded-xl font-semibold hover:bg-surface ${on(h) ? 'text-brand' : 'text-ink'}">${l}</a>`).join('')}
+                ${L.map(([h, l]) => `<a href="#${h}" class="flex items-center px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold hover:bg-surface ${on(h) ? 'text-brand' : 'text-ink'}">${l}</a>`).join('')}
                 <div class="my-1.5 border-t border-line"></div>
-                <a href="#/empresa" class="flex items-center gap-3 px-3 h-11 rounded-xl font-semibold hover:bg-surface"><i class="ph ph-buildings text-xl text-ink-soft"></i>Empresa${co ? ` <span class="text-ink-mute font-normal truncate">· ${esc(co.name)}</span>` : ''}</a>
+                <a href="#/empresa" class="flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold hover:bg-surface"><i class="ph ph-buildings text-xl text-ink-soft shrink-0"></i>Empresa${co ? ` <span class="text-ink-mute font-normal truncate">· ${esc(co.name)}</span>` : ''}</a>
                 <p class="px-3 pt-2 pb-1 text-[0.8rem] font-bold uppercase tracking-wide text-ink-mute">Candidato${cand ? ` · ${esc((cand.name || '').split(' ')[0])}` : ''}</p>
                 ${candItems.map(item).join('')}${candOut}
               </div>
@@ -595,13 +595,13 @@
             if (h === '#more') {
               const on = extra.some(x => x[0] === path) || path === '/empresa/planes';
               return `<button type="button" data-nav-more class="flex flex-col items-center gap-0.5 pt-2.5 pb-1 px-0.5 min-w-0 text-center leading-tight text-[0.82rem] font-semibold ${on ? 'text-brand' : 'text-ink-mute'}" aria-haspopup="dialog">
-                <span class="relative"><i class="${on ? 'ph-fill' : 'ph'} ${ic} text-[1.6rem]"></i></span>${on ? esc((extra.find(x => x[0] === path) || ['', '', 'Más'])[2]) : 'Más'}</button>`;
+                <span class="relative"><i class="${on ? 'ph-fill' : 'ph'} ${ic} text-[1.6rem]"></i></span><span class="block w-full truncate">${on ? esc((extra.find(x => x[0] === path) || ['', '', 'Más'])[2]) : 'Más'}</span></button>`;
             }
             const a = path === h;
             const nb = h === '/empresa/busquedas' ? nNew : h === '/notificaciones' ? notifUnread() : 0;
             const badge = nb ? `<span class="absolute -top-1 -right-2.5 min-w-5 h-5 px-1 rounded-full bg-bad text-white text-[0.7rem] font-bold grid place-items-center">${nb}</span>` : '';
             return `<a href="#${h}" class="flex flex-col items-center gap-0.5 pt-2.5 pb-1 px-0.5 min-w-0 text-center leading-tight ${mode === 'candidate' ? 'text-[0.74rem] min-[380px]:text-[0.78rem]' : 'text-[0.82rem]'} font-semibold ${a ? 'text-brand' : 'text-ink-mute'}" ${a ? 'aria-current="page"' : ''}>
-              <span class="relative"><i class="${a ? 'ph-fill' : 'ph'} ${ic} text-[1.6rem]"></i>${badge}</span>${short || l}</a>`;
+              <span class="relative"><i class="${a ? 'ph-fill' : 'ph'} ${ic} text-[1.6rem]"></i>${badge}</span><span class="block w-full truncate">${short || l}</span></a>`;
           }).join('')}
         </div>
       </div>`;
@@ -904,7 +904,7 @@
   ];
   const INFO_PATHS = ['/nosotros', '/faqs', '/terminos', '/privacidad', '/cafe', '/cafe/nota'];
   function siteFooter() {
-    const col = (t, links) => `<div><p class="font-display font-bold text-ink">${t}</p><ul class="mt-3 space-y-1">${links.map(([h, l, ic]) => `<li><a href="#${h}" class="inline-flex items-center gap-2 min-h-[44px] text-ink-soft font-semibold hover:text-brand"><i class="ph-fill ${ic} text-brand text-[1.15rem] shrink-0" aria-hidden="true"></i>${l}</a></li>`).join('')}</ul></div>`;
+    const col = (t, links) => `<div><p class="font-display font-bold text-ink">${t}</p><ul class="mt-3 space-y-1">${links.map(([h, l, ic]) => `<li><a href="#${h}" class="flex items-center gap-2 min-h-[44px] py-1 text-ink-soft font-semibold hover:text-brand"><i class="ph-fill ${ic} text-brand text-[1.15rem] shrink-0" aria-hidden="true"></i><span class="min-w-0">${l}</span></a></li>`).join('')}</ul></div>`;
     return `<footer class="border-t border-line bg-white">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-8">
           <div class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">
@@ -2891,8 +2891,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     if (params.get('d')) { S.ivDay = params.get('d'); S.ivMonth = S.ivDay.slice(0, 7); }
     S.ivDay = S.ivDay || today; S.ivMonth = S.ivMonth || S.ivDay.slice(0, 7);
     const html = `<div id="iv-root" class="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
-      <div class="flex items-end justify-between gap-4">
-        <div><h1 class="text-[2rem] sm:text-[2.4rem] leading-tight font-extrabold">Entrevistas</h1><p id="iv-sub" class="text-ink-soft mt-1"></p></div>
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="min-w-0"><h1 class="text-[2rem] sm:text-[2.4rem] leading-tight font-extrabold">Entrevistas</h1><p id="iv-sub" class="text-ink-soft mt-1"></p></div>
         <button type="button" class="btn btn-primary shrink-0 max-md:h-11 max-md:px-4" data-iv-new><i class="ph-bold ph-plus"></i><span class="max-[380px]:hidden">Agendar</span><span class="hidden md:inline">&nbsp;entrevista</span></button>
       </div>
       <div class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] items-start">
@@ -2998,15 +2998,15 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         ${fedfu('w-11 h-11 shrink-0')}
         <div class="min-w-0 flex-1"><h2 id="guide-t" class="text-[1.35rem] font-extrabold leading-tight">Empezá en 3 pasos</h2>
           <p class="text-ink-soft mt-0.5">${nDone} de 3 listos. Se van tildando solos a medida que avanzás.</p></div>
-        <button type="button" id="guide-hide" class="shrink-0 font-semibold text-ink-mute hover:text-ink h-11 px-2 -mr-2">Ocultar</button>
+        <button type="button" id="guide-hide" class="shrink-0 font-semibold text-ink-mute hover:text-ink h-11 px-2 -mr-2" aria-label="Ocultar la guía"><i class="ph-bold ph-x text-lg sm:hidden"></i><span class="max-sm:hidden">Ocultar</span></button>
       </div>
       <div class="mt-4 flex gap-1.5" aria-hidden="true">${steps.map(s => `<span class="h-1.5 flex-1 rounded-full ${s.done ? 'bg-brand' : 'bg-line'}"></span>`).join('')}</div>
       <ol class="mt-4 space-y-2">${steps.map((s, i) => {
         const now = i === cur;
-        const btn = !s.done && s.cta ? (s.publish ? `<button type="button" class="btn btn-sm ${now ? 'btn-primary' : 'btn-soft'} shrink-0" data-publish>${s.cta}</button>` : `<a href="${s.href}" class="btn btn-sm ${now ? 'btn-primary' : 'btn-soft'} shrink-0">${s.cta}</a>`) : '';
-        return `<li class="flex items-center gap-3.5 rounded-2xl px-3 py-3 ${now ? 'bg-brand-soft/60' : ''}">
+        const btn = !s.done && s.cta ? (s.publish ? `<button type="button" class="btn btn-sm ${now ? 'btn-primary' : 'btn-soft'} shrink-0 max-sm:grow max-sm:justify-center max-sm:ml-[3.125rem]" data-publish>${s.cta}</button>` : `<a href="${s.href}" class="btn btn-sm ${now ? 'btn-primary' : 'btn-soft'} shrink-0 max-sm:grow max-sm:justify-center max-sm:ml-[3.125rem]">${s.cta}</a>`) : '';
+        return `<li class="flex flex-wrap items-center gap-x-3.5 gap-y-2.5 rounded-2xl px-3 py-3 ${now ? 'bg-brand-soft/60' : ''}">
           <span class="w-9 h-9 rounded-full grid place-items-center shrink-0 font-bold ${s.done ? 'bg-ok text-white' : now ? 'bg-brand text-white' : 'bg-surface text-ink-soft border border-line'}">${s.done ? '<i class="ph-bold ph-check"></i>' : i + 1}</span>
-          <span class="min-w-0 flex-1"><span class="block font-semibold leading-tight ${s.done ? 'text-ink-mute line-through decoration-1' : ''}">${s.title}</span>${s.done ? '' : `<span class="block text-ink-soft text-[0.92rem] leading-snug mt-0.5">${s.sub}</span>`}</span>
+          <span class="min-w-0 flex-1 basis-[9.5rem]"><span class="block font-semibold leading-tight ${s.done ? 'text-ink-mute line-through decoration-1' : ''}">${s.title}</span>${s.done ? '' : `<span class="block text-ink-soft text-[0.92rem] leading-snug mt-0.5">${s.sub}</span>`}</span>
           ${btn}</li>`;
       }).join('')}</ol>
     </section>`;
@@ -3035,8 +3035,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       ${t.href ? `<a href="${t.href}" class="btn btn-sm btn-soft shrink-0">${t.cta}</a>` : `<button type="button" class="btn btn-sm btn-soft shrink-0" ${t.notify ? `data-todo-notify="${t.notify}"` : `data-todo-feature="${t.feature}"`}>${t.cta}</button>`}
     </div></li>`;
     const html = `<div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
-      <div class="flex items-end justify-between gap-4">
-        <div><p class="text-ink-soft font-semibold">${hello}</p><h1 class="text-[2rem] sm:text-[2.4rem] leading-tight font-extrabold">${esc(co.name)}</h1></div>
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="min-w-0"><p class="text-ink-soft font-semibold">${hello}</p><h1 class="text-[2rem] sm:text-[2.4rem] leading-tight font-extrabold">${esc(co.name)}</h1></div>
         <button class="btn btn-primary shrink-0 max-md:h-11 max-md:px-4" data-publish aria-label="Publicar búsqueda"><i class="ph-bold ph-plus"></i><span class="max-[380px]:hidden">Publicar</span><span class="hidden md:inline">&nbsp;búsqueda</span></button>
       </div>
       ${showGuide ? `<div class="mt-8">${guideCard(gSteps)}</div>` : ''}
@@ -3120,9 +3120,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         ${nJobs ? `<div class="flex flex-col md:flex-row gap-3 md:items-center">
           <div class="relative flex-1"><i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-xl text-ink-mute pointer-events-none"></i>
             <input id="ds-q" type="search" class="input pl-12" placeholder="Buscar cliente o puesto" value="${esc(F.q)}" aria-label="Buscar cliente o puesto"></div>
-          <div class="inline-flex rounded-full bg-white border border-line p-1 self-start md:self-auto" role="tablist" aria-label="Estado">
+          <div class="max-w-full overflow-x-auto self-start md:self-auto"><div class="inline-flex rounded-full bg-white border border-line p-1 whitespace-nowrap" role="tablist" aria-label="Estado">
             ${[['all', 'Todos'], ['on', 'Activos'], ['off', 'Inactivos']].map(([v, l]) => `<button type="button" role="tab" data-dst="${v}" aria-selected="${F.st === v}" class="h-10 px-4 rounded-full font-semibold ${F.st === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}">${l}</button>`).join('')}
-          </div>
+          </div></div>
           <button class="btn btn-primary h-12 shrink-0" data-publish><i class="ph-bold ph-plus"></i>Publicar búsqueda</button>
         </div>
         <p id="ds-count" class="mt-6 font-semibold text-ink" aria-live="polite"></p>
@@ -4334,7 +4334,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const head = () => {
       const active = j.status === 'activa', feat = Store.isFeatured(j), t = Store.ternaOfJob(j.id), nT = t && t.items.length ? t.items.length : 0;
       const back = j.client && isCons ? [`#/empresa/cliente?n=${encodeURIComponent(j.client)}`, j.client] : ['#/empresa/busquedas', 'Búsquedas'];
-      const mi = (attr, ic, l, cls = '') => `<button type="button" ${attr} class="w-full flex items-center gap-3 px-3 h-11 rounded-xl font-semibold hover:bg-surface text-left ${cls}"><i class="${ic} text-xl"></i>${l}</button>`;
+      const mi = (attr, ic, l, cls = '') => `<button type="button" ${attr} class="w-full flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold hover:bg-surface text-left ${cls}"><i class="${ic} text-xl shrink-0"></i>${l}</button>`;
       return `<a href="${back[0]}" class="inline-flex items-center gap-1.5 font-semibold text-ink-soft hover:text-ink max-w-full"><i class="ph-bold ph-arrow-left shrink-0"></i><span class="truncate">${esc(back[1])}</span></a>
       <div class="mt-5 flex flex-wrap items-start gap-x-6 gap-y-4">
         <div class="flex items-start gap-4 min-w-0 flex-1 basis-[20rem]">
@@ -4358,9 +4358,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             <button type="button" data-menu="js-more" class="btn btn-outline px-4" aria-haspopup="true" aria-expanded="false"><i class="ph-bold ph-dots-three text-xl"></i><span class="max-sm:hidden">Más</span></button>
             <div data-menu-panel="js-more" class="hidden dd-pop absolute right-0 top-full mt-2 z-50 w-64 bg-white rounded-2xl border border-line shadow-[0_24px_48px_-20px_rgba(20,18,58,.35)] p-1.5">
               ${mi('data-js-qs', 'ph ph-list-checks text-ink-soft', `Preguntas filtro${questionsOf(j).length ? ` (${questionsOf(j).length})` : ''}`)}
-              ${active ? (reqOfJob(j.id) ? `<a href="#/empresa/hub?tab=mine" class="w-full flex items-center gap-3 px-3 h-11 rounded-xl font-semibold hover:bg-surface"><i class="ph ph-users-three text-xl text-ink-soft"></i>Ver pedido en el Hub</a>` : mi('data-js-hub', 'ph ph-users-three text-ink-soft', 'Pedir recomendaciones al Hub')) : ''}
+              ${active ? (reqOfJob(j.id) ? `<a href="#/empresa/hub?tab=mine" class="w-full flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold hover:bg-surface"><i class="ph ph-users-three text-xl text-ink-soft shrink-0"></i>Ver pedido en el Hub</a>` : mi('data-js-hub', 'ph ph-users-three text-ink-soft', 'Pedir recomendaciones al Hub')) : ''}
               ${mi('data-js-toggle', `ph ${active ? 'ph-pause' : 'ph-play'} text-ink-soft`, active ? 'Pausar búsqueda' : 'Reactivar búsqueda')}
-              ${nT ? `<a href="#/vacante?id=${j.id}" class="w-full flex items-center gap-3 px-3 h-11 rounded-xl font-semibold hover:bg-surface"><i class="ph ph-eye text-xl text-ink-soft"></i>Ver aviso</a>` : ''}
+              ${nT ? `<a href="#/vacante?id=${j.id}" class="w-full flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold hover:bg-surface"><i class="ph ph-eye text-xl text-ink-soft shrink-0"></i>Ver aviso</a>` : ''}
               ${mi(`data-view="${tab === 'tablero' ? 'postulantes' : 'tablero'}"`, `ph ${tab === 'tablero' ? 'ph-list-bullets' : 'ph-kanban'} text-ink-soft`, tab === 'tablero' ? 'Ver como lista' : 'Ver como tablero')}
               ${mi(`data-notify="${j.id}"`, 'ph ph-hand-heart text-ink-soft', 'Avisar a no seleccionados')}
               <div class="my-1 border-t border-line"></div>
@@ -4483,7 +4483,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             if (S.appGroup === 'out' && out) return box('bg-surface text-ok', 'ph-check-circle', 'Ya les avisaste a todos los descartados', 'Gracias por cerrar el círculo: los candidatos lo valoran mucho.', '');
             return '';
           })()}
-          <div class="mt-5 flex items-center justify-between gap-3">
+          <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
             <p class="font-semibold text-ink-soft">${list.length} postulante${list.length === 1 ? '' : 's'}${G[2] ? ` · ${G[1].toLowerCase()}` : ''}</p>
             <div><select id="ap-sort" data-dd class="input h-10 py-0 w-auto font-semibold text-ink" aria-label="Ordenar">
                 <option value="match" ${S.appSort !== 'recent' ? 'selected' : ''}>Mayor calificación</option>
@@ -5266,15 +5266,15 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         </aside>
         <section class="min-w-0">
           <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="inline-flex rounded-full bg-white border border-line p-1" role="tablist" aria-label="Dónde buscar">
+          <div class="max-w-full overflow-x-auto"><div class="inline-flex rounded-full bg-white border border-line p-1 whitespace-nowrap" role="tablist" aria-label="Dónde buscar">
             ${[['bank', 'ph-address-book', 'Mis candidatos'], ['platform', 'ph-magnifying-glass', 'Buscar en +Humanos']].map(([v, ic, l]) => `<button type="button" role="tab" data-ttab="${v}" aria-selected="${F.tab === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${F.tab === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}</button>`).join('')}
-          </div>
+          </div></div>
           <button type="button" id="db-import" class="btn btn-outline bg-white h-12 px-5"><i class="ph-bold ph-upload-simple text-lg"></i>Importar candidatos</button>
           </div>
           <p class="mt-3 text-ink-soft max-w-2xl">${F.tab === 'bank' ? 'Personas que se postularon a tus búsquedas o que guardaste. Ya tenés su historial y tus notas.' : (hasBase(co) ? 'Toda la gente registrada en +Humanos, aunque nunca se haya postulado a tus búsquedas, con su CV y contacto.' : 'Toda la gente registrada en +Humanos, aunque nunca se haya postulado a tus búsquedas. Está incluida en el plan Pro.')}</p>
           <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
             <p id="db-count" class="font-semibold text-ink" aria-live="polite"></p>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <select id="db-sort" data-dd class="input h-11 py-0 w-auto bg-[#EEF0F7] border-transparent font-semibold" aria-label="Ordenar"></select>
               <select id="db-per" data-dd class="input h-11 py-0 w-auto bg-[#EEF0F7] border-transparent font-semibold" aria-label="Por página">${[9, 18, 36].map(n => `<option value="${n}" ${F.per === n ? 'selected' : ''}>${n} por página</option>`).join('')}</select>
             </div>
@@ -5605,7 +5605,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     <div id="cp-bar" class="save-bar fixed inset-x-0 z-30 translate-y-[150%] transition-transform duration-300">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 pb-3">
         <div class="rounded-2xl bg-ink text-white shadow-lift p-3 pl-5 flex items-center gap-3">
-          <span class="flex-1 font-semibold">Tenés cambios sin guardar</span>
+          <span class="flex-1 min-w-0 font-semibold leading-tight">Tenés cambios sin guardar</span>
           <button type="button" id="cp-discard" class="btn btn-sm text-white hover:bg-white/10 px-3">Descartar</button>
           <button type="button" id="cp-save" class="btn btn-primary btn-sm">Guardar</button>
         </div>
@@ -6341,11 +6341,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             <p class="text-ink-soft mt-1">Notas y entrevistas con consultoras. Las publicadas se ven en <a href="#/cafe" class="text-brand font-semibold hover:underline">/cafe</a>.</p></div>
           <button type="button" id="ap-new" class="btn btn-primary h-12 px-5"><i class="ph-bold ph-plus"></i>Nueva nota</button>
         </div>
-        <ul class="mt-6 space-y-3">${all.map(p => `<li class="card p-3 sm:p-4 flex items-center gap-4">
+        <ul class="mt-6 space-y-3">${all.map(p => `<li class="card p-3 sm:p-4 flex flex-wrap sm:flex-nowrap items-center gap-x-4 gap-y-3">
             ${postImg(p, 'w-20 h-16 sm:w-28 sm:h-20 rounded-xl shrink-0')}
-            <div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2">${catPill(p.cat)}<span class="rounded-full px-2.5 py-0.5 text-[0.8rem] font-bold ${p.published ? 'bg-ok/10 text-ok' : 'bg-surface text-ink-mute border border-line'}">${p.published ? 'Publicada' : 'Borrador'}</span></div>
+            <div class="min-w-0 flex-1 basis-[10rem]"><div class="flex flex-wrap items-center gap-2">${catPill(p.cat)}<span class="rounded-full px-2.5 py-0.5 text-[0.8rem] font-bold ${p.published ? 'bg-ok/10 text-ok' : 'bg-surface text-ink-mute border border-line'}">${p.published ? 'Publicada' : 'Borrador'}</span></div>
               <p class="mt-1.5 font-bold leading-snug line-clamp-2">${esc(p.title)}</p><p class="text-ink-mute text-[0.88rem] truncate">${esc(p.consultora || '')} · ${fmtDate(p.date)}</p></div>
-            <div class="flex gap-2 shrink-0">
+            <div class="flex gap-2 shrink-0 max-sm:w-full max-sm:justify-end">
               ${p.published ? `<a href="#/cafe/nota?id=${encodeURIComponent(p.id)}" class="icon-btn w-10 h-10 border border-line hover:bg-surface" title="Ver" aria-label="Ver nota"><i class="ph-bold ph-eye text-lg"></i></a>` : ''}
               <button type="button" data-post-edit="${esc(p.id)}" class="icon-btn w-10 h-10 border border-line hover:bg-surface" title="Editar" aria-label="Editar nota"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
               <button type="button" data-post-del="${esc(p.id)}" class="icon-btn w-10 h-10 border border-line hover:bg-surface text-[#C62828]" title="Eliminar" aria-label="Eliminar nota"><i class="ph-bold ph-trash text-lg"></i></button>
@@ -7231,7 +7231,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       </div>
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
         <div class="relative flex-1"><i class="ph ph-magnifying-glass text-xl text-ink-mute absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i><input id="ae-q" type="search" class="input pl-12 bg-white" placeholder="Buscar por nombre, rubro o email" value="${esc(F.q)}" aria-label="Buscar empresas"></div>
-        <div class="inline-flex rounded-full bg-white border border-line p-1 self-start" role="tablist" aria-label="Tipo">${[['', 'Todas'], ['Consultora', 'Consultoras'], ['Empresa', 'Empresas']].map(([v, l]) => `<button type="button" role="tab" data-ae-type="${v}" aria-selected="${F.type === v}" class="h-10 px-4 rounded-full font-semibold ${F.type === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}">${l}</button>`).join('')}</div>
+        <div class="max-w-full overflow-x-auto self-start"><div class="inline-flex rounded-full bg-white border border-line p-1 whitespace-nowrap" role="tablist" aria-label="Tipo">${[['', 'Todas'], ['Consultora', 'Consultoras'], ['Empresa', 'Empresas']].map(([v, l]) => `<button type="button" role="tab" data-ae-type="${v}" aria-selected="${F.type === v}" class="h-10 px-4 rounded-full font-semibold ${F.type === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}">${l}</button>`).join('')}</div></div>
       </div>
       <ul id="ae-list" class="mt-5 space-y-3"></ul>
     </div>`;
