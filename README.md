@@ -188,7 +188,7 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 - Del lado del candidato tampoco hay coincidencia: el aviso y las cards de vacantes no muestran porcentaje. "Para vos" filtra por rubro y provincia, y las vacantes se ordenan por fecha.
 
 ## Panel de administración (#/admin)
-- Acceso con un link chico "Admin" en el pie. Clave de demo: `admin` (solo del lado del navegador; en producción va con usuario y contraseña validados en el servidor).
+- Acceso con un link chico "Admin" en el pie. La clave no figura en el código: solo su huella (SHA-256). En producción va con usuario y contraseña validados en el servidor.
 - Recibe los CVs que llegan por "Enviar CV": estados Por revisar / Aprobados / Descartados, buscador, filtros por provincia y área, Ver CV, WhatsApp y Eliminar.
 - Solo los CVs aprobados pasan a la Base de datos (pestaña de la plataforma) de empresas y consultoras.
 - Trae 6 CVs de ejemplo la primera vez (se borran con "Restablecer demo").

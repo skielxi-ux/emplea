@@ -7278,7 +7278,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     };
   }
 
-  const ADMIN_PASS = 'admin';
+  // Solo se guarda la huella (SHA-256) de la clave, no la clave. En producción el acceso se valida en el servidor.
+  const ADMIN_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
+  const sha256 = async t => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, '0')).join('');
   const adminOn = () => { try { return sessionStorage.getItem('emplea.admin') === '1'; } catch (e) { return !!S.admin; } };
   const adminSet = on => { S.admin = on; try { on ? sessionStorage.setItem('emplea.admin', '1') : sessionStorage.removeItem('emplea.admin'); } catch (e) { /* sin storage */ } };
   const SP_ST = {
@@ -7318,13 +7320,13 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             <input id="adm-pass" type="password" class="input pl-12" autocomplete="current-password" placeholder="Tu clave" required></div>
           <p id="adm-err" class="err hidden"></p>
           <button class="btn btn-primary w-full justify-center mt-4 h-12">Ingresar</button>
-          <p class="mt-4 text-[0.85rem] text-ink-mute text-center">Demo: la clave es <b>admin</b></p>
         </form></div>`,
       mount() {
         $('#adm-pass').focus();
-        $('#adm-login').onsubmit = e => {
+        $('#adm-login').onsubmit = async e => {
           e.preventDefault();
-          if ($('#adm-pass').value.trim() !== ADMIN_PASS) { const er = $('#adm-err'); er.textContent = 'La clave no es correcta.'; er.classList.remove('hidden'); return; }
+          let ok = false; try { ok = (await sha256($('#adm-pass').value.trim())) === ADMIN_HASH; } catch (er) { ok = false; }
+          if (!ok) { const er = $('#adm-err'); er.textContent = 'La clave no es correcta.'; er.classList.remove('hidden'); return; }
           adminSet(true); render();
         };
       }
