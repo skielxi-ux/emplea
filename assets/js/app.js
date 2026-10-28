@@ -38,7 +38,7 @@
   const senLabel = id => (SENIORITIES.find(s => s.id === id) || {}).label || '';
   const hashColor = s => PALETTE[[...String(s)].reduce((a, c) => a + c.charCodeAt(0), 0) % PALETTE.length];
   // Fotos propias del sitio (cada ruta aparece una sola vez: en el index.html único se incrustan)
-  const LOCAL_IMG = { equipo: 'assets/img/hero-equipo.webp', p1: 'assets/img/pain-1.webp', p2: 'assets/img/pain-2.webp', p3: 'assets/img/pain-3.webp', p4: 'assets/img/pain-4.webp', p5: 'assets/img/pain-5.webp', p6: 'assets/img/pain-6.webp' };
+  const LOCAL_IMG = { buscar: 'assets/img/hero-buscar.webp', equipo: 'assets/img/hero-equipo.webp', p1: 'assets/img/pain-1.webp', p2: 'assets/img/pain-2.webp', p3: 'assets/img/pain-3.webp', p4: 'assets/img/pain-4.webp', p5: 'assets/img/pain-5.webp', p6: 'assets/img/pain-6.webp' };
   // Imagen de una nota o slide: 'lib:p2' (foto propia), data URL, ruta local o id de Unsplash
   const imgSrc = (id, w = 1600) => !id ? '' : id.startsWith('lib:') ? (LOCAL_IMG[id.slice(4)] || '') : /^(assets\/|data:|https?:)/.test(id) ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
   // Rubro de la lista fija (los escritos a mano antes se reconocen por palabras clave)
@@ -632,7 +632,7 @@
     const topProv = byProv[0] || ['Tucumán', 0];
     const IMG = id => /^(assets\/|data:)/.test(id) ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1800&q=70`;
     const SLIDES = [
-      { key: 'buscar', label: 'Buscá trabajo', img: 'photo-1595986630530-969786b19b4d', pos: '60% 30%', tint: '#3B5BFD',
+      { key: 'buscar', label: 'Buscá trabajo', img: LOCAL_IMG.buscar, pos: '58% 30%', tint: '#3B5BFD',
         tag: ['ph-briefcase', `${jobs.length} vacantes activas`],
         title: 'Tu próximo trabajo está acá',
         text: 'Vacantes de consultoras y empresas de todo el país. Buscá por puesto, provincia, modalidad y rubro.',
