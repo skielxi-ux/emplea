@@ -309,3 +309,15 @@ Nueva pestaña **Admin → Empresas**:
 - **Agregar empresa:** tipo, nombre, logo, rubro, tamaño, provincia, ciudad, dirección, descripción, web, LinkedIn, Instagram, WhatsApp y email. Aparece en "Empresas adheridas" con su página propia, aunque no publique búsquedas.
 - **Acciones:** editar el perfil de cualquiera, ocultarla o mostrarla en "Empresas adheridas", y borrar las cargadas a mano que no tengan búsquedas.
 - "Empresas adheridas" ahora también muestra las cuentas registradas que todavía no publicaron.
+
+## Formulario de búsqueda (paso 2)
+- **Descripción del puesto** (obligatoria) a la vista, junto con área, experiencia, modalidad, jornada y salario.
+- **Secciones desplegables**, cada una muestra cuánto tiene cargado ("3 cargadas", "2 de 4 elegidas" u "Opcional"):
+  - **Responsabilidades:** una por línea.
+  - **Calificaciones:** una por línea. Antes se llamaba "Requisitos" y se guarda en el mismo campo.
+  - **Preguntas filtro.**
+  - **Skills clave**, con estrella para marcar las excluyentes.
+  - **Competencias:** lista vertical con casillas. Se eligen hasta 4 y las demás se desactivan al llegar a 4.
+  - **Beneficios.**
+- **Borrador automático:** con el puesto se completan la descripción, las responsabilidades típicas del área (`AREA_RESP`), las calificaciones y las skills.
+- **El aviso** muestra "Responsabilidades" y "Calificaciones".

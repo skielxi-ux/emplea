@@ -1592,7 +1592,9 @@
       </div>
       <h3 class="mt-7 text-lg font-bold">Sobre el puesto</h3>
       <p class="mt-2 text-ink-soft leading-relaxed">${esc(j.description)}</p>
-      ${j.requirements?.length ? `<h3 class="mt-6 text-lg font-bold">Qué buscamos</h3>
+      ${j.responsibilities?.length ? `<h3 class="mt-6 text-lg font-bold">Responsabilidades</h3>
+      <ul class="mt-3 space-y-2.5">${j.responsibilities.map(r => `<li class="flex gap-3"><i class="ph-bold ph-arrow-right text-brand text-lg shrink-0 mt-0.5"></i><span>${esc(r)}</span></li>`).join('')}</ul>` : ''}
+      ${j.requirements?.length ? `<h3 class="mt-6 text-lg font-bold">Calificaciones</h3>
       <ul class="mt-3 space-y-2.5">${j.requirements.map(r => `<li class="flex gap-3"><i class="ph-fill ph-check-circle text-brand text-xl shrink-0 mt-0.5"></i><span>${esc(r)}</span></li>`).join('')}</ul>` : ''}
             ${(j.skills || []).length ? `<h3 class="mt-6 text-lg font-bold">Skills clave</h3>
       ${p && (p.skills || []).length ? '' : `<p class="text-ink-mute text-[0.92rem]">Las que marcan “excluyente” son imprescindibles.</p>`}
@@ -3278,6 +3280,25 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     arquitectura: 'desarrollar proyectos, planos y cómputos, y hacer seguimiento de obra',
     ingenieria: 'liderar proyectos técnicos, controlar la calidad y proponer mejoras de procesos'
   };
+  const AREA_RESP = {
+    administracion: ['Gestionar la agenda y la documentación del área', 'Emitir y controlar facturas', 'Atender consultas de clientes y proveedores', 'Cargar y mantener al día la información en el sistema'],
+    finanzas: ['Registrar operaciones contables', 'Hacer conciliaciones bancarias', 'Liquidar impuestos y presentar declaraciones', 'Preparar reportes para la gerencia'],
+    ventas: ['Atender y ampliar la cartera de clientes', 'Preparar presupuestos y hacer seguimiento', 'Cumplir los objetivos comerciales del mes', 'Registrar cada oportunidad en el CRM'],
+    tecnologia: ['Desarrollar y mantener sistemas', 'Resolver incidencias y pedidos de soporte', 'Documentar cambios y procesos', 'Trabajar junto al resto del equipo'],
+    atencion: ['Atender consultas y reclamos por teléfono, chat o en persona', 'Dar seguimiento a cada caso hasta resolverlo', 'Registrar las interacciones en el sistema'],
+    logistica: ['Preparar y despachar pedidos', 'Controlar el stock', 'Coordinar entregas y recorridos', 'Mantener el orden del depósito'],
+    salud: ['Brindar atención a pacientes', 'Seguir los protocolos de la institución', 'Registrar cada intervención en la historia clínica'],
+    gastronomia: ['Preparar y servir con calidad', 'Mantener el orden y la higiene del sector', 'Controlar insumos y mercadería'],
+    oficios: ['Hacer trabajos de instalación y reparación', 'Realizar mantenimiento preventivo', 'Cumplir las normas de seguridad'],
+    produccion: ['Operar las líneas de producción', 'Controlar la calidad del producto', 'Cumplir las normas de seguridad e higiene'],
+    marketing: ['Planificar y crear contenido para redes', 'Gestionar campañas y publicaciones', 'Medir resultados y proponer mejoras'],
+    rrhh: ['Llevar adelante búsquedas y entrevistas', 'Acompañar la incorporación de personas nuevas', 'Gestionar la documentación del personal'],
+    educacion: ['Planificar y dar clases', 'Acompañar el aprendizaje de cada estudiante', 'Comunicarse con las familias y el equipo'],
+    comex: ['Gestionar operaciones de importación y exportación', 'Preparar la documentación de cada operación', 'Coordinar con despachantes y transportes'],
+    arquitectura: ['Desarrollar proyectos, planos y cómputos', 'Hacer seguimiento de obra', 'Coordinar con clientes y proveedores'],
+    ingenieria: ['Liderar proyectos técnicos', 'Controlar la calidad de los procesos', 'Proponer mejoras y medir resultados']
+  };
+  const respOf = area => [...(AREA_RESP[area] || ['Encargarse de las tareas del día a día del puesto', 'Trabajar junto al resto del equipo'])];
   const PRO_AREAS = ['finanzas', 'salud', 'ingenieria', 'arquitectura'];
   function fedfuDraft(title, place) {
     const words = t => norm(t).split(/[^a-z0-9]+/).filter(w => w.length > 3 && !STOP.has(w)).map(w => w.slice(0, 5));
@@ -3292,6 +3313,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     });
     if (best && bestScore) {
       return { area: best.area, seniority: best.seniority, from: best.title, description: best.description,
+        responsibilities: (best.responsibilities || []).length ? [...best.responsibilities] : respOf(best.area),
         requirements: [...(best.requirements || [])], skills: (best.skills || []).slice(0, 5) };
     }
     const sks = (AREA_SKILLS[area] || []).slice(0, 3);
@@ -3299,6 +3321,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     return {
       area, seniority: null, from: '',
       description: `Buscamos ${lc} para sumarse al equipo${place ? ` en ${place}` : ''}. Vas a ${AREA_TASKS[area] || 'encargarte de las tareas del día a día del puesto junto al equipo'}.`,
+      responsibilities: respOf(area),
       requirements: [PRO_AREAS.includes(area) ? 'Título habilitante' : 'Secundario completo', 'Experiencia previa en puestos similares',
         ...(sks.length ? [`Manejo de ${sks.slice(0, 2).join(' y ')}`] : []), 'Buena comunicación y trabajo en equipo'],
       skills: sks.map(n => ({ n, must: false }))
@@ -3312,6 +3335,13 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const opt = (arr, sel) => arr.map(v => Array.isArray(v) ? `<option value="${v[0]}" ${v[0] === sel ? 'selected' : ''}>${esc(v[1])}</option>` : `<option ${v === sel ? 'selected' : ''}>${esc(v)}</option>`).join('');
     const seg = (name, arr, sel) => `<div class="grid grid-cols-${arr.length} gap-2">${arr.map(v => `<label class="cursor-pointer"><input type="radio" name="${name}" value="${v}" class="peer sr-only" ${v === sel ? 'checked' : ''}>
       <span class="flex items-center justify-center h-12 rounded-xl border border-line font-semibold text-[0.95rem] peer-checked:border-brand peer-checked:bg-brand-soft peer-checked:text-brand">${v}</span></label>`).join('')}</div>`;
+    // Sección desplegable del paso 2: título, cuánto tiene cargado y el contenido
+    const pfSec = (id, ic, title, inner) => `<details class="group rounded-2xl border border-line bg-white open:border-brand/40" data-sec="${id}">
+      <summary class="flex items-center gap-3 px-4 min-h-[3.75rem] py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span class="w-10 h-10 rounded-xl bg-surface grid place-items-center shrink-0"><i class="ph ${ic} text-xl text-ink"></i></span>
+        <span class="flex-1 min-w-0"><span class="block font-semibold leading-tight">${title}</span><span class="block text-[0.88rem] text-ink-mute leading-tight mt-0.5" data-sec-n="${id}">Opcional</span></span>
+        <i class="ph-bold ph-caret-down text-ink-mute transition group-open:rotate-180 shrink-0"></i></summary>
+      <div class="px-4 pb-4">${inner}</div></details>`;
     const body = `
       <div class="flex items-center gap-2 pr-10" aria-hidden="true"><span id="pf-bar1" class="h-1.5 flex-1 rounded-full bg-brand"></span><span id="pf-bar2" class="h-1.5 flex-1 rounded-full bg-line"></span></div>
       <p id="pf-stepl" class="mt-3 text-[0.92rem] font-bold text-brand">Paso 1 de 2 · Lo básico</p>
@@ -3328,7 +3358,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             <div><label class="label" for="pf-prov">Provincia *</label><select id="pf-prov" class="input"><option value="">Elegí una provincia</option>${opt(PROVINCES)}</select></div>
             <div><label class="label" for="pf-city">Ciudad <span class="font-normal text-ink-mute">(opcional)</span></label><input id="pf-city" class="input" placeholder="Ej: San Miguel de Tucumán" enterkeyhint="next"></div>
           </div>
-          <div class="rounded-2xl bg-peach border border-peach-line p-4 flex gap-3 items-start">${fedfu('w-10 h-10 shrink-0')}<p class="text-ink-soft leading-snug">Con el puesto, <b class="text-ink">completamos el área, la descripción, los requisitos y las skills</b> a partir de búsquedas parecidas. En el paso 2 lo revisás y publicás.</p></div>
+          <div class="rounded-2xl bg-peach border border-peach-line p-4 flex gap-3 items-start">${fedfu('w-10 h-10 shrink-0')}<p class="text-ink-soft leading-snug">Con el puesto, <b class="text-ink">completamos el área, la descripción, las responsabilidades, las calificaciones y las skills</b> a partir de búsquedas parecidas. En el paso 2 lo revisás y publicás.</p></div>
         </div>
         <div data-pf-step="2" class="space-y-5 hidden">
           <div id="pf-draft" class="rounded-2xl bg-peach border border-peach-line p-4 flex gap-3 items-start"></div>
@@ -3346,45 +3376,33 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           <div><p class="label">Modalidad</p>${seg('pf-mod', MODALITIES, 'Presencial')}</div>
           <div><p class="label">Jornada</p>${seg('pf-type', JOB_TYPES, 'Full time')}</div>
           <div><label class="label" for="pf-sal">Salario <span class="font-normal text-ink-mute">(opcional, recibe más postulantes)</span></label><input id="pf-sal" class="input" placeholder="Ej: $900.000 a $1.100.000"></div>
-          <div><label class="label" for="pf-desc">Descripción *</label><textarea id="pf-desc" rows="3" class="input h-auto py-3" placeholder="¿Qué va a hacer la persona en el día a día?"></textarea></div>
-          <div><label class="label" for="pf-req">Requisitos <span class="font-normal text-ink-mute">(uno por línea)</span></label><textarea id="pf-req" rows="3" class="input h-auto py-3" placeholder="Secundario completo&#10;Manejo de Excel"></textarea></div>
-          <div>
-            <p class="label">Skills clave <span class="font-normal text-ink-mute">(conocimientos técnicos)</span></p>
-            <div id="pf-sk-sel" class="flex flex-wrap gap-2"></div>
-            <p class="text-ink-mute text-[0.9rem] mt-2"><i class="ph-fill ph-star text-warn"></i> Tocá la estrella para marcar una skill como excluyente.</p>
-            <div id="pf-sk-sug" class="mt-2 flex flex-wrap gap-2"></div>
-            <div class="mt-3 flex gap-2">
-              <input id="pf-sk-new" class="input" placeholder="Agregar otra skill (ej: SAP)" maxlength="40" enterkeyhint="done" aria-label="Agregar otra skill">
-              <button type="button" id="pf-sk-add" class="btn btn-outline shrink-0 px-4" aria-label="Agregar skill"><i class="ph-bold ph-plus text-lg"></i></button>
-            </div>
+          <div><label class="label" for="pf-desc">Descripción del puesto *</label><textarea id="pf-desc" rows="4" class="input h-auto py-3" placeholder="De qué se trata el puesto y para qué equipo es."></textarea></div>
+          <div class="space-y-2.5">
+            ${pfSec('resp', 'ph-list-bullets', 'Responsabilidades', `<p class="text-ink-mute text-[0.9rem] mb-2">Qué va a hacer la persona. Una por línea.</p>
+              <textarea id="pf-resp" rows="5" class="input h-auto py-3" placeholder="Atender a clientes&#10;Emitir facturas"></textarea>`)}
+            ${pfSec('req', 'ph-graduation-cap', 'Calificaciones', `<p class="text-ink-mute text-[0.9rem] mb-2">Estudios, experiencia y lo que tiene que saber. Una por línea.</p>
+              <textarea id="pf-req" rows="5" class="input h-auto py-3" placeholder="Secundario completo&#10;2 años de experiencia en el puesto"></textarea>`)}
+            ${pfSec('qs', 'ph-funnel', 'Preguntas filtro', `<p class="text-ink-mute text-[0.9rem] mb-2">El candidato las responde al postularse. Si no cumple una excluyente, queda marcado.</p><div id="pf-qs"></div>`)}
+            ${pfSec('sk', 'ph-wrench', 'Skills clave', `<p class="text-ink-mute text-[0.9rem] mb-2">Conocimientos técnicos. Tocá la <i class="ph-fill ph-star text-warn"></i> para marcar una como excluyente.</p>
+              <div id="pf-sk-sel" class="flex flex-wrap gap-2"></div>
+              <div id="pf-sk-sug" class="mt-3 flex flex-wrap gap-2"></div>
+              <div class="mt-3 flex gap-2">
+                <input id="pf-sk-new" class="input" placeholder="Agregar otra skill (ej: SAP)" maxlength="40" enterkeyhint="done" aria-label="Agregar otra skill">
+                <button type="button" id="pf-sk-add" class="btn btn-outline shrink-0 px-4" aria-label="Agregar skill"><i class="ph-bold ph-plus text-lg"></i></button>
+              </div>`)}
+            ${pfSec('cp', 'ph-user-circle-check', 'Competencias', `<p class="text-ink-mute text-[0.9rem] mb-2">Elegí hasta 4, las que más importan para el puesto.</p>
+              <div id="pf-cp" class="rounded-xl border border-line divide-y divide-line overflow-hidden"></div>
+              <div class="mt-3 flex gap-2">
+                <input id="pf-cp-new" class="input" placeholder="Agregar otra competencia" maxlength="40" enterkeyhint="done" aria-label="Agregar otra competencia">
+                <button type="button" id="pf-cp-add" class="btn btn-outline shrink-0 px-4" aria-label="Agregar competencia"><i class="ph-bold ph-plus text-lg"></i></button>
+              </div>`)}
+            ${pfSec('ben', 'ph-gift', 'Beneficios', `<p class="text-ink-mute text-[0.9rem] mb-2">Tocá los que ofrece la empresa.</p>
+              <div id="pf-ben" class="flex flex-wrap gap-2"></div>
+              <div class="mt-3 flex gap-2">
+                <input id="pf-ben-new" class="input" placeholder="Agregar otro beneficio" maxlength="40" enterkeyhint="done" aria-label="Agregar otro beneficio">
+                <button type="button" id="pf-ben-add" class="btn btn-outline shrink-0 px-4" aria-label="Agregar beneficio"><i class="ph-bold ph-plus text-lg"></i><span class="hidden sm:inline">Agregar</span></button>
+              </div>`)}
           </div>
-          <div>
-            <p class="label">Preguntas filtro <span class="font-normal text-ink-mute">(opcional, hasta 3)</span></p>
-            <p class="text-ink-mute text-[0.9rem] -mt-1 mb-2">El candidato las responde al postularse. Si no cumple una excluyente, queda marcado.</p>
-            <div id="pf-qs"></div>
-          </div>
-          <details class="group rounded-2xl border border-line">
-            <summary class="flex items-center gap-3 px-4 h-14 cursor-pointer list-none font-semibold [&::-webkit-details-marker]:hidden">
-              <i class="ph ph-sliders-horizontal text-xl text-ink-soft"></i><span class="flex-1">Competencias y beneficios <span class="font-normal text-ink-mute">(opcional)</span></span><i class="ph-bold ph-caret-down text-ink-mute transition group-open:rotate-180"></i></summary>
-            <div class="px-4 pb-4 space-y-5">
-              <div>
-                <p class="label">Competencias <span class="font-normal text-ink-mute">(hasta 4, las que más importan)</span></p>
-                <div id="pf-cp" class="flex flex-wrap gap-2"></div>
-                <div class="mt-3 flex gap-2">
-                  <input id="pf-cp-new" class="input" placeholder="Agregar otra competencia" maxlength="40" enterkeyhint="done" aria-label="Agregar otra competencia">
-                  <button type="button" id="pf-cp-add" class="btn btn-outline shrink-0 px-4" aria-label="Agregar competencia"><i class="ph-bold ph-plus text-lg"></i></button>
-                </div>
-              </div>
-              <div>
-                <p class="label">Beneficios <span class="font-normal text-ink-mute">(tocá los que ofrece la empresa)</span></p>
-                <div id="pf-ben" class="flex flex-wrap gap-2"></div>
-                <div class="mt-3 flex gap-2">
-                  <input id="pf-ben-new" class="input" placeholder="Agregar otro beneficio" maxlength="40" enterkeyhint="done" aria-label="Agregar otro beneficio">
-                  <button type="button" id="pf-ben-add" class="btn btn-outline shrink-0 px-4" aria-label="Agregar beneficio"><i class="ph-bold ph-plus text-lg"></i><span class="hidden sm:inline">Agregar</span></button>
-                </div>
-              </div>
-            </div>
-          </details>
         </div>
         <p id="pf-err" class="err hidden mt-4"></p>
       </form>`;
@@ -3426,6 +3444,20 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       // Skills clave (con excluyente) y competencias
       const sk = [], cp = [], cpOpts = [...COMPETENCIAS];
       const pfQs = [], syncQs = renderQEditor($('#pf-qs', c), pfQs);
+      const lines = id => $('#' + id, c).value.split('\n').map(x => x.trim()).filter(Boolean);
+      const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+      function updSecs() {
+        const set = (id, t) => { const el = $(`[data-sec-n="${id}"]`, c); if (el) { el.textContent = t || 'Opcional'; el.classList.toggle('text-brand', !!t); el.classList.toggle('text-ink-mute', !t); el.classList.toggle('font-semibold', !!t); } };
+        const r = lines('pf-resp').length, q = lines('pf-req').length;
+        set('resp', r ? plural(r, 'cargada', 'cargadas') : '');
+        set('req', q ? plural(q, 'cargada', 'cargadas') : '');
+        syncQs(); const nq = cleanQs(pfQs).length; set('qs', nq ? plural(nq, 'pregunta', 'preguntas') : '');
+        const nm = sk.filter(x => x.must).length; set('sk', sk.length ? `${plural(sk.length, 'skill', 'skills')}${nm ? `, ${nm} excluyente${nm === 1 ? '' : 's'}` : ''}` : '');
+        set('cp', cp.length ? `${cp.length} de 4 elegidas` : '');
+        set('ben', ben.sel.size ? plural(ben.sel.size, 'elegido', 'elegidos') : '');
+      }
+      c.addEventListener('input', () => updSecs());
+      c.addEventListener('click', () => setTimeout(updSecs, 0));
       const cap = t => { t = t.trim().replace(/\s+/g, ' '); return t.charAt(0).toUpperCase() + t.slice(1); };
       const drawSk = () => {
         $('#pf-sk-sel', c).innerHTML = sk.length ? sk.map((x, i) => `<span class="inline-flex items-center gap-0.5 h-10 pl-1 pr-1 rounded-full font-semibold ${x.must ? 'bg-sun-soft text-ink border border-sun' : 'bg-brand-soft text-brand'}">
@@ -3439,7 +3471,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           : (area ? '' : '<span class="text-ink-mute text-[0.92rem]">Elegí el área para ver sugerencias.</span>');
       };
       const drawCp = () => {
-        $('#pf-cp', c).innerHTML = cpOpts.map(n => { const on = cp.includes(n); return `<button type="button" class="chip ${on ? 'chip-on' : ''}" data-cp="${esc(n)}" aria-pressed="${on}"><i class="${on ? 'ph-bold ph-check' : 'ph ph-plus'}"></i>${esc(n)}</button>`; }).join('');
+        const full = cp.length >= 4;
+        $('#pf-cp', c).innerHTML = cpOpts.map(n => { const on = cp.includes(n), off = full && !on; return `<label class="flex items-center gap-3 px-4 min-h-[3rem] py-2 ${off ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-surface'} ${on ? 'bg-brand-soft/50' : ''}">
+          <input type="checkbox" class="w-5 h-5 accent-[#3B5BFD] shrink-0" data-cp="${esc(n)}" ${on ? 'checked' : ''} ${off ? 'disabled' : ''}><span class="font-medium">${esc(n)}</span></label>`; }).join('');
+        updSecs();
       };
       const addSk = n => { n = cap(n); if (n && !sk.some(x => norm(x.n) === norm(n))) sk.push({ n, must: false }); drawSk(); };
       const addCp = n => { n = cap(n); if (!n) return; const ex = cpOpts.find(o => norm(o) === norm(n)); if (!ex) cpOpts.push(n); const v = ex || n; if (!cp.includes(v)) { if (cp.length >= 4) { toast('Elegí hasta 4 competencias', 'ph-info'); } else cp.push(v); } drawCp(); };
@@ -3447,8 +3482,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         const m = e.target.closest('[data-sk-must]'); if (m) { const x = sk[+m.dataset.skMust]; x.must = !x.must; drawSk(); return; }
         const d = e.target.closest('[data-sk-del]'); if (d) { sk.splice(+d.dataset.skDel, 1); drawSk(); return; }
         const a = e.target.closest('[data-sk-add]'); if (a) { addSk(a.dataset.skAdd); return; }
-        const q = e.target.closest('[data-cp]'); if (q) { const v = q.dataset.cp, i = cp.indexOf(v); if (i >= 0) cp.splice(i, 1); else addCp(v); drawCp(); }
       });
+      c.addEventListener('change', e => { const q = e.target.closest('[data-cp]'); if (q) { const v = q.dataset.cp, i = cp.indexOf(v); if (i >= 0) cp.splice(i, 1); else addCp(v); drawCp(); } });
       $('#pf-area', c).addEventListener('change', drawSk);
       $('#pf-sk-add', c).onclick = () => { addSk($('#pf-sk-new', c).value); $('#pf-sk-new', c).value = ''; };
       $('#pf-sk-new', c).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#pf-sk-add', c).click(); } });
@@ -3492,7 +3527,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       };
       const STEP1 = [...(isCons ? [['pf-client', 'la empresa cliente']] : []), ['pf-title', 'el puesto'], ['pf-prov', 'la provincia']];
       let step = 1, draftKey = '', edited = false;
-      ['pf-desc', 'pf-req'].forEach(id => $('#' + id, c).addEventListener('input', () => { edited = true; }));
+      ['pf-desc', 'pf-req', 'pf-resp'].forEach(id => $('#' + id, c).addEventListener('input', () => { edited = true; }));
       $('#pf-sk-sel', c).addEventListener('click', () => { edited = true; });
       $('#pf-sk-sug', c).addEventListener('click', () => { edited = true; });
       const setStep = n => {
@@ -3517,10 +3552,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           if (d.seniority) $('#pf-sen', c).value = d.seniority;
           $('#pf-desc', c).value = d.description;
           $('#pf-req', c).value = d.requirements.join('\n');
+          $('#pf-resp', c).value = (d.responsibilities || []).join('\n');
+          updSecs();
           sk.splice(0, sk.length, ...d.skills.map(x => ({ ...x })));
           drawSk();
           $('#pf-draft', c).innerHTML = `${fedfu('w-10 h-10 shrink-0')}<div class="min-w-0"><p class="font-bold leading-snug">Te armamos un borrador</p>
-            <p class="text-ink-soft leading-snug mt-0.5">${d.from ? `Basado en búsquedas parecidas a “${esc(d.from)}”.` : 'Con lo típico para este puesto.'} Revisá la descripción y los requisitos: podés cambiar todo o publicar así.</p>
+            <p class="text-ink-soft leading-snug mt-0.5">${d.from ? `Basado en búsquedas parecidas a “${esc(d.from)}”.` : 'Con lo típico para este puesto.'} Revisá la descripción, las responsabilidades y las calificaciones: podés cambiar todo o publicar así.</p>
             ${d.area ? '' : '<p class="text-warn font-semibold mt-1">No reconocí el área: elegila abajo.</p>'}</div>`;
         }
         setStep(2);
@@ -3537,7 +3574,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           id: newId, title: v('pf-title'), company: co.name, companyType: co.type, area: v('pf-area'), seniority: v('pf-sen'),
           province: v('pf-prov'), city: v('pf-city') || v('pf-prov'), modality: $('input[name="pf-mod"]:checked', c).value,
           type: $('input[name="pf-type"]:checked', c).value, salary: v('pf-sal') || null, description: v('pf-desc'),
-          requirements: v('pf-req').split('\n').map(s => s.trim()).filter(Boolean), benefits: [...ben.sel],
+          responsibilities: lines('pf-resp'), requirements: lines('pf-req'), benefits: [...ben.sel],
           skills: sk.map(x => ({ ...x })), comps: [...cp], questions: (syncQs(), cleanQs(pfQs)),
           postedAt: new Date().toISOString(), status: 'activa',
           ...(isCons ? { client: v('pf-client'), clientIndustry: v('pf-ind'), showClient: $('#pf-show', c).checked } : {})
@@ -6972,7 +7009,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       </div>
       ${inp('salary', 'Sueldo', f.salary, 'Si no lo dice, dejalo vacío')}
       <label class="label mt-4" for="xe-desc">Descripción</label><textarea id="xe-desc" rows="4" class="input h-auto py-3">${esc(f.description)}</textarea>
-      <label class="label mt-4" for="xe-reqs">Requisitos <span class="font-normal text-ink-mute">(uno por línea)</span></label><textarea id="xe-reqs" rows="3" class="input h-auto py-3">${esc(f.requirements.join('\n'))}</textarea>
+      <label class="label mt-4" for="xe-reqs">Calificaciones <span class="font-normal text-ink-mute">(uno por línea)</span></label><textarea id="xe-reqs" rows="3" class="input h-auto py-3">${esc(f.requirements.join('\n'))}</textarea>
       <p class="label mt-5">Cómo postularse</p>
       <div class="grid gap-x-3 sm:grid-cols-3">${inp('phone', 'WhatsApp', f.contact.phone)}${inp('email', 'Email', f.contact.email)}${inp('url', 'Link', f.contact.url)}</div>
       <p class="mt-3 text-[0.9rem] text-ink-mute"><i class="ph ph-clock"></i> Se publica por 30 días y después vence solo.</p>`;
