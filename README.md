@@ -314,3 +314,11 @@ Nueva pestaña **Admin → Empresas**:
 - **Lista fija de rubros:** `INDUSTRIES` en data.js. Se elige de esa lista al cargar o editar una empresa, tanto desde el Admin como desde el perfil de la empresa.
 - **Rubros escritos a mano antes de la lista:** se reconocen por palabras clave (`INDUSTRY_KW`). Por ejemplo, "Construccion" pasa a "Construcción e inmobiliaria" y "Software" a "Tecnología y software".
 - **Filtro en "Empresas adheridas":** desplegable "Rubro" con "Todos los rubros" y la cantidad de empresas de cada uno. Los rubros sin empresas no aparecen.
+
+## Empresa verificada, seguir empresas y LinkedIn
+- **Tilde azul de verificada:** se muestra en avisos, tarjetas, la página de la empresa, "Empresas adheridas" y el Admin. Lo da o lo quita el admin en **Admin → Empresas → Verificar**. Las empresas de ejemplo verificadas se marcan con `verified: true` en `COMPANIES`.
+- **Seguir:** botón en la página de la empresa y en cada aviso. Pide ingresar si el candidato no tiene sesión.
+  - Cada búsqueda nueva de una empresa seguida genera un aviso en Notificaciones: "X, que seguís, publicó una búsqueda nueva", también por WhatsApp en el sitio real.
+  - En Notificaciones aparece la lista "Empresas que seguís", con opción de dejar de seguir.
+  - La página de la empresa muestra cuántos seguidores tiene. En el demo, las empresas de ejemplo tienen una base de seguidores para que se vea el número.
+- **Publicar en LinkedIn:** un toque desde "Compartir" o desde "⋯ Más" en cada búsqueda. Copia un texto sugerido, porque LinkedIn no permite precargarlo, y abre LinkedIn con el link del aviso, que lleva `&src=linkedin` para Reportes.

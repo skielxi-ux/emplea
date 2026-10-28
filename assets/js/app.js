@@ -44,6 +44,12 @@
   // Rubro de la lista fija (los escritos a mano antes se reconocen por palabras clave)
   const industryOf = t => { t = String(t || '').trim(); if (!t) return ''; if (INDUSTRIES.includes(t)) return t; const n = norm(t); const hit = INDUSTRY_KW.find(([rx]) => rx.test(n)); return hit ? hit[1] : 'Otro'; };
   const industryOpts = sel => `<option value="">Elegí un rubro</option>${INDUSTRIES.map(x => `<option ${industryOf(sel) === x ? 'selected' : ''}>${x}</option>`).join('')}`;
+  // Insignia de empresa verificada (la da el equipo de +Humanos desde el Admin)
+  const isVerified = name => { const v = Store.coProfile(name).verified; return v === undefined ? !!(COMPANIES[name] || {}).verified : !!v; };
+  const vBadge = (name, cls = '') => isVerified(name) ? `<i class="ph-fill ph-seal-check text-[#1D9BF0] shrink-0 ${cls}" title="Empresa verificada por +Humanos" role="img" aria-label="Verificada"></i>` : '';
+  // Seguidores: los reales de este navegador más una base de ejemplo para las empresas del demo
+  const followersOf = name => (COMPANIES[name] ? 40 + ([...name].reduce((a, ch) => a * 31 + ch.charCodeAt(0), 7) >>> 0) % 260 : 0) + (Store.isFollowing(name) ? 1 : 0);
+  const followBtn = (name, cls = '') => { const on = Store.isFollowing(name); return `<button type="button" data-follow="${esc(name)}" aria-pressed="${on}" class="btn ${on ? 'btn-soft' : 'btn-primary'} ${cls}"><i class="${on ? 'ph-bold ph-check' : 'ph-bold ph-plus'}"></i>${on ? 'Siguiendo' : 'Seguir'}</button>`; };
   const companyOf = name => COMPANIES[name] || { type: 'Empresa', color: hashColor(name), benefits: [] };
   const finePointer = () => window.matchMedia('(pointer: fine)').matches;
   const digits = s => String(s || '').replace(/\D/g, '');
@@ -357,7 +363,7 @@
         <div class="flex items-center gap-3">
           ${logo(j.company, 'w-11 h-11 text-sm')}
           <div class="min-w-0 flex-1">
-            <p class="font-semibold truncate">${esc(j.company)}</p>
+            <p class="font-semibold flex items-center gap-1 min-w-0"><span class="truncate">${esc(j.company)}</span>${vBadge(j.company)}</p>
             <p class="text-[0.92rem] text-ink-mute flex items-center gap-1 truncate"><i class="ph ph-map-pin shrink-0"></i>${esc(j.province)}</p>
           </div>
           ${opts.preview ? '' : saveBtn(j.id)}
@@ -957,6 +963,8 @@
           ['¿Cómo sé si leyeron mi CV?', 'En <b>Mis postulaciones</b> ves cada etapa: enviado, CV leído, en proceso, finalista y resultado. Si hay novedades, te avisamos.'],
           ['¿Puedo recibir avisos de vacantes nuevas?', 'Sí. Creá una alerta desde <b>Notificaciones</b> con tu rubro y tu provincia. Cuando se publica algo para vos, te avisamos ahí y por WhatsApp.'],
           ['¿Me pueden recomendar a otra consultora?', 'Sí, pero solo con tu permiso. Si una consultora del Hub cree que encajás en una búsqueda de otra, te manda un link por WhatsApp. Ahí ves quién te quiere conocer y para qué puesto, y decidís. Si no aceptás, no le pasamos nada.'],
+          ['¿Qué significa el tilde azul?', 'Que el equipo de +Humanos verificó que es una consultora o empresa real. Igual, nunca pagues para conseguir un trabajo ni para una entrevista.'],
+          ['¿Puedo seguir a una consultora o empresa?', 'Sí. Tocá <b>Seguir</b> en su página o en uno de sus avisos y te avisamos acá y por WhatsApp cuando publique una búsqueda nueva.'],
           ['¿Quién ve mis datos?', 'Solo las empresas y consultoras a las que te postulás. Tu perfil aparece en búsquedas de talento únicamente si aceptaste ser contactado, y lo podés cambiar cuando quieras.']
         ]) + grp('Si sos empresa o consultora', 'ph-buildings', [
           ['¿Tiene costo para consultoras y empresas?', 'Por ahora no: publicar búsquedas y usar todas las herramientas de +Humanos es gratis.'],
@@ -1161,7 +1169,7 @@
         return `<li><a href="#/e?n=${encodeURIComponent(e.name)}" class="group flex items-center gap-4 sm:gap-6 rounded-[22px] bg-white border border-line p-4 sm:p-6 hover:border-brand/40 hover:shadow-lift transition">
           <span class="rounded-full overflow-hidden shrink-0">${logo(e.name, 'w-16 h-16 sm:w-20 sm:h-20 text-xl sm:text-2xl !rounded-full')}</span>
           <span class="min-w-0 flex-1">
-            <span class="flex flex-wrap items-center gap-x-2 gap-y-1"><span class="font-display font-bold text-[1.2rem] sm:text-[1.3rem] leading-tight group-hover:text-brand">${esc(e.name)}</span>${e.type === 'Consultora' ? '<span class="rounded-full bg-lilac text-brand px-2.5 py-0.5 text-[0.8rem] font-bold">Consultora</span>' : ''}</span>
+            <span class="flex flex-wrap items-center gap-x-2 gap-y-1"><span class="font-display font-bold text-[1.2rem] sm:text-[1.3rem] leading-tight group-hover:text-brand">${esc(e.name)}</span>${vBadge(e.name, 'text-[1.25rem]')}${e.type === 'Consultora' ? '<span class="rounded-full bg-lilac text-brand px-2.5 py-0.5 text-[0.8rem] font-bold">Consultora</span>' : ''}</span>
             ${e.industry ? `<span class="block text-ink-soft mt-0.5 truncate">${esc(e.industry)}</span>` : ''}
             ${loc ? `<span class="flex items-center gap-1.5 text-ink-mute mt-1"><i class="ph ph-map-pin text-lg"></i><span class="truncate">${esc(loc)}${e.nProv > 1 ? ` · y ${e.nProv - 1} provincia${e.nProv > 2 ? 's' : ''} más` : ''}</span></span>` : ''}
             <span class="sm:hidden mt-2 inline-flex rounded-full bg-brand-soft text-brand px-3 py-1 text-[0.88rem] font-bold">${e.active ? `${e.active} búsqueda${e.active === 1 ? '' : 's'} abierta${e.active === 1 ? '' : 's'}` : 'Sin búsquedas abiertas'}</span>
@@ -1545,8 +1553,12 @@
           </div>
           <a href="#/e?n=${encodeURIComponent(j.company)}" class="card p-5 flex items-center gap-3.5 hover:border-brand/40 transition group">
             ${logo(j.company, 'w-12 h-12 text-sm')}
-            <span class="min-w-0 flex-1"><span class="block font-bold leading-tight truncate group-hover:text-brand">${esc(j.company)}</span><span class="block text-ink-mute text-[0.92rem]">${esc(j.companyType || '')} · Ver todas sus búsquedas</span></span>
+            <span class="min-w-0 flex-1"><span class="flex items-center gap-1 font-bold leading-tight group-hover:text-brand min-w-0"><span class="truncate">${esc(j.company)}</span>${vBadge(j.company)}</span><span class="block text-ink-mute text-[0.92rem]">${esc(j.companyType || '')} · Ver todas sus búsquedas</span></span>
             <i class="ph-bold ph-caret-right text-ink-mute"></i></a>
+          <div class="card p-5 -mt-2">
+            <p class="text-ink-soft text-[0.95rem]">Seguí a ${esc(j.company)} y te avisamos cuando publique una búsqueda nueva.</p>
+            ${followBtn(j.company, 'btn-sm mt-3')}
+          </div>
         </aside>
         ${more.length ? `<section class="lg:col-span-2" aria-labelledby="more-t"><h2 id="more-t" class="text-[1.5rem] font-extrabold">Otros avisos que te pueden interesar</h2>
           <ul class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">${more.map(adCard).join('')}</ul></section>` : ''}
@@ -1572,7 +1584,7 @@
     return `
       <a href="#/e?n=${encodeURIComponent(j.company)}" class="flex items-center gap-3 pr-12 group w-fit max-w-full">
         ${logo(j.company, 'w-14 h-14 text-lg')}
-        <div class="min-w-0"><p class="font-bold text-lg leading-tight group-hover:text-brand truncate">${esc(j.company)}</p>
+        <div class="min-w-0"><p class="font-bold text-lg leading-tight group-hover:text-brand flex items-center gap-1 min-w-0"><span class="truncate">${esc(j.company)}</span>${vBadge(j.company)}</p>
           <p class="text-ink-mute">${esc(j.companyType)} · ${ago(j.postedAt)} · <span class="text-brand font-semibold">Ver perfil</span></p></div>
       </a>
       ${Store.isFeatured(j) ? `<div class="mt-4 -mb-2">${featPill()}</div>` : ''}
@@ -2137,6 +2149,13 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   // Revisa las alertas activas y crea los avisos de vacantes nuevas que encajan
   function checkAlerts(opts = {}) {
     if (!Store.candidate()) return 0;
+    // Empresas y consultoras que sigue: cada búsqueda nueva es un aviso
+    const fo = Store.follows();
+    if (fo.length) {
+      const haveF = new Set(Store.notifs().filter(n => n.follow).map(n => n.jobId)), outF = [];
+      fo.forEach(f => Store.activeJobs().forEach(j => { if (j.company === f.name && j.postedAt > f.since && !haveF.has(j.id)) { outF.push({ id: 'nf' + j.id, type: 'job', follow: f.name, jobId: j.id, at: j.postedAt }); haveF.add(j.id); } }));
+      if (outF.length) { Store.addNotifs(outF); if (!opts.silent) setTimeout(() => toast(outF.length === 1 ? `${outF[0].follow} publicó una búsqueda nueva` : `Hay ${outF.length} búsquedas nuevas de empresas que seguís`, 'ph-bell-ringing'), 600); }
+    }
     const al = Store.alerts().filter(a => a.active !== false); if (!al.length) return 0;
     const have = new Set(Store.notifs().filter(n => n.type === 'job').map(n => n.alertId + '|' + n.jobId));
     const now = new Date().toISOString(), out = [];
@@ -2227,7 +2246,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const al = n.alertId ? alerts.find(a => a.id === n.alertId) : null;
       let body = '';
       if (n.type === 'job' && j) {
-        body = `<p>${n.first ? 'Esta se publicó hace poco y encaja con' : 'Encontré una vacante nueva para'} tu alerta <b>${esc(al ? al.label : '')}</b>:</p>
+        body = `<p>${n.follow ? `<b>${esc(n.follow)}</b>, que seguís, publicó una búsqueda nueva:` : `${n.first ? 'Esta se publicó hace poco y encaja con' : 'Encontré una vacante nueva para'} tu alerta <b>${esc(al ? al.label : '')}</b>:`}</p>
           <div class="mt-2.5 rounded-[14px] border border-line bg-white p-3 flex flex-wrap sm:flex-nowrap items-center gap-3">
             ${logo(j.company, 'w-10 h-10 text-[0.75rem]')}
             <button type="button" data-open-job="${j.id}" class="min-w-0 flex-1 text-left"><span class="block font-semibold leading-tight truncate hover:text-brand">${esc(j.title)}</span><span class="block text-[0.88rem] text-ink-mute truncate">${esc(j.company)} · ${esc(j.province)}${j.salary ? ` · ${esc(j.salary)}` : ''}</span></button>
@@ -2269,6 +2288,14 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
               ${p && !alerts.some(a => sameAlert(a, p)) ? `<button type="button" id="al-mine" class="btn btn-primary btn-sm"><i class="ph-bold ph-bell-ringing"></i>Alerta para ${esc(alertLabel(p))}</button>` : ''}
               <button type="button" data-alert-new class="btn btn-soft btn-sm"><i class="ph ph-plus"></i>${alerts.length ? 'Otra alerta' : 'Crear una alerta'}</button>
             </div>
+          </div>
+          <div class="card p-5 mt-4">
+            <h2 class="text-xl font-extrabold flex items-center gap-2"><i class="ph-fill ph-buildings text-brand"></i>Empresas que seguís</h2>
+            ${Store.follows().length ? `<ul class="mt-3 divide-y divide-line">${Store.follows().map(f => `<li class="py-3 flex items-center gap-3">
+                ${logo(f.name, 'w-10 h-10 text-[0.75rem]')}
+                <a href="#/e?n=${encodeURIComponent(f.name)}" class="min-w-0 flex-1 font-semibold leading-tight hover:text-brand flex items-center gap-1"><span class="truncate">${esc(f.name)}</span>${vBadge(f.name)}</a>
+                <button type="button" class="btn btn-sm btn-outline px-3" data-follow="${esc(f.name)}">Dejar de seguir</button></li>`).join('')}</ul>`
+              : '<p class="mt-2 text-ink-soft">Seguí a una consultora o empresa desde su página y te avisamos cuando publique una búsqueda nueva.</p><a href="#/empresas" class="mt-3 btn btn-soft btn-sm"><i class="ph ph-buildings"></i>Ver empresas</a>'}
           </div>
         </aside>
       </div>
@@ -4389,6 +4416,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           <div class="relative" data-menu-wrap>
             <button type="button" data-menu="js-more" class="btn btn-outline px-4" aria-haspopup="true" aria-expanded="false"><i class="ph-bold ph-dots-three text-xl"></i><span class="max-sm:hidden">Más</span></button>
             <div data-menu-panel="js-more" class="hidden dd-pop absolute right-0 top-full mt-2 z-50 w-64 bg-white rounded-2xl border border-line shadow-[0_24px_48px_-20px_rgba(20,18,58,.35)] p-1.5">
+              ${mi('data-js-li', 'ph ph-linkedin-logo text-[#0A66C2]', 'Publicar en LinkedIn')}
               ${mi('data-js-qs', 'ph ph-list-checks text-ink-soft', `Preguntas filtro${questionsOf(j).length ? ` (${questionsOf(j).length})` : ''}`)}
               ${active ? (reqOfJob(j.id) ? `<a href="#/empresa/hub?tab=mine" class="w-full flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold hover:bg-surface"><i class="ph ph-users-three text-xl text-ink-soft shrink-0"></i>Ver pedido en el Hub</a>` : mi('data-js-hub', 'ph ph-users-three text-ink-soft', 'Pedir recomendaciones al Hub')) : ''}
               ${mi('data-js-toggle', `ph ${active ? 'ph-pause' : 'ph-play'} text-ink-soft`, active ? 'Pausar búsqueda' : 'Reactivar búsqueda')}
@@ -4862,6 +4890,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           if (e.target.closest('[data-bk-all]')) { openBankSuggestions(j.id); return; }
           if (e.target.closest('[data-js-feature]')) { openFeature(j.id); return; }
           if (e.target.closest('[data-js-share]')) { closeMenus(); openShareChannels(j.id); return; }
+          if (e.target.closest('[data-js-li]')) { closeMenus(); shareLinkedIn(j); return; }
           if (e.target.closest('[data-js-hub]')) { closeMenus(); openHubAsk(j.id); return; }
           if (e.target.closest('[data-js-qs]')) { closeMenus(); openQuestionsSheet(j.id, () => { draw(); }); return; }
           if (e.target.closest('[data-js-del]')) {
@@ -5809,9 +5838,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           <div class="flex flex-col sm:flex-row sm:items-end gap-4">
             <div class="-mt-12 sm:-mt-14 rounded-2xl ring-4 ring-white bg-white w-fit shadow-lift shrink-0">${logo(name, 'w-24 h-24 sm:w-28 sm:h-28 text-3xl')}</div>
             <div class="min-w-0 flex-1 sm:pb-1">
-              <h1 class="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight leading-tight">${esc(name)}</h1>
+              <h1 class="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight leading-tight flex items-center gap-2 flex-wrap">${esc(name)}${vBadge(name, 'text-[0.8em]')}</h1>
               <p class="text-ink-soft mt-1">${meta.map(esc).join(' · ')}</p>
+              <p class="text-ink-mute mt-1 text-[0.95rem]"><b class="text-ink">${followersOf(name)}</b> seguidor${followersOf(name) === 1 ? '' : 'es'}${isVerified(name) ? ' · <span class="text-[#1D9BF0] font-semibold">Verificada por +Humanos</span>' : ''}</p>
             </div>
+            ${own ? '' : followBtn(name, 'h-12 px-6 shrink-0 self-start sm:self-end')}
             ${links.length ? `<div class="flex gap-2">${links.map(([u, ic, l]) => `<a href="${esc(u)}" target="_blank" rel="noopener" class="icon-btn border border-line w-12 h-12" aria-label="${l}" title="${l}"><i class="ph ${ic} text-2xl"></i></a>`).join('')}</div>` : ''}
           </div>
         </div>
@@ -6179,6 +6210,14 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   }
 
   // Compartir un aviso con un link por canal (?src=), para saber de dónde vienen los postulantes
+  // Publicar en LinkedIn con un toque: copia un texto sugerido (LinkedIn no lo deja precargar) y abre la ventana para compartir
+  function shareLinkedIn(j) {
+    const u = `${location.href.split('#')[0]}#/vacante?id=${encodeURIComponent(j.id)}&src=linkedin`;
+    const txt = `Estamos buscando ${j.title} en ${j.city}, ${j.province}.${j.modality ? ` Modalidad ${j.modality.toLowerCase()}.` : ''} Si te interesa o conocés a alguien, postulate acá: ${u}`;
+    try { navigator.clipboard.writeText(txt).catch(() => {}); } catch (e) { /* sin portapapeles */ }
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}`, '_blank', 'noopener');
+    toast('Copiamos un texto para la publicación: pegalo en LinkedIn', 'ph-linkedin-logo');
+  }
   function openShareChannels(jobId) {
     const j = Store.job(jobId); if (!j) return;
     const base = location.href.split('#')[0];
@@ -6187,13 +6226,16 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const share = { whatsapp: u => `https://wa.me/?text=${encodeURIComponent(txt + ' ' + u)}`, linkedin: u => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}`, facebook: u => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}` };
     const body = `<h2 class="text-[1.6rem] font-extrabold pr-10 leading-tight">Compartir por canal</h2>
       <p class="text-ink-soft mt-1">${esc(j.title)}${j.client ? ` · ${esc(j.client)}` : ''}</p>
-      <p class="mt-3 text-ink-soft">Usá el link de cada canal: así en <b class="text-ink">Reportes</b> ves de dónde vino cada postulante.</p>
+      <button type="button" id="sh-li" class="mt-4 w-full flex items-center gap-3 rounded-[18px] bg-[#0A66C2] text-white p-4 text-left hover:opacity-95">
+        <i class="ph-fill ph-linkedin-logo text-3xl shrink-0"></i><span class="min-w-0 flex-1"><span class="block font-bold text-[1.05rem]">Publicar en LinkedIn</span><span class="block text-white/80 text-[0.9rem] leading-snug">Abre LinkedIn con el aviso listo. Copiamos un texto para que lo pegues.</span></span><i class="ph-bold ph-arrow-square-out text-xl shrink-0"></i></button>
+      <p class="mt-4 text-ink-soft">O usá el link de cada canal: así en <b class="text-ink">Reportes</b> ves de dónde vino cada postulante.</p>
       <ul class="mt-4 space-y-2">${CHANNELS.filter(c => !['emplea', 'referido', 'banco', 'importado'].includes(c[0])).map(([id, l, ic]) => `<li class="flex items-center gap-3 rounded-[16px] border border-line p-3">
           <span class="w-10 h-10 rounded-xl bg-surface grid place-items-center shrink-0"><i class="ph ${ic} text-xl"></i></span>
           <span class="min-w-0 flex-1"><span class="block font-semibold">${l}</span><span class="block text-[0.82rem] text-ink-mute truncate">…&src=${id}</span></span>
           ${share[id] ? `<a href="${esc(share[id](link(id)))}" target="_blank" rel="noopener" class="btn btn-soft btn-sm px-3" aria-label="Publicar en ${l}"><i class="ph-bold ph-share-fat"></i><span class="hidden sm:inline">Publicar</span></a>` : ''}
           <button type="button" data-copy-ch="${id}" class="btn btn-outline btn-sm px-3" aria-label="Copiar link para ${l}"><i class="ph-bold ph-copy"></i><span class="hidden sm:inline">Copiar</span></button></li>`).join('')}</ul>`;
     openSheet(sheetScroll(body), c => {
+      $('#sh-li', c).onclick = () => shareLinkedIn(j);
       $$('[data-copy-ch]', c).forEach(b => b.onclick = async () => {
         const u = link(b.dataset.copyCh);
         try { await navigator.clipboard.writeText(u); } catch (e) { const ta = document.createElement('textarea'); ta.value = u; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) { /* nada */ } ta.remove(); }
@@ -6999,7 +7041,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           <div class="flex items-start gap-3.5">
             ${logo(e.name, 'w-14 h-14 text-base')}
             <div class="min-w-0 flex-1">
-              <p class="flex flex-wrap items-center gap-x-2 gap-y-1"><span class="font-display font-bold text-[1.15rem] leading-tight">${esc(e.name)}</span><span class="rounded-full ${e.type === 'Consultora' ? 'bg-lilac text-brand' : 'bg-surface text-ink-soft'} px-2.5 py-0.5 text-[0.8rem] font-bold">${esc(e.type)}</span>${e.hidden ? '<span class="rounded-full bg-sun-soft text-warn px-2.5 py-0.5 text-[0.8rem] font-bold"><i class="ph-bold ph-eye-slash"></i> Oculta</span>' : ''}</p>
+              <p class="flex flex-wrap items-center gap-x-2 gap-y-1"><span class="font-display font-bold text-[1.15rem] leading-tight">${esc(e.name)}</span>${vBadge(e.name, 'text-[1.2rem]')}<span class="rounded-full ${e.type === 'Consultora' ? 'bg-lilac text-brand' : 'bg-surface text-ink-soft'} px-2.5 py-0.5 text-[0.8rem] font-bold">${esc(e.type)}</span>${e.hidden ? '<span class="rounded-full bg-sun-soft text-warn px-2.5 py-0.5 text-[0.8rem] font-bold"><i class="ph-bold ph-eye-slash"></i> Oculta</span>' : ''}</p>
               <p class="text-ink-soft text-[0.95rem] mt-0.5">${[e.industry, loc].filter(Boolean).map(esc).join(' · ') || '<span class="text-ink-mute">Sin rubro ni ubicación</span>'}</p>
               <p class="mt-1.5 text-[0.9rem] text-ink-mute flex flex-wrap gap-x-3 gap-y-1">
                 <span><i class="ph ${o[0]}"></i> ${o[1]}${e.since ? ` ${ago(e.since).toLowerCase()}` : ''}</span>
@@ -7011,6 +7053,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           <div class="mt-3 flex flex-wrap gap-2">
             <a href="#/e?n=${encodeURIComponent(e.name)}" class="btn btn-outline btn-sm"><i class="ph ph-eye"></i>Ver página</a>
             <button type="button" data-ae-edit="${esc(e.name)}" class="btn btn-outline btn-sm"><i class="ph ph-pencil-simple"></i>Editar perfil</button>
+            <button type="button" data-ae-ver="${esc(e.name)}" class="btn btn-outline btn-sm">${isVerified(e.name) ? '<i class="ph ph-seal-check"></i>Quitar verificación' : '<i class="ph-fill ph-seal-check text-[#1D9BF0]"></i>Verificar'}</button>
             <button type="button" data-ae-hide="${esc(e.name)}" class="btn btn-outline btn-sm">${e.hidden ? '<i class="ph ph-eye"></i>Mostrar en Empresas' : '<i class="ph ph-eye-slash"></i>Ocultar de Empresas'}</button>
             ${e.origin === 'manual' && !e.total ? `<button type="button" data-ae-del="${esc(e.name)}" class="btn btn-outline btn-sm text-bad"><i class="ph ph-trash"></i>Borrar</button>` : ''}
           </div></li>`;
@@ -7025,6 +7068,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         $('#view').onclick = (async e => {
           const t = e.target.closest('[data-ae-type]'); if (t) { F.type = t.dataset.aeType; again(); return; }
           const ed = e.target.closest('[data-ae-edit]'); if (ed) { openCompanyEditor(ed.dataset.aeEdit, again); return; }
+          const vb = e.target.closest('[data-ae-ver]'); if (vb) { const n = vb.dataset.aeVer, on = !isVerified(n); Store.saveCoProfile(n, { verified: on }); toast(on ? `${n} ya tiene el tilde de verificada` : `Le quitaste la verificación a ${n}`, 'ph-seal-check'); again(); return; }
           const h = e.target.closest('[data-ae-hide]'); if (h) { const n = h.dataset.aeHide, on = !Store.coProfile(n).hidden; Store.saveCoProfile(n, { hidden: on }); toast(on ? `${n} ya no aparece en Empresas adheridas` : `${n} vuelve a aparecer en Empresas adheridas`, on ? 'ph-eye-slash' : 'ph-eye'); again(); return; }
           const d = e.target.closest('[data-ae-del]'); if (d) { if (await askConfirm({ title: `¿Borrar ${esc(d.dataset.aeDel)}?`, text: 'Se borra su perfil y deja de aparecer en Empresas adheridas.', ok: 'Borrar', danger: true })) { Store.removeCoProfile(d.dataset.aeDel); toast('Empresa borrada', 'ph-trash'); again(); } }
         });
@@ -7297,6 +7341,14 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     if (e.target.closest('[data-del-req]')) { e.preventDefault(); openDeleteRequest(); return; }
     if (e.target.closest('[data-alert-new]')) { e.preventDefault(); openAlertForm(); return; }
     if (e.target.closest('[data-hub-join]')) { e.preventDefault(); openHubJoin(); return; }
+    const fw = e.target.closest('[data-follow]');
+    if (fw) {
+      e.preventDefault(); e.stopPropagation();
+      const name = fw.dataset.follow;
+      const go = () => { const on = Store.toggleFollow(name); toast(on ? `Ahora seguís a ${name}. Te avisamos cuando publique una búsqueda.` : `Dejaste de seguir a ${name}`, on ? 'ph-bell-ringing' : 'ph-bell-slash'); refresh(); };
+      if (!Store.candidate()) openCandLogin(go, { title: `Ingresá para seguir a ${esc(name)}`, sub: 'Te avisamos acá y por WhatsApp cuando publique una búsqueda nueva.' }); else go();
+      return;
+    }
     const ap = e.target.closest('[data-apply-job]');
     if (ap) { e.preventDefault(); e.stopPropagation(); openApply(ap.dataset.applyJob); return; }
     if (e.target.closest('[data-close-sheet]')) { closeSheet(); return; }

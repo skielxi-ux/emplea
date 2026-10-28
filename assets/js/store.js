@@ -114,6 +114,8 @@ const Store = (() => {
   const KHR = 'emplea.hubreqs', KRF = 'emplea.referrals';
   // Claves de los avisos externos (función quitada): se borran al reiniciar
   const KEQ = 'emplea.extqueue', KES = 'emplea.extsources';
+  // Empresas y consultoras que sigue el candidato: [{ name, since }]
+  const KFO = 'emplea.follows';
   const KAL = 'emplea.alerts', KNT = 'emplea.notifs', KNS = 'emplea.notifseen', KNC = 'emplea.notifcleared';
   // Cuenta demo: talento@demo.com.ar / demo1234
   const DEMO_ACC = { 'talento@demo.com.ar': { name: 'Talento Norte', type: 'Consultora', pass: 'hbr2v10' } };
@@ -319,7 +321,7 @@ const Store = (() => {
     setCandidate(c) {
       const d = x => String(x || '').replace(/\D/g, '').slice(-10), prev = read('emplea.candlast', ''), cur = d(c.phone);
       if (prev && prev !== cur) {
-        [K.profile, K.contact, K.cvMeta, K.saved, KAL, KNT, KNS, KNC, KSEEN].forEach(k => localStorage.removeItem(k));
+        [K.profile, K.contact, K.cvMeta, K.saved, KAL, KNT, KNS, KNC, KSEEN, KFO].forEach(k => localStorage.removeItem(k));
         saved = [];
         this.delCv('last');
       }
@@ -354,6 +356,9 @@ const Store = (() => {
     referrals: () => read(KRF, []),
     referral(id) { return read(KRF, []).find(r => r.id === id) || null; },
     saveReferral(r) { const l = read(KRF, []); const i = l.findIndex(x => x.id === r.id); if (i >= 0) l[i] = { ...l[i], ...r }; else l.unshift(r); write(KRF, l); },
+    follows: () => read(KFO, []),
+    isFollowing(name) { return read(KFO, []).some(f => f.name === name); },
+    toggleFollow(name) { const l = read(KFO, []); const on = !l.some(f => f.name === name); write(KFO, on ? [{ name, since: new Date().toISOString() }, ...l] : l.filter(f => f.name !== name)); return on; },
     delReqs: () => read(KDR, []),
     // Personas borradas de toda la plataforma (para ocultar perfiles de ejemplo que vienen en el código)
     isErased(o) { const d10 = x => String(x || '').replace(/\D/g, '').slice(-10), em = x => String(x || '').trim().toLowerCase(); return read(KER, []).some(e => (e.phone && e.phone === d10(o.phone)) || (e.email && e.email === em(o.email))); },
@@ -402,7 +407,7 @@ const Store = (() => {
     setCvMeta: m => write(K.cvMeta, m),
 
     async reset() {
-      [...Object.values(K), 'emplea.seedrev', KP, KC, KT, KB, KPL, KCAND, KSEEN, KACC, KAL, KNT, KNS, KNC, KSP, 'emplea.featseed', 'emplea.ternabar.hidden', 'emplea.guide.hidden', 'emplea.ivseed', 'emplea.adminseed', KUL, KDR, KER, 'emplea.candlast', KPO, KHR, KRF, KEQ, KES].forEach(k => localStorage.removeItem(k));
+      [...Object.values(K), 'emplea.seedrev', KP, KC, KT, KB, KPL, KCAND, KSEEN, KACC, KAL, KNT, KNS, KNC, KSP, 'emplea.featseed', 'emplea.ternabar.hidden', 'emplea.guide.hidden', 'emplea.ivseed', 'emplea.adminseed', KUL, KDR, KER, 'emplea.candlast', KPO, KHR, KRF, KEQ, KES, KFO].forEach(k => localStorage.removeItem(k));
       Object.keys(localStorage).filter(k => (k.startsWith('emplea.repseed.') || k.startsWith('emplea.hubseed.'))).forEach(k => localStorage.removeItem(k));
       try { if (lf) await lf.clear(); } catch (e) { /* noop */ }
       location.hash = '#/';

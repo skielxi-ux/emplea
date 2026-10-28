@@ -49,12 +49,12 @@ const MODALITIES = ['Presencial', 'Híbrido', 'Remoto'];
 const JOB_TYPES = ['Full time', 'Part time', 'Por proyecto'];
 
 const COMPANIES = {
-  'Talento Norte':      { industry: 'Consultoría de RRHH', type: 'Consultora', color: '#0866FF', benefits: ['Obra social', 'Capacitaciones', 'Bono por desempeño'] },
-  'Selecta RRHH':       { industry: 'Consultoría de RRHH', type: 'Consultora', color: '#7B3FE4', benefits: ['Obra social', 'Plan de carrera'] },
-  'Bit Solutions':      { industry: 'Tecnología y software', type: 'Empresa',    color: '#0F9D8A', benefits: ['Home office', 'Clases de inglés', 'Semana extra de vacaciones'] },
-  'Grupo Andino':       { industry: 'Construcción e inmobiliaria', type: 'Empresa',    color: '#E2582B', benefits: ['Obra social', 'Comedor', 'Uniforme'] },
+  'Talento Norte':      { verified: true, industry: 'Consultoría de RRHH', type: 'Consultora', color: '#0866FF', benefits: ['Obra social', 'Capacitaciones', 'Bono por desempeño'] },
+  'Selecta RRHH':       { verified: true, industry: 'Consultoría de RRHH', type: 'Consultora', color: '#7B3FE4', benefits: ['Obra social', 'Plan de carrera'] },
+  'Bit Solutions':      { verified: true, industry: 'Tecnología y software', type: 'Empresa',    color: '#0F9D8A', benefits: ['Home office', 'Clases de inglés', 'Semana extra de vacaciones'] },
+  'Grupo Andino':       { verified: true, industry: 'Construcción e inmobiliaria', type: 'Empresa',    color: '#E2582B', benefits: ['Obra social', 'Comedor', 'Uniforme'] },
   'Logística Federal':  { industry: 'Logística y transporte', type: 'Empresa',    color: '#1F6FB2', benefits: ['Premio por presentismo', 'Obra social'] },
-  'Clínica del Parque': { industry: 'Salud', type: 'Empresa',    color: '#D23B6E', benefits: ['Obra social premium', 'Capacitación continua'] },
+  'Clínica del Parque': { verified: true, industry: 'Salud', type: 'Empresa',    color: '#D23B6E', benefits: ['Obra social premium', 'Capacitación continua'] },
   'Sabores del Sur':    { industry: 'Gastronomía y hotelería', type: 'Empresa',    color: '#C9821B', benefits: ['Comida en el turno', 'Propinas'] },
   'Agro Pampa':         { industry: 'Agro y alimentos', type: 'Empresa',    color: '#3B8C3A', benefits: ['Transporte', 'Obra social', 'Comedor'] },
   'Retail Plus':        { industry: 'Comercio y retail', type: 'Empresa',    color: '#E0245E', benefits: ['Descuentos en compras', 'Obra social'] },
