@@ -321,3 +321,8 @@ Nueva pestaña **Admin → Empresas**:
   - **Beneficios.**
 - **Borrador automático:** con el puesto se completan la descripción, las responsabilidades típicas del área (`AREA_RESP`), las calificaciones y las skills.
 - **El aviso** muestra "Responsabilidades" y "Calificaciones".
+
+## Rubros de las empresas
+- **Lista fija de rubros:** `INDUSTRIES` en data.js. Se elige de esa lista al cargar o editar una empresa, tanto desde el Admin como desde el perfil de la empresa.
+- **Rubros escritos a mano antes de la lista:** se reconocen por palabras clave (`INDUSTRY_KW`). Por ejemplo, "Construccion" pasa a "Construcción e inmobiliaria" y "Software" a "Tecnología y software".
+- **Filtro en "Empresas adheridas":** desplegable "Rubro" con "Todos los rubros" y la cantidad de empresas de cada uno. Los rubros sin empresas no aparecen.

@@ -41,6 +41,9 @@
   const LOCAL_IMG = { equipo: 'assets/img/hero-equipo.webp', p1: 'assets/img/pain-1.webp', p2: 'assets/img/pain-2.webp', p3: 'assets/img/pain-3.webp', p4: 'assets/img/pain-4.webp', p5: 'assets/img/pain-5.webp', p6: 'assets/img/pain-6.webp' };
   // Imagen de una nota o slide: 'lib:p2' (foto propia), data URL, ruta local o id de Unsplash
   const imgSrc = (id, w = 1600) => !id ? '' : id.startsWith('lib:') ? (LOCAL_IMG[id.slice(4)] || '') : /^(assets\/|data:|https?:)/.test(id) ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
+  // Rubro de la lista fija (los escritos a mano antes se reconocen por palabras clave)
+  const industryOf = t => { t = String(t || '').trim(); if (!t) return ''; if (INDUSTRIES.includes(t)) return t; const n = norm(t); const hit = INDUSTRY_KW.find(([rx]) => rx.test(n)); return hit ? hit[1] : 'Otro'; };
+  const industryOpts = sel => `<option value="">Elegí un rubro</option>${INDUSTRIES.map(x => `<option ${industryOf(sel) === x ? 'selected' : ''}>${x}</option>`).join('')}`;
   const companyOf = name => COMPANIES[name] || { type: 'Empresa', color: hashColor(name), benefits: [] };
   const finePointer = () => window.matchMedia('(pointer: fine)').matches;
   const digits = s => String(s || '').replace(/\D/g, '');
@@ -1101,12 +1104,15 @@
       const p = Store.coProfile(e.name), cmp = companyOf(e.name);
       const provs = Object.entries(e.provs).sort((a, b) => b[1] - a[1]).map(x => x[0]);
       const home = p.province || provs[0] || '';
-      return { ...e, type: p.type || e.type, provs, industry: p.industry || cmp.industry || '', city: p.city || '', home, nProv: new Set([home, ...provs].filter(Boolean)).size };
+      return { ...e, type: p.type || e.type, provs, industry: industryOf(p.industry || cmp.industry), city: p.city || '', home, nProv: new Set([home, ...provs].filter(Boolean)).size };
     });
   }
   function Employers() {
-    const F = S.emp || (S.emp = { q: '', prov: '', type: '', sort: 'activas', limit: 9 });
+    const F = S.emp || (S.emp = { q: '', prov: '', type: '', ind: '', sort: 'activas', limit: 9 });
+    if (F.ind === undefined) F.ind = '';
     const all = employersData();
+    const indCount = {}; all.forEach(e => { if (e.industry) indCount[e.industry] = (indCount[e.industry] || 0) + 1; });
+    const indOpts = INDUSTRIES.filter(x => indCount[x]);
     const provOpts = [...new Set(all.flatMap(e => [e.home, ...e.provs]).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
     const sel = (id, label, ic, opts, val) => `<div class="min-w-0"><label for="${id}" class="label max-lg:sr-only">${label}</label><div class="relative"><i class="ph ${ic} text-xl text-ink-mute absolute left-4 max-lg:left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
       <select id="${id}" data-dd class="input pl-12 max-lg:pl-10 max-lg:pr-8 bg-white truncate">${opts.map(([v, l]) => `<option value="${esc(v)}" ${v === val ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></div></div>`;
@@ -1128,6 +1134,7 @@
           <div class="grid grid-cols-2 lg:grid-cols-1 gap-3 lg:gap-5">
           ${sel('em-prov', 'Provincia', 'ph-map-pin', [['', 'Todo el país'], ...provOpts.map(p => [p, p])], F.prov)}
           ${sel('em-type', 'Tipo', 'ph-buildings', [['', 'Todas'], ['Empresa', 'Empresas'], ['Consultora', 'Consultoras']], F.type)}
+          <div class="col-span-2 lg:col-span-1">${sel('em-ind', 'Rubro', 'ph-briefcase', [['', 'Todos los rubros'], ...indOpts.map(x => [x, `${x} (${indCount[x]})`])], F.ind)}</div>
           </div>
           <button type="button" id="em-clear" class="btn btn-outline w-full justify-center"><i class="ph ph-x"></i>Limpiar filtros</button>
         </aside>
@@ -1146,7 +1153,7 @@
       ${siteFooter()}`;
     function draw() {
       const q = norm(F.q.trim());
-      let list = all.filter(e => (!q || norm(`${e.name} ${e.industry} ${e.type}`).includes(q)) && (!F.prov || e.home === F.prov || e.provs.includes(F.prov)) && (!F.type || e.type === F.type));
+      let list = all.filter(e => (!q || norm(`${e.name} ${e.industry} ${e.type}`).includes(q)) && (!F.prov || e.home === F.prov || e.provs.includes(F.prov)) && (!F.type || e.type === F.type) && (!F.ind || e.industry === F.ind));
       list.sort(F.sort === 'az' ? (a, b) => a.name.localeCompare(b.name, 'es') : (a, b) => b.active - a.active || a.name.localeCompare(b.name, 'es'));
       const shown = list.slice(0, F.limit);
       $('#em-count').textContent = list.length ? `Mostrando ${shown.length} de ${list.length} ${list.length === 1 ? 'empresa' : 'empresas'}` : 'Sin resultados';
@@ -1164,7 +1171,7 @@
           <i class="ph-bold ph-caret-right text-ink-mute text-lg shrink-0"></i>
         </a></li>`;
       }).join('') : `<li>${emptyState('ph-buildings', 'No encontramos empresas', 'Probá con otro nombre o sacá algún filtro.')}</li>`;
-      $('#em-clear').classList.toggle('max-lg:hidden', !(F.q.trim() || F.prov || F.type));
+      $('#em-clear').classList.toggle('max-lg:hidden', !(F.q.trim() || F.prov || F.type || F.ind));
       const rest = list.length - shown.length;
       $('#em-more').innerHTML = rest > 0 ? `<button type="button" id="em-more-btn" class="btn btn-outline">Ver más empresas (${rest})</button>` : '';
       const mb = $('#em-more-btn'); if (mb) mb.onclick = () => { F.limit += 9; draw(); };
@@ -1175,8 +1182,9 @@
         $('#em-q').addEventListener('input', e => { F.q = e.target.value; F.limit = 9; draw(); });
         $('#em-prov').onchange = e => { F.prov = e.target.value; F.limit = 9; draw(); };
         $('#em-type').onchange = e => { F.type = e.target.value; F.limit = 9; draw(); };
+        $('#em-ind').onchange = e => { F.ind = e.target.value; F.limit = 9; draw(); };
         $('#em-sort').onchange = e => { F.sort = e.target.value; draw(); };
-        $('#em-clear').onclick = () => { Object.assign(F, { q: '', prov: '', type: '', limit: 9 }); $('#em-q').value = ''; $('#em-prov').value = ''; $('#em-type').value = ''; ['#em-prov', '#em-type'].forEach(x => $(x)._ddSync && $(x)._ddSync()); draw(); };
+        $('#em-clear').onclick = () => { Object.assign(F, { q: '', prov: '', type: '', ind: '', limit: 9 }); $('#em-q').value = ''; $('#em-prov').value = ''; $('#em-type').value = ''; $('#em-ind').value = ''; ['#em-prov', '#em-type', '#em-ind'].forEach(x => $(x)._ddSync && $(x)._ddSync()); draw(); };
       }
     };
   }
@@ -5551,7 +5559,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             <textarea id="cp-desc" rows="4" maxlength="600" class="input h-auto py-3" placeholder="Ej: Somos una consultora de RRHH del NOA…">${esc(p.description || '')}</textarea>
             <p class="text-ink-mute text-[0.88rem] text-right mt-1"><span id="cp-desc-n">${(p.description || '').length}</span>/600</p></div>
           <div class="grid sm:grid-cols-2 gap-4">
-            ${field('cp-ind', 'Rubro', p.industry, 'placeholder="Ej: Recursos humanos" maxlength="40"')}
+            <div><label class="label" for="cp-ind">Rubro</label><select id="cp-ind" class="input">${industryOpts(p.industry || companyOf(co.name).industry)}</select></div>
             <div><label class="label" for="cp-size">Cantidad de empleados</label><select id="cp-size" class="input"><option value="">Elegí una opción</option>
               ${SIZES.map(x => `<option ${p.size === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div>
           </div>`)}
@@ -5803,7 +5811,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const pubClients = [...new Set(jobs.filter(j => j.client && j.showClient).map(j => j.client))];
     const links = [[toUrl(p.website), 'ph-globe', 'Sitio web'], [toUrl(p.linkedin, LINKEDIN), 'ph-linkedin-logo', 'LinkedIn'], [toUrl(p.instagram, INSTAGRAM), 'ph-instagram-logo', 'Instagram']].filter(l => l[0]);
     const wa = waLink(p.contactPhone, `Hola, vi el perfil de ${name} en +Humanos y quería consultar por sus búsquedas.`);
-    const meta = [type, p.industry, p.size ? `${p.size} empleados` : '', [p.city, p.province].filter(Boolean).join(', ')].filter(Boolean);
+    const meta = [type, industryOf(p.industry || cmp.industry), p.size ? `${p.size} empleados` : '', [p.city, p.province].filter(Boolean).join(', ')].filter(Boolean);
     const html = `
       ${own ? `<div class="bg-ink text-white"><div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-3 text-[0.95rem]">
         <i class="ph-fill ph-eye text-lg"></i><span class="flex-1">Así ven tu página los candidatos.</span>
@@ -7202,7 +7210,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     Object.entries(acc).forEach(([email, a]) => { const e = get(a.name, a.type); e.origin = 'registro'; e.email = email; e.since = a.createdAt || ''; e.type = a.type || e.type; });
     Object.entries(profs).forEach(([name, p]) => { if (p.manual) { const e = get(name, p.type); if (e.origin !== 'registro') { e.origin = 'manual'; e.since = p.addedAt || ''; } } });
     Store.jobs().filter(j => !j.external).forEach(j => { const e = get(j.company, j.companyType); e.total++; if (j.status === 'activa') e.active++; if (!e.last || j.postedAt > e.last) e.last = j.postedAt; if (!e.type) e.type = j.companyType; });
-    return Object.values(by).map(e => { const p = Store.coProfile(e.name); return { ...e, type: p.type || e.type || companyOf(e.name).type, industry: p.industry || '', city: p.city || '', province: p.province || '', hidden: !!p.hidden }; });
+    return Object.values(by).map(e => { const p = Store.coProfile(e.name); return { ...e, type: p.type || e.type || companyOf(e.name).type, industry: industryOf(p.industry || companyOf(e.name).industry), city: p.city || '', province: p.province || '', hidden: !!p.hidden }; });
   }
 
   function openCompanyEditor(name0, onDone) {
@@ -7218,7 +7226,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       <p class="label mt-4">Logo <span class="font-normal text-ink-mute">(opcional)</span></p>
       ${logoPicker('ce-logo', name0, st.logo)}
       <div class="grid sm:grid-cols-2 gap-x-3">
-        ${inp('ind', 'Rubro', p0.industry, 'Ej.: Salud, Construcción, RRHH')}
+        <div><label class="label mt-4" for="ce-ind">Rubro</label><select id="ce-ind" data-dd class="input">${industryOpts(p0.industry || (name0 ? companyOf(name0).industry : ''))}</select></div>
         <div><label class="label mt-4" for="ce-size">Tamaño</label><select id="ce-size" data-dd class="input"><option value="">Sin dato</option>${SIZES.map(s => `<option ${p0.size === s ? 'selected' : ''}>${s}</option>`).join('')}</select></div>
         <div><label class="label mt-4" for="ce-prov">Provincia</label><select id="ce-prov" data-dd class="input">${PROVINCES.map(pv => `<option ${(p0.province || 'Tucumán') === pv ? 'selected' : ''}>${pv}</option>`).join('')}</select></div>
         ${inp('city', 'Ciudad', p0.city, 'Ej.: San Miguel de Tucumán')}
