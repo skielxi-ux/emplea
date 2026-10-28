@@ -19,11 +19,8 @@ const Store = (() => {
     write(K.jobs, jobs);
   }
 
-  // Los avisos externos vencen solos (no hay una empresa que los cierre)
-  if (jobs.some(j => j.external && j.status === 'activa' && j.external.until && new Date(j.external.until) < new Date())) {
-    jobs.forEach(j => { if (j.external && j.status === 'activa' && j.external.until && new Date(j.external.until) < new Date()) j.status = 'vencida'; });
-    write(K.jobs, jobs);
-  }
+  // Ya no hay avisos externos: se quitan los que hayan quedado guardados
+  if (jobs.some(j => j.external)) { jobs = jobs.filter(j => !j.external); write(K.jobs, jobs); }
 
   const seedApp = a => {
     const c = SEED_CANDIDATES.find(x => x.id === a.cand) || {};
@@ -115,7 +112,7 @@ const Store = (() => {
   const KPO = 'emplea.posts';
   // Hub: pedidos "Busco perfil" entre selectores y recomendaciones de candidatos (con permiso del candidato)
   const KHR = 'emplea.hubreqs', KRF = 'emplea.referrals';
-  // Avisos externos (cargados con IA desde posts de redes y páginas de empresas): borradores para revisar y fuentes
+  // Claves de los avisos externos (función quitada): se borran al reiniciar
   const KEQ = 'emplea.extqueue', KES = 'emplea.extsources';
   const KAL = 'emplea.alerts', KNT = 'emplea.notifs', KNS = 'emplea.notifseen', KNC = 'emplea.notifcleared';
   // Cuenta demo: talento@demo.com.ar / demo1234
@@ -357,15 +354,6 @@ const Store = (() => {
     referrals: () => read(KRF, []),
     referral(id) { return read(KRF, []).find(r => r.id === id) || null; },
     saveReferral(r) { const l = read(KRF, []); const i = l.findIndex(x => x.id === r.id); if (i >= 0) l[i] = { ...l[i], ...r }; else l.unshift(r); write(KRF, l); },
-    extQueue() {
-      const l = read(KEQ, null); if (l) return l;
-      const seed = (typeof SEED_EXT_POSTS !== 'undefined' ? SEED_EXT_POSTS : []).map(x => ({ ...x, at: isoDaysAgo(x.daysAgo || 0, 2), status: 'nuevo' }));
-      write(KEQ, seed); return seed;
-    },
-    saveExt(d) { const l = this.extQueue(); const i = l.findIndex(x => x.id === d.id); if (i >= 0) l[i] = { ...l[i], ...d }; else l.unshift(d); write(KEQ, l); },
-    removeExt(id) { write(KEQ, this.extQueue().filter(x => x.id !== id)); },
-    extSources: () => read(KES, []),
-    saveExtSources: l => write(KES, l),
     delReqs: () => read(KDR, []),
     // Personas borradas de toda la plataforma (para ocultar perfiles de ejemplo que vienen en el código)
     isErased(o) { const d10 = x => String(x || '').replace(/\D/g, '').slice(-10), em = x => String(x || '').trim().toLowerCase(); return read(KER, []).some(e => (e.phone && e.phone === d10(o.phone)) || (e.email && e.email === em(o.email))); },

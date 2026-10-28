@@ -804,21 +804,6 @@ const SEED_HUB_REQS = [
   { id: 'h5', company: 'Clínica del Parque', jobId: 'j17', daysAgo: 5, note: 'Enfermero/a con matrícula para turno noche.' }
 ];
 
-// Avisos externos de ejemplo para la bandeja del Admin (posts inventados, como los que circulan en redes de Tucumán)
-const EXT_SOURCES = [
-  ['instagram', 'Instagram', 'ph-instagram-logo'], ['facebook', 'Facebook', 'ph-facebook-logo'], ['whatsapp', 'Grupo de WhatsApp', 'ph-whatsapp-logo'],
-  ['web', 'Página de una empresa', 'ph-globe'], ['organismo', 'Organismo público', 'ph-bank'], ['otro', 'Otro', 'ph-dots-three-circle']
-];
-const SEED_EXT_POSTS = [
-  { id: 'x1', src: 'instagram', author: '@panaderia.lavecinal', url: '', daysAgo: 0,
-    text: '📢 ¡BUSCAMOS AYUDANTE DE PANADERÍA! 🥖\nPara nuestra sucursal de Yerba Buena, Tucumán.\nTurno mañana de 6 a 13 hs.\nRequisitos:\n- Mayor de 18 años\n- Experiencia no excluyente\n- Ganas de aprender y buena onda\nEnviá tu CV por WhatsApp al 381 555-0142 📲' },
-  { id: 'x2', src: 'whatsapp', author: 'Grupo Empleos Tucumán', url: '', daysAgo: 1,
-    text: 'Se busca vendedora para local de ropa en el centro de San Miguel de Tucumán. Part time, turno tarde. Con experiencia en atención al público y manejo de caja. Enviar CV a rrhh.modasnorte.tuc@gmail.com' },
-  { id: 'x3', src: 'facebook', author: 'Distribuidora El Cardón', url: '', daysAgo: 1,
-    text: 'Distribuidora El Cardón incorpora CHOFER con carnet profesional para reparto en Banda del Río Salí y alrededores. Full time. Sueldo $1.100.000 + premios por presentismo. Interesados enviar CV a elcardon.seleccion@gmail.com o al WhatsApp 381 555-0177.' },
-  { id: 'x4', src: 'whatsapp', author: 'Grupo Changas y Empleos NOA', url: '', daysAgo: 2,
-    text: '🔥 TRABAJÁ DESDE TU CASA 🔥 Ganá $80.000 por día sin experiencia!! Solo tenés que abonar la inscripción de $15.000 y te enviamos el kit. Escribí al 381 555-0199' }
-];
 
 // Rubros de las empresas (lista fija para el filtro de "Empresas adheridas" y los formularios)
 const INDUSTRIES = ['Agro y alimentos', 'Comercio y retail', 'Construcción e inmobiliaria', 'Consultoría de RRHH', 'Educación', 'Energía y minería',
