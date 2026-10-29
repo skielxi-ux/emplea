@@ -334,6 +334,11 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Ir a una calle:** el botón de cada calle acerca la cámara a sus empresas.
 - **Búsquedas abiertas:** las empresas con búsquedas activas tienen una antena en el techo con una luz roja que titila.
 - **Zeppelin:** un dirigible de +Humanos da vueltas sobre la ciudad con un cartel que dice cuántas búsquedas abiertas hay en total.
+- **Avenida de las consultoras:** las cuentas de tipo Consultora van todas a "Av. Consultoras", la primera calle de la ciudad, en coral. Las empresas siguen en la calle de su rubro.
+- **Cuántas búsquedas:** sobre la antena hay un globito rojo con la cantidad de búsquedas abiertas.
+- **Búsqueda nueva:** si la empresa publicó en las últimas 48 h, salen fuegos artificiales de su edificio cada pocos segundos.
+- **Solo con búsquedas abiertas:** un interruptor en el panel apaga en gris los edificios sin búsquedas.
+- **Iluminar por puesto o área:** al escribir un puesto, área o skill, quedan en color solo las empresas que lo buscan, con un anillo amarillo que late, y el panel dice cuántas son.
 - **Modelos:** [City Builder Kit de Kenney](https://kenney.nl) (licencia CC0), en `assets/models/`. La paleta cálida está en `colormap.png` y se recolorea en el navegador por bloques para cada fachada.
 - **Navegación:** se arrastra para moverse, se pellizca o se usa la rueda para acercar, y con dos dedos o el botón derecho se gira. Tiene botones de acercar, alejar y ver toda la ciudad.
 - **Panel de calles:** cada calle es un botón que lleva hasta ella, y hay un buscador de empresas.

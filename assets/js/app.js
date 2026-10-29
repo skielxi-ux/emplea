@@ -7016,13 +7016,15 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     'Agro y alimentos': '#5E9E3A', 'Comercio y retail': '#E4572E', 'Construcción e inmobiliaria': '#C98516', 'Consultoría de RRHH': '#3B5BDB', 'Educación': '#7B4FD6',
     'Energía y minería': '#C2416B', 'Estudios contables y jurídicos': '#46607A', 'Finanzas y seguros': '#1F7A6B', 'Gastronomía y hotelería': '#D9488A', 'Gobierno y ONG': '#5C6B8A',
     'Industria y manufactura': '#8A5A3C', 'Logística y transporte': '#2F86C9', 'Marketing y comunicación': '#B04BC0', 'Salud': '#16A085', 'Servicios profesionales': '#6B7A2E',
-    'Tecnología y software': '#0E8FB0', 'Telecomunicaciones': '#4A4FB8', 'Turismo': '#D9792A', 'Otro': '#7A808C'
+    'Tecnología y software': '#0E8FB0', 'Telecomunicaciones': '#4A4FB8', 'Turismo': '#D9792A', 'Otro': '#7A808C', 'Consultoras': '#F2715A'
   };
   const indColor = ind => IND_COLOR[ind] || IND_COLOR['Otro'];
   function cityData() {
-    const by = {};
-    employersData().forEach(e => { const ind = e.industry || 'Otro'; (by[ind] = by[ind] || []).push(e); });
-    return INDUSTRIES.filter(i => by[i]).map(i => ({ ind: i, n: streetNo(i), cos: by[i].sort((a, b) => a.name.localeCompare(b.name, 'es')) }));
+    // Las consultoras tienen su propia avenida (arriba de todo); las empresas van a la calle de su rubro
+    const by = {}, cons = [], az = (a, b) => a.name.localeCompare(b.name, 'es');
+    employersData().forEach(e => { if (e.type === 'Consultora') return cons.push(e); const ind = e.industry || 'Otro'; (by[ind] = by[ind] || []).push(e); });
+    const list = INDUSTRIES.filter(i => by[i]).map(i => ({ ind: i, n: streetNo(i), name: `Calle ${streetNo(i)}`, sub: i, cos: by[i].sort(az) }));
+    return cons.length ? [{ ind: 'Consultoras', n: 0, name: 'Av. Consultoras', sub: 'Consultoras de RRHH', cos: cons.sort(az) }, ...list] : list;
   }
 
   function MapPage(params) {
@@ -7034,18 +7036,27 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <div class="p-4 pb-3">
           <div class="flex items-start gap-3">
             <div class="min-w-0 flex-1"><h1 class="text-[1.3rem] font-extrabold leading-tight">Ciudad +Humanos</h1>
-              <p class="text-ink-soft text-[0.92rem] leading-snug">Cada edificio es una empresa y cada calle, un rubro. Tocá un edificio para ver sus búsquedas.</p></div>
+              <p class="max-sm:hidden text-ink-soft text-[0.92rem] leading-snug">Cada edificio es una empresa y cada calle, un rubro. La luz roja que titila marca a quienes están buscando gente.</p></div>
             <button type="button" id="city-tog" class="sm:hidden icon-btn w-10 h-10 border border-line shrink-0" aria-expanded="false" aria-controls="city-panel" aria-label="Ver calles"><i class="ph-bold ph-caret-down"></i></button>
           </div>
           <div class="relative mt-3"><i class="ph ph-magnifying-glass text-lg text-ink-mute absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
             <input id="city-q" type="search" class="input h-11 pl-10" placeholder="Buscar una empresa" list="city-names" aria-label="Buscar una empresa en el mapa">
             <datalist id="city-names">${streets.flatMap(s => s.cos).map(e => `<option value="${esc(e.name)}">`).join('')}</datalist></div>
+          <div class="mt-2">
+            <div class="relative"><i class="ph ph-briefcase text-lg text-ink-mute absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+              <input id="city-job" type="search" class="input h-11 pl-10" placeholder="Iluminar por puesto o área" list="city-jobs" aria-label="Iluminar las empresas que buscan este puesto o área">
+              <datalist id="city-jobs">${[...new Set(Store.activeJobs().flatMap(j => [j.area, j.title]).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es')).map(t => `<option value="${esc(t)}">`).join('')}</datalist></div>
+            <button type="button" id="city-open" aria-pressed="false" class="group mt-2 w-full flex items-center gap-2.5 rounded-xl px-1 py-1 text-left text-[0.92rem] font-semibold">
+              <span class="relative w-10 h-6 rounded-full bg-line group-aria-pressed:bg-[#F2715A] transition-colors shrink-0"><span class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform group-aria-pressed:translate-x-4"></span></span>
+              Solo con búsquedas abiertas</button>
+          </div>
+          <p id="city-fmsg" class="hidden mt-2 text-[0.88rem] text-ink-soft"></p>
         </div>
         <div id="city-panel" class="max-sm:hidden border-t border-line max-h-[40vh] sm:max-h-[calc(100dvh-17rem)] overflow-y-auto overscroll-contain">
-          <p class="px-4 pt-3 text-[0.85rem] text-ink-mute">${streets.length} calle${streets.length === 1 ? '' : 's'}, ${total} empresa${total === 1 ? '' : 's'}</p>
+          <p class="px-4 pt-3 text-[0.85rem] text-ink-mute">${streets.length} calle${streets.length === 1 ? '' : 's'}, ${total} empresa${total === 1 ? '' : 's'} y consultora${total === 1 ? '' : 's'}</p>
           <ul class="p-2">${streets.map(s => `<li><button type="button" data-street="${s.n}" class="w-full flex items-center gap-3 rounded-xl px-2.5 py-2 text-left hover:bg-surface">
-            <span class="w-10 h-10 rounded-lg bg-navy text-white grid place-items-center font-bold shrink-0 leading-none text-[0.95rem]" style="background:${indColor(s.ind)}">${s.n}</span>
-            <span class="min-w-0 flex-1"><span class="block font-semibold leading-tight truncate">Calle ${s.n}</span><span class="block text-[0.88rem] text-ink-soft truncate">${esc(s.ind)}</span></span>
+            <span class="w-10 h-10 rounded-lg bg-navy text-white grid place-items-center font-bold shrink-0 leading-none text-[0.95rem]" style="background:${indColor(s.ind)}">${s.n || '<i class="ph-bold ph-users-three text-lg"></i>'}</span>
+            <span class="min-w-0 flex-1"><span class="block font-semibold leading-tight truncate">${esc(s.name)}</span><span class="block text-[0.88rem] text-ink-soft truncate">${esc(s.sub)}</span></span>
             <span class="text-[0.85rem] text-ink-mute shrink-0">${s.cos.length}</span></button></li>`).join('')}</ul>
         </div>
       </section>
@@ -7066,11 +7077,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           if (!e) { card.classList.add('hidden'); pan.classList.remove('max-sm:hidden'); return; }
           pan.classList.add('max-sm:hidden');
           const jobs = Store.activeJobs().filter(j => j.company === e.name).sort((a, b) => b.postedAt.localeCompare(a.postedAt));
-          const n = streetNo(e.industry || 'Otro'), loc = [e.city, e.home].filter(Boolean).join(', ');
+          const st = streets.find(s => s.cos.some(x => x.name === e.name)) || { name: '', sub: '' }, loc = [e.city, e.home].filter(Boolean).join(', ');
           card.innerHTML = `<div class="p-5">
             <div class="flex items-start gap-3">${logo(e.name, 'w-14 h-14 text-base')}
               <div class="min-w-0 flex-1"><p class="font-extrabold text-[1.2rem] leading-tight flex items-center gap-1.5"><span class="truncate">${esc(e.name)}</span>${vBadge(e.name)}</p>
-                <p class="text-ink-soft text-[0.92rem] mt-0.5">Calle ${n}, ${esc(e.industry || 'Otro')}</p>${loc ? `<p class="text-ink-mute text-[0.88rem]"><i class="ph ph-map-pin"></i> ${esc(loc)}</p>` : ''}</div>
+                <p class="text-ink-soft text-[0.92rem] mt-0.5">${esc(st.name)}, ${esc(st.n ? st.sub : 'Consultora de RRHH')}</p>${loc ? `<p class="text-ink-mute text-[0.88rem]"><i class="ph ph-map-pin"></i> ${esc(loc)}</p>` : ''}</div>
               <button type="button" id="cc-x" class="icon-btn w-9 h-9 -mr-1 -mt-1 shrink-0" aria-label="Cerrar"><i class="ph-bold ph-x"></i></button></div>
             <p class="mt-4 font-semibold">${jobs.length ? `${jobs.length} búsqueda${jobs.length === 1 ? '' : 's'} abierta${jobs.length === 1 ? '' : 's'}` : 'Sin búsquedas abiertas por ahora'}</p>
             ${jobs.length ? `<ul class="mt-2 divide-y divide-line rounded-xl border border-line">${jobs.slice(0, 4).map(j => `<li><a href="#/vacante?id=${j.id}" class="flex items-center gap-3 px-3.5 py-2.5 hover:bg-surface"><span class="min-w-0 flex-1"><span class="block font-semibold leading-tight truncate">${esc(j.title)}</span><span class="block text-[0.86rem] text-ink-mute truncate">${esc(j.city)}, ${esc(j.province)} · ${esc(j.modality)}</span></span><i class="ph-bold ph-caret-right text-ink-mute"></i></a></li>`).join('')}</ul>` : '<p class="text-ink-soft text-[0.95rem] mt-1">Seguila y te avisamos cuando publique una.</p>'}
@@ -7094,6 +7105,21 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           $('#city-load').remove();
           const want = params && params.get('e'); if (want && S.map3d) S.map3d.selectByName(want);
         }).catch(() => { $('#city-load').remove(); cityFallback(box, streets); });
+        // Filtros: solo empresas con búsquedas abiertas, y empresas que buscan un puesto o área
+        const F = { open: false, q: '' };
+        const applyF = () => {
+          const t = norm(F.q.trim()), msg = $('#city-fmsg');
+          const hits = t ? new Set(Store.activeJobs().filter(j => norm([j.title, j.area, ...(j.skills || []).map(x => x.n || x)].join(' ')).includes(t)).map(j => j.company)) : null;
+          const all = streets.flatMap(s => s.cos), open = new Set(Store.activeJobs().map(j => j.company));
+          const on = all.filter(e => (!F.open || open.has(e.name)) && (!hits || hits.has(e.name))).map(e => e.name);
+          if (S.map3d) S.map3d.filter(F.open || hits ? new Set(on) : null, !!hits);
+          msg.classList.toggle('hidden', !(F.open || hits));
+          msg.innerHTML = hits ? (on.length ? `<b class="text-ink">${on.length}</b> ${on.length === 1 ? 'empresa busca' : 'empresas buscan'} “${esc(F.q.trim())}”` : `Nadie busca “${esc(F.q.trim())}” por ahora`) : `<b class="text-ink">${on.length}</b> ${on.length === 1 ? 'empresa tiene' : 'empresas tienen'} búsquedas abiertas`;
+        };
+        $('#city-open').onclick = e => { F.open = !F.open; e.currentTarget.setAttribute('aria-pressed', String(F.open)); applyF(); };
+        const jq = $('#city-job'); let jt = 0;
+        jq.addEventListener('input', () => { clearTimeout(jt); jt = setTimeout(() => { F.q = jq.value; applyF(); }, 250); });
+        jq.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); F.q = jq.value; applyF(); jq.blur(); } });
         $$('[data-street]').forEach(b => b.onclick = () => { if (S.map3d) S.map3d.street(+b.dataset.street); if (innerWidth < 640) $('#city-tog').click(); });
         $('#city-zin').onclick = () => S.map3d && S.map3d.zoom(1.35);
         $('#city-zout').onclick = () => S.map3d && S.map3d.zoom(1 / 1.35);
@@ -7233,7 +7259,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       // Cartel de la calle en el borde de la maqueta
       const col = indColor(s.ind), curb = mat(col);
       [-S * 0.5 - M / 2, len + S * 0.5 + M / 2].forEach(x => {
-        const sg = label([`Calle ${s.n}`, s.ind], { bg: col, fg: ['#ffffff', 'rgba(255,255,255,.85)'], scale: 0.05 }); sg.position.set(x, 6, Z(r)); scene.add(sg); tags.push(sg);
+        const sg = label([s.name, s.sub], { bg: col, fg: ['#ffffff', 'rgba(255,255,255,.85)'], scale: 0.05 }); sg.position.set(x, 6, Z(r)); scene.add(sg); tags.push(sg);
         box3(mat(0x8F8780), x, 3, Z(r), 0.3, 6, 0.3, true);
       });
       for (let c = 0; c < cols; c++) if (!isAve(c)) [-1, 1].forEach(d => box3(curb, X(c), 0.55, Z(r) + d * 0.455 * S, S, 0.9, 0.5, false));
@@ -7245,14 +7271,14 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       'Energía y minería': ['building-garage', 'building-small-b'], 'Construcción e inmobiliaria': ['building-small-b', 'building-garage'],
       'Comercio y retail': ['building-small-d'], 'Gastronomía y hotelería': ['building-small-d', 'building-small-c'], 'Turismo': ['building-small-d', 'building-small-a'],
       'Tecnología y software': ['building-small-b', 'building-small-c'], 'Telecomunicaciones': ['building-small-b'], 'Finanzas y seguros': ['building-small-c', 'building-small-b'],
-      'Consultoría de RRHH': ['building-small-a', 'building-small-c'], 'Estudios contables y jurídicos': ['building-small-a'], 'Servicios profesionales': ['building-small-a', 'building-small-b'],
+      'Consultoría de RRHH': ['building-small-a', 'building-small-c'], 'Estudios contables y jurídicos': ['building-small-a'], 'Consultoras': ['building-small-c', 'building-small-a', 'building-small-b'], 'Servicios profesionales': ['building-small-a', 'building-small-b'],
       'Marketing y comunicación': ['building-small-a', 'building-small-d'], 'Educación': ['building-small-c', 'building-small-a'], 'Gobierno y ONG': ['building-small-c']
     };
     const ALL = ['building-small-a', 'building-small-b', 'building-small-c', 'building-small-d', 'building-garage'];
     const hash = t => { let h = 7; for (const ch of t) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
     const ring = new T.Mesh(new T.RingGeometry(0.56 * S, 0.68 * S, 40), new T.MeshBasicMaterial({ color: new T.Color(0xF2715A).convertSRGBToLinear(), transparent: true, opacity: 0.95, depthWrite: false }));
     ring.rotation.x = -Math.PI / 2; ring.visible = false; ring.renderOrder = 2; scene.add(ring);
-    const buildings = [], halos = [], openBy = {};
+    const hlGeo = new T.RingGeometry(0.5 * S, 0.8 * S, 40), buildings = [], halos = [], openBy = {}, fireworks = [], hlMat = new T.MeshBasicMaterial({ color: new T.Color(0xFFC531).convertSRGBToLinear(), transparent: true, opacity: 0.9, depthWrite: false });
     Store.activeJobs().forEach(j => { openBy[j.company] = (openBy[j.company] || 0) + 1; });
     const bulbGeo = new T.SphereGeometry(0.045, 12, 8), bulbMat = new T.MeshBasicMaterial({ color: 0xFF2D2D });
     const hc = document.createElement('canvas'); hc.width = hc.height = 64; { const x = hc.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,60,50,.9)'); gr.addColorStop(0.35, 'rgba(255,60,50,.35)'); gr.addColorStop(1, 'rgba(255,60,50,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); }
@@ -7272,8 +7298,27 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         const mast = new T.Mesh(new T.CylinderGeometry(0.012, 0.022, hgt, 6), mat(0x9A948C)); mast.position.y = hgt / 2; mast.castShadow = true;
         const bulb = new T.Mesh(bulbGeo, bulbMat); bulb.position.y = hgt + 0.03;
         const halo = new T.Sprite(haloMat); halo.position.y = hgt + 0.03; halo.scale.set(0.3, 0.3, 1); halo.userData.halo = true;
-        a.add(mast, bulb, halo); a.position.set(-0.22, kit.height[name] - 0.02, -0.18); g.add(a); halos.push(halo);
+        a.add(mast, bulb, halo); a.position.set(-0.22, kit.height[name] - 0.02, -0.18); g.add(a); halos.push(halo); halo.userData.b = g;
+        // Globito con la cantidad de búsquedas, arriba de la antena
+        const d = north ? 1 : -1, bc = document.createElement('canvas'), bx2 = bc.getContext('2d'), txt = String(openBy[e.name]);
+        bc.width = 128; bc.height = 128; bx2.fillStyle = '#FF2D2D'; bx2.beginPath(); bx2.arc(64, 60, 50, 0, Math.PI * 2); bx2.fill(); bx2.lineWidth = 8; bx2.strokeStyle = '#fff'; bx2.stroke();
+        bx2.fillStyle = '#fff'; bx2.font = `800 ${txt.length > 1 ? 52 : 62}px Poppins, Figtree, sans-serif`; bx2.textAlign = 'center'; bx2.textBaseline = 'middle'; bx2.fillText(txt, 64, 64);
+        const bt2 = new T.CanvasTexture(bc); if (T.sRGBEncoding) bt2.encoding = T.sRGBEncoding;
+        const badge = new T.Sprite(new T.SpriteMaterial({ map: bt2, depthTest: false, transparent: true })); badge.renderOrder = 11; badge.center.set(0.5, 0); badge.scale.set(3.4, 3.4, 1);
+        badge.position.set(X(c) - d * 0.22 * S, (kit.height[name] + 0.52) * S, Z(r) - d * 0.18 * S); scene.add(badge); tags.push(badge); g.userData.badge = badge;
+        // Fuegos artificiales si publicó una búsqueda en las últimas 48 h
+        const newest = Store.activeJobs().filter(j => j.company === e.name).reduce((m, j) => Math.max(m, new Date(j.postedAt).getTime() || 0), 0);
+        if (Date.now() - newest < 48 * 3600e3) {
+          const N = 42, pos = new Float32Array(N * 3), col = new Float32Array(N * 3), vel = [], pal = [0xFF5A3C, 0xFFC531, 0xFF7AB6, 0x6BD3FF, 0xFFFFFF].map(h => new T.Color(h));
+          for (let q = 0; q < N; q++) { const th = Math.random() * Math.PI * 2, ph = Math.random() * Math.PI * 0.5, sp = 13 + Math.random() * 8; vel.push([Math.cos(th) * Math.cos(ph) * sp, Math.sin(ph) * sp + 4, Math.sin(th) * Math.cos(ph) * sp]); const cc = pal[q % pal.length]; col.set([cc.r, cc.g, cc.b], q * 3); }
+          const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(pos, 3)); geo.setAttribute('color', new T.BufferAttribute(col, 3));
+          const pm = new T.PointsMaterial({ size: 9 * Math.min(devicePixelRatio || 1, 2), vertexColors: true, transparent: true, depthWrite: false, sizeAttenuation: false });
+          const pts = new T.Points(geo, pm); pts.frustumCulled = false; pts.renderOrder = 9; scene.add(pts);
+          fireworks.push({ pts, pm, vel, o: [X(c), (kit.height[name] + 1.4) * S, Z(r)], off: (h % 100) / 37, b: g });
+        }
       }
+      // Anillo que se ilumina cuando la empresa busca el puesto filtrado
+      const hl = new T.Mesh(hlGeo, hlMat); hl.rotation.x = -Math.PI / 2; hl.position.set(X(c), 0.4, Z(r)); hl.visible = false; scene.add(hl); g.userData.hl = hl;
     }));
     // Lotes libres: casas del barrio (sin ficha), plazas, árboles y una fuente en el centro
     const fill = ['grass-trees', 'grass-trees-tall', 'grass', 'pavement', 'grass-trees'], homes = ['building-small-a', 'building-small-b', 'building-small-d', 'building-small-c', 'building-small-a', 'building-garage'];
@@ -7311,7 +7356,18 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     zep.scale.setScalar(1.3); scene.add(zep);
     const zr = { x: len * 0.55 + 20, z: depth * 0.5 + 20 }, zy = 62;
     // Animación de la cámara
-    let anim = null, sel = null, raf = 0, alive = true, last = performance.now();
+    let anim = null, sel = null, raf = 0, alive = true, last = performance.now(), hlOn = false;
+    // Filtro: apaga en gris los edificios que no cumplen y prende un anillo en los que buscan el puesto
+    const grayMat = mat(0xDCD8D1);
+    const filter = (set, highlight) => {
+      hlOn = !!(set && highlight);
+      buildings.forEach(b => {
+        const on = !set || set.has(b.userData.e.name);
+        b.traverse(o => { if (!o.isMesh) return; if (!('m0' in o.userData)) o.userData.m0 = o.material; o.material = on ? o.userData.m0 : grayMat; });
+        b.userData.lb.material.opacity = on ? 1 : 0.35; if (b.userData.badge) b.userData.badge.visible = on;
+        b.userData.hl.visible = hlOn && on; b.userData.off = !on;
+      });
+    };
     const flyTo = (target, zoom, ms = 650) => { anim = { t0: performance.now(), ms, from: ctl.target.clone(), to: target.clone(), z0: cam.zoom, z1: zoom, off: cam.position.clone().sub(ctl.target) }; };
     const select = b => {
       if (sel) sel.position.y = 0;
@@ -7340,8 +7396,14 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         cam.zoom = anim.z0 + (anim.z1 - anim.z0) * ease; cam.updateProjectionMatrix(); if (k >= 1) anim = null;
       }
       cars.forEach(c => { c.x = (c.x + c.dir * c.speed * dt + len + S) % (len + S); c.g.position.x = c.x - S / 2; });
+      fireworks.forEach(f => {
+        const t = ((now / 1000 + f.off) % 3) , a = f.pts.geometry.attributes.position;
+        f.pts.visible = t < 1.5 && !f.b.userData.off; if (!f.pts.visible) return;
+        f.vel.forEach((v, q) => a.setXYZ(q, f.o[0] + v[0] * t, f.o[1] + v[1] * t - 9 * t * t, f.o[2] + v[2] * t)); a.needsUpdate = true; f.pm.opacity = 1 - t / 1.5;
+      });
+      if (hlOn) { const o = 0.55 + 0.4 * Math.sin(now / 200); hlMat.opacity = o; }
       const blink = (now % 1400) < 700, pul = 0.24 + 0.1 * Math.sin(now / 110);
-      bulbMat.color.setHex(blink ? 0xFF2D2D : 0x7A1E1E); halos.forEach(h => { h.visible = blink; h.scale.set(pul, pul, 1); });
+      bulbMat.color.setHex(blink ? 0xFF2D2D : 0x7A1E1E); halos.forEach(h => { h.visible = blink && !h.userData.b.userData.off; h.scale.set(pul, pul, 1); });
       const ang = now / 26000, px = cx + Math.cos(ang) * zr.x, pz = cz + Math.sin(ang) * zr.z;
       zep.position.set(px, zy + Math.sin(now / 1500) * 1.5, pz); zep.rotation.y = Math.atan2(-Math.cos(ang) * zr.z, -Math.sin(ang) * zr.x);
       if (sel) sel.position.y = Math.abs(Math.sin(now / 260)) * 1.2;
@@ -7354,6 +7416,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       select, zoom: f => flyTo(ctl.target, Math.min(ctl.maxZoom, Math.max(ctl.minZoom, cam.zoom * f)), 300),
       home: () => { select(null); flyTo(home, 1); },
       street: n => { const i = streets.findIndex(s => s.n === n); if (i >= 0) { const last = Math.max(0, Math.ceil(streets[i].cos.length / 2) - 1); select(null); flyTo(new T.Vector3((X(lotCols[0]) + X(lotCols[last])) / 2, 0, Z(i * 3 + 1)), focusZoom(Math.max(4, last + 3))); } },
+      filter,
       selectByName: name => { const b = buildings.find(x => x.userData.e.name === name); if (b) select(b); },
       destroy() {
         alive = false; cancelAnimationFrame(raf); removeEventListener('resize', onResize); if (ro) ro.disconnect(); ctl.dispose();
