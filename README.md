@@ -360,3 +360,19 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Reenviar, cancelar o quitar:** si está invitada, se puede reenviar (genera un link nuevo) o cancelar la invitación. Si está activa, "Quitar acceso" borra sus usuarios: no pueden ingresar más, pero el perfil y las búsquedas quedan como están.
 - **"¿Es tu empresa? Pedí acceso":** en la página pública de cada empresa sin cuenta. La persona deja nombre, cargo, email, celular y confirma que trabaja ahí. El pedido aparece arriba en Admin → Empresas (con un número en la pestaña). "Dar acceso" abre la invitación con sus datos ya cargados, y "Rechazar" lo cierra.
 - **Prototipo:** el link lleva adentro los datos del perfil para funcionar en otro dispositivo, y los pedidos de acceso se ven solo en el navegador donde se hicieron. En producción, el link lleva solo un código al azar que valida el servidor (ver SEGURIDAD.md).
+
+## Encuesta Laboral
+- **Dónde:** botón "Encuesta Laboral" en el pie (`#/encuesta`). Inspirada en la encuesta anual de UX Argentina.
+- **Quién responde:** cualquier persona que trabaje o busque trabajo, sin cuenta y de forma anónima. Tarda unos 5 minutos.
+- **Preguntas, en 4 pasos** (quien está sin trabajo salta del 1 al 4):
+  1. Trabajo: situación, área, rubro, tamaño de empresa, provincia, experiencia, modalidad y jornada.
+  2. Sueldo y beneficios: sueldo neto mensual, aumentos en los últimos 12 meses y beneficios.
+  3. Satisfacción: conformidad del 1 al 5, si piensa cambiar de trabajo y por qué.
+  4. Búsqueda: cómo consiguió su trabajo, cuánto tardó y qué le pesa más al elegir (hasta 3).
+- **Resultados en vivo en la misma página**, con filtro por provincia (Tucumán por defecto), área y experiencia:
+  - indicadores: respuestas, sueldo mediano, conformidad promedio y % que busca cambiar;
+  - gráficos de sueldo por área (mediana y rango medio), modalidad, aumentos, beneficios, conformidad, motivos para cambiar, canales, tiempo de búsqueda y prioridades;
+  - comparación "lo que se pide vs. lo que se cobra", con los datos de Pretensión salarial;
+  - descarga en CSV.
+- **Regla de privacidad:** con menos de 5 respuestas no se muestran sueldos.
+- **Demo:** trae 640 respuestas de ejemplo (`demo: true`) con montos ficticios. En producción, las respuestas van a la base de datos y se limita a una por persona.

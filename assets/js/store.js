@@ -107,6 +107,7 @@ const Store = (() => {
   const KCAND = 'emplea.cand', KSEEN = 'emplea.candseen', KACC = 'emplea.coaccounts';
   const KSP = 'emplea.spontcvs';
   const KSAL = 'emplea.salaries';
+  const KSV = 'emplea.surveys';
   const KINV = 'emplea.invites', KAR = 'emplea.accessreqs';
   const KUL = 'emplea.unlocks';
   const KDR = 'emplea.delreqs';
@@ -350,6 +351,10 @@ const Store = (() => {
     // Alertas de vacantes del candidato y avisos de Fedfu
     // CVs enviados desde "Enviar CV" (sin postularse a una vacante): van a "Toda la plataforma"
     spontCvs: () => read(KSP, []),
+    // Encuesta Laboral (anónima)
+    surveys: () => read(KSV, []),
+    addSurvey(x) { const l = read(KSV, []); l.unshift(x); write(KSV, l); },
+    seedSurveys(list) { const l = read(KSV, []); if (l.some(x => x.demo)) return; write(KSV, [...l, ...list]); },
     // Pretensiones salariales (anónimas: solo se usan agrupadas). ckey = celular del candidato, para que pueda editar la suya.
     salaries: () => read(KSAL, []),
     mySalary: ck => ck ? read(KSAL, []).find(x => x.ckey === ck) || null : null,

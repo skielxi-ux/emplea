@@ -914,7 +914,7 @@
     ['Facebook', 'ph-facebook-logo', 'https://www.facebook.com/emplea'],
     ['WhatsApp', 'ph-whatsapp-logo', 'https://wa.me/5493815550000']
   ];
-  const INFO_PATHS = ['/nosotros', '/faqs', '/terminos', '/privacidad', '/cafe', '/cafe/nota'];
+  const INFO_PATHS = ['/nosotros', '/faqs', '/terminos', '/privacidad', '/cafe', '/cafe/nota', '/encuesta'];
   function siteFooter() {
     const col = (t, links) => `<div><p class="font-display font-bold text-ink">${t}</p><ul class="mt-3 space-y-1">${links.map(([h, l, ic]) => `<li><a href="#${h}" class="flex items-center gap-2 min-h-[44px] py-1 text-ink-soft font-semibold hover:text-brand"><i class="ph-fill ${ic} text-brand text-[1.15rem] shrink-0" aria-hidden="true"></i><span class="min-w-0">${l}</span></a></li>`).join('')}</ul></div>`;
     return `<footer class="border-t border-line bg-white">
@@ -925,7 +925,7 @@
               <p class="mt-3 text-ink-soft max-w-xs">El portal de gestión para consultoras: publicá, calificá y presentá candidatos en un solo lugar.</p>
               <ul class="mt-5 flex gap-2" aria-label="Redes sociales">${SOCIAL.map(([n, ic, u]) => `<li><a href="${u}" target="_blank" rel="noopener" aria-label="${n} de +Humanos" title="${n}" class="w-11 h-11 rounded-full bg-surface text-ink grid place-items-center hover:bg-brand hover:text-white transition"><i class="ph-fill ${ic} text-[1.35rem]"></i></a></li>`).join('')}</ul>
             </div>
-            ${col('+Humanos', [['/nosotros', 'Nosotros', 'ph-hand-heart'], ['/empresas', 'Empresas adheridas', 'ph-buildings'], ['/cafe', 'Charla de café', 'ph-coffee'], ['/faqs', 'Preguntas frecuentes', 'ph-question']])}
+            ${col('+Humanos', [['/nosotros', 'Nosotros', 'ph-hand-heart'], ['/empresas', 'Empresas adheridas', 'ph-buildings'], ['/cafe', 'Charla de café', 'ph-coffee'], ['/encuesta', 'Encuesta Laboral', 'ph-chart-bar'], ['/faqs', 'Preguntas frecuentes', 'ph-question']])}
             ${col('Legal', [['/terminos', 'Términos y condiciones', 'ph-scroll'], ['/privacidad', 'Política de privacidad', 'ph-shield-check']])}
           </div>
           <div class="mt-10 pt-6 border-t border-line flex flex-col sm:flex-row gap-2 sm:items-center justify-between text-ink-mute text-[0.92rem]">
@@ -7854,6 +7854,245 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     });
   }
 
+  /* ================= ENCUESTA LABORAL =================
+     Abierta y anónima, para cualquier persona que trabaje o busque trabajo. Cuatro pasos: trabajo y sueldo, beneficios,
+     satisfacción y cómo se busca trabajo. Los resultados se muestran en la misma página y se actualizan con cada respuesta.
+     Prototipo: las respuestas quedan en este navegador (más unas de ejemplo). En producción van a la base de datos. */
+  const SV_ED = 2026, SV_CLOSE = '2026-12-31';
+  const SV_SIT = [['emp', 'En relación de dependencia'], ['ind', 'Independiente o monotributo'], ['busca', 'Sin trabajo, buscando']];
+  const SV_MOD = [['pres', 'Presencial'], ['hib', 'Híbrido'], ['rem', 'Remoto']];
+  const SV_MOD_C = { pres: '#16A085', hib: '#3B5BFD', rem: '#E0603A' };
+  const SV_BEN = ['Obra social o prepaga', 'Bono o premio', 'Capacitación', 'Home office', 'Comedor o viandas', 'Transporte o movilidad', 'Días extra de vacaciones', 'Ninguno'];
+  const SV_RAISE = ['Ninguno', '1', '2', '3', '4 o más'];
+  const SV_SAT = ['Nada conforme', 'Poco conforme', 'Más o menos', 'Conforme', 'Muy conforme'];
+  const SV_CHG = [['si', 'Sí, estoy buscando'], ['tal', 'Tal vez'], ['no', 'No']];
+  const SV_WHY = ['Mejor sueldo', 'Crecer profesionalmente', 'Mal ambiente laboral', 'Modalidad u horarios', 'Estabilidad', 'Otro motivo'];
+  const SV_CH = ['Recomendación o contactos', 'LinkedIn', 'Portales de empleo', 'Consultora de RRHH', 'Instagram o Facebook', 'Me presenté directamente', '+Humanos', 'Otro'];
+  const SV_TIME = ['Menos de 1 mes', '1 a 3 meses', '3 a 6 meses', 'Más de 6 meses'];
+  const SV_PRI = ['Sueldo', 'Estabilidad', 'Modalidad', 'Cercanía', 'Crecimiento', 'Buen ambiente', 'Beneficios', 'Horarios'];
+  const svLabel = (list, k) => (list.find(x => x[0] === k) || [, k])[1];
+
+  function surveySeed() {
+    if (Store.surveys().some(x => x.demo)) return;
+    const MULT = { tecnologia: 1.55, ingenieria: 1.45, arquitectura: 1.2, finanzas: 1.15, comex: 1.15, salud: 1.1, rrhh: 1.05, marketing: 1, ventas: 1, oficios: 1, administracion: 0.95, produccion: 0.95, logistica: 0.95, educacion: 0.9, atencion: 0.88, gastronomia: 0.85 };
+    const BASE = { sin: 700000, jr: 860000, ssr: 1180000, sr: 1650000 };
+    let seed = 41; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280, pick = a => a[Math.floor(rnd() * a.length)], wpick = (a, w) => { let r = rnd() * w.reduce((x, y) => x + y, 0); for (let i = 0; i < a.length; i++) { r -= w[i]; if (r <= 0) return a[i]; } return a[a.length - 1]; };
+    const provs = ['Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Salta', 'Jujuy', 'Santiago del Estero', 'Catamarca'];
+    const out = [];
+    for (let i = 0; i < 640; i++) {
+      const sit = wpick(['emp', 'ind', 'busca'], [70, 18, 12]), area = pick(AREAS).id, lv = wpick(['sin', 'jr', 'ssr', 'sr'], [12, 30, 33, 25]);
+      const mod = area === 'tecnologia' ? wpick(['pres', 'hib', 'rem'], [15, 40, 45]) : ['gastronomia', 'salud', 'oficios', 'produccion', 'logistica'].includes(area) ? wpick(['pres', 'hib', 'rem'], [90, 8, 2]) : wpick(['pres', 'hib', 'rem'], [58, 32, 10]);
+      const r = { id: 'svd' + i, demo: true, ed: SV_ED, at: new Date(Date.now() - rnd() * 75 * 864e5).toISOString(), sit, area, province: pick(provs) };
+      if (sit !== 'busca') {
+        const full = rnd() > 0.14, net = BASE[lv] * (MULT[area] || 1) * (0.86 + rnd() * 0.28) * (full ? 1 : 0.55) * (sit === 'ind' ? 1.08 : 1);
+        const sat = Math.max(0, Math.min(4, Math.round(1.6 + (net / 1.3e6) * 1.2 + (rnd() - 0.5) * 2.4)));
+        Object.assign(r, { title: '', industry: pick(INDUSTRIES), level: lv, size: pick(SIZES), mod, shift: full ? 'full' : 'part', net: Math.round(net / 10000) * 10000,
+          raises: wpick(SV_RAISE, [14, 26, 28, 20, 12]), benefits: SV_BEN.slice(0, 7).filter((b, k) => rnd() < [0.82, 0.38, 0.45, mod === 'pres' ? 0.05 : 0.7, 0.22, 0.2, 0.12][k]),
+          sat, change: sat <= 1 ? wpick(['si', 'tal', 'no'], [60, 30, 10]) : sat === 2 ? wpick(['si', 'tal', 'no'], [30, 45, 25]) : wpick(['si', 'tal', 'no'], [8, 30, 62]) });
+        if (!r.benefits.length) r.benefits = ['Ninguno'];
+        if (r.change !== 'no') r.why = wpick(SV_WHY, [48, 20, 9, 10, 8, 5]);
+      }
+      Object.assign(r, { channel: wpick(SV_CH, [34, 14, 16, 12, 10, 8, 3, 3]), took: wpick(SV_TIME, [22, 38, 24, 16]), pri: [...new Set([wpick(SV_PRI, [40, 18, 12, 8, 10, 6, 4, 2]), wpick(SV_PRI, [12, 18, 14, 10, 14, 14, 10, 8]), wpick(SV_PRI, [8, 12, 12, 14, 12, 16, 12, 14])])] });
+      out.push(r);
+    }
+    Store.seedSurveys(out);
+  }
+
+  // Formulario en 4 pasos
+  function openSurvey() {
+    const A = { sit: '', area: '', title: '', industry: '', level: '', size: '', province: 'Tucumán', mod: '', shift: 'full', net: '', raises: '', benefits: [], sat: -1, change: '', why: '', channel: '', took: '', pri: [] };
+    let step = 0;
+    const chips = (key, list, multi) => `<div class="flex flex-wrap gap-2">${list.map(o => { const [k, l] = Array.isArray(o) ? o : [o, o]; const on = multi ? A[key].includes(k) : A[key] === k; return `<button type="button" data-sv="${key}" data-v="${esc(String(k))}" ${multi ? 'data-multi' : ''} aria-pressed="${on}" class="chip h-auto min-h-10 py-2 text-left whitespace-normal ${on ? 'chip-on' : ''}">${esc(l)}</button>`; }).join('')}</div>`;
+    const q = (t, inner, hint = '') => `<fieldset class="mt-5"><legend class="label">${t}${hint ? ` <span class="font-normal text-ink-mute">${hint}</span>` : ''}</legend>${inner}</fieldset>`;
+    const sel = (id, ph, opts, cur) => `<select id="${id}" class="input"><option value="">${ph}</option>${opts.map(([v, l]) => `<option value="${esc(v)}" ${cur === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+    const works = () => A.sit && A.sit !== 'busca';
+    const STEPS = [
+      ['Tu trabajo', () => q('¿Cuál es tu situación?', chips('sit', SV_SIT)) + (works() ? `
+        <div class="grid sm:grid-cols-2 gap-x-3">
+          <div class="mt-5"><label class="label" for="sv-area">Área</label>${sel('sv-area', 'Elegí un área', AREAS.map(a => [a.id, a.label]), A.area)}</div>
+          <div class="mt-5"><label class="label" for="sv-ind">Rubro de la empresa</label>${sel('sv-ind', 'Elegí un rubro', INDUSTRIES.map(x => [x, x]), A.industry)}</div>
+          <div class="mt-5"><label class="label" for="sv-size">Tamaño de la empresa</label>${sel('sv-size', 'Cantidad de personas', SIZES.map(x => [x, x + ' personas']), A.size)}</div>
+          <div class="mt-5"><label class="label" for="sv-prov">Provincia</label>${sel('sv-prov', 'Provincia', PROVINCES.map(x => [x, x]), A.province)}</div>
+        </div>
+        ${q('Experiencia', chips('level', SAL_LV))}${q('Modalidad', chips('mod', SV_MOD))}${q('Jornada', chips('shift', SAL_SH))}` : A.sit === 'busca' ? `
+        <div class="grid sm:grid-cols-2 gap-x-3">
+          <div class="mt-5"><label class="label" for="sv-area">Área en la que buscás</label>${sel('sv-area', 'Elegí un área', AREAS.map(a => [a.id, a.label]), A.area)}</div>
+          <div class="mt-5"><label class="label" for="sv-prov">Provincia</label>${sel('sv-prov', 'Provincia', PROVINCES.map(x => [x, x]), A.province)}</div>
+        </div>` : '')],
+      ['Sueldo y beneficios', () => `<div class="mt-5"><label class="label" for="sv-net">Sueldo neto mensual</label>
+          <div class="relative"><span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-ink-soft">$</span><input id="sv-net" inputmode="numeric" class="input pl-9 text-[1.1rem] font-semibold" placeholder="0" value="${A.net ? Number(A.net).toLocaleString('es-AR') : ''}"></div>
+          <p class="mt-1.5 text-[0.88rem] text-ink-mute">Lo que cobrás en mano por mes. Si sos independiente, un promedio de lo que te queda.</p></div>
+        ${q('¿Cuántos aumentos tuviste en los últimos 12 meses?', chips('raises', SV_RAISE))}${q('¿Qué beneficios tenés?', chips('benefits', SV_BEN, true), '(marcá todos los que tengas)')}`],
+      ['Satisfacción', () => q('¿Qué tan conforme estás con tu trabajo?', `<div class="grid grid-cols-5 gap-2">${SV_SAT.map((l, i) => `<button type="button" data-sv="sat" data-v="${i}" aria-pressed="${A.sat === i}" class="rounded-2xl border ${A.sat === i ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:border-brand'} px-1 py-2.5 text-center"><span class="block text-[1.5rem] font-extrabold leading-none">${i + 1}</span><span class="block mt-1 text-[0.72rem] leading-tight">${l}</span></button>`).join('')}</div>`)
+        + q('¿Pensás cambiar de trabajo en los próximos 6 meses?', chips('change', SV_CHG)) + (A.change && A.change !== 'no' ? q('¿Por qué, principalmente?', chips('why', SV_WHY)) : '')],
+      ['Cómo se busca trabajo', () => q(works() ? '¿Cómo conseguiste tu trabajo actual?' : '¿Cómo conseguiste tu último trabajo?', chips('channel', SV_CH)) + q('¿Cuánto tardaste en conseguirlo?', chips('took', SV_TIME))
+        + q('¿Qué te pesa más al elegir un trabajo?', chips('pri', SV_PRI, true), '(hasta 3)')]
+    ];
+    const flow = () => works() ? [0, 1, 2, 3] : [0, 3];
+    const draw = c => {
+      const f = flow(), i = f.indexOf(step), [t, fn] = STEPS[step];
+      $('#sv-body', c).innerHTML = `<p class="text-[0.85rem] font-bold uppercase tracking-wide text-brand">Paso ${i + 1} de ${f.length}</p>
+        <div class="mt-2 h-1.5 rounded-full bg-surface overflow-hidden"><span class="block h-full rounded-full bg-brand transition-all" style="width:${(i + 1) / f.length * 100}%"></span></div>
+        <h2 class="mt-4 text-[1.5rem] font-extrabold leading-tight">${t}</h2>${fn()}<p id="sv-err" class="err hidden"></p>`;
+      $('#sv-back', c).classList.toggle('hidden', i === 0);
+      $('#sv-next', c).innerHTML = i === f.length - 1 ? '<i class="ph-bold ph-paper-plane-tilt"></i>Enviar respuestas' : 'Siguiente<i class="ph-bold ph-arrow-right"></i>';
+      const sc = c.querySelector('.sheet-scroll'); if (sc) sc.scrollTop = 0;
+      const net = $('#sv-net', c); if (net) net.oninput = () => { const d = digits(net.value).slice(0, 9); net.value = d ? Number(d).toLocaleString('es-AR') : ''; A.net = d; };
+      [['sv-area', 'area'], ['sv-ind', 'industry'], ['sv-size', 'size'], ['sv-prov', 'province']].forEach(([id, k]) => { const el = $('#' + id, c); if (el) el.onchange = () => { A[k] = el.value; }; });
+    };
+    const check = () => {
+      if (step === 0) { if (!A.sit) return 'Elegí tu situación.'; if (!A.area) return 'Elegí un área.'; if (works() && (!A.industry || !A.level || !A.mod)) return 'Completá rubro, experiencia y modalidad.'; }
+      if (step === 1) { const n = Number(A.net); if (!n) return 'Escribí tu sueldo neto mensual.'; if (n < 100000 || n > 50000000) return 'Revisá el monto: en pesos, por mes y en neto (por ejemplo, 1.100.000).'; if (!A.raises) return 'Elegí cuántos aumentos tuviste.'; if (!A.benefits.length) return 'Marcá tus beneficios (o "Ninguno").'; }
+      if (step === 2) { if (A.sat < 0) return 'Elegí qué tan conforme estás.'; if (!A.change) return 'Contanos si pensás cambiar de trabajo.'; }
+      if (step === 3) { if (!A.channel || !A.took) return 'Contanos cómo conseguiste trabajo y cuánto tardaste.'; if (!A.pri.length) return 'Elegí qué te pesa más (hasta 3).'; }
+      return '';
+    };
+    openSheet(`<div class="sheet-scroll flex-1 overflow-y-auto overscroll-contain px-5 sm:px-7 pt-3 pb-6"><div id="sv-body"></div>
+        <p class="mt-6 flex gap-2 text-[0.88rem] text-ink-mute"><i class="ph-fill ph-shield-check text-ok text-lg shrink-0"></i>Anónima: no pedimos nombre, teléfono ni email.</p></div>`
+      + sheetFoot('<button id="sv-back" class="btn btn-outline h-14 px-5 hidden"><i class="ph-bold ph-arrow-left"></i>Atrás</button><button id="sv-next" class="btn btn-primary h-14 flex-1"></button>'), c => {
+      draw(c);
+      c.addEventListener('click', e => {
+        const b = e.target.closest('[data-sv]'); if (!b) return;
+        const k = b.dataset.sv, v = k === 'sat' ? +b.dataset.v : b.dataset.v;
+        if (b.hasAttribute('data-multi')) {
+          let l = A[k].includes(v) ? A[k].filter(x => x !== v) : [...A[k], v];
+          if (k === 'benefits') l = v === 'Ninguno' ? (l.includes('Ninguno') ? ['Ninguno'] : []) : l.filter(x => x !== 'Ninguno');
+          if (k === 'pri' && l.length > 3) { toast('Elegí hasta 3', 'ph-info'); return; }
+          A[k] = l;
+        } else A[k] = v;
+        if (k === 'change' && v === 'no') A.why = '';
+        // vuelve a dibujar el paso conservando el scroll
+        const sc = c.querySelector('.sheet-scroll'), y = sc ? sc.scrollTop : 0; draw(c); if (sc) sc.scrollTop = y;
+      });
+      $('#sv-back', c).onclick = () => { const f = flow(); step = f[Math.max(0, f.indexOf(step) - 1)]; draw(c); };
+      $('#sv-next', c).onclick = () => {
+        const m = check(), er = $('#sv-err', c); if (m) { er.textContent = m; er.classList.remove('hidden'); er.scrollIntoView({ block: 'nearest' }); return; }
+        const f = flow(), i = f.indexOf(step);
+        if (i < f.length - 1) { step = f[i + 1]; draw(c); return; }
+        const r = { id: 'sv' + Date.now().toString(36), ed: SV_ED, at: new Date().toISOString(), sit: A.sit, area: A.area, province: A.province, channel: A.channel, took: A.took, pri: A.pri };
+        if (works()) Object.assign(r, { industry: A.industry, level: A.level, size: A.size, mod: A.mod, shift: A.shift, net: Number(A.net), raises: A.raises, benefits: A.benefits, sat: A.sat, change: A.change, why: A.why || undefined });
+        Store.addSurvey(r);
+        try { localStorage.setItem('emplea.survey.done', String(SV_ED)); } catch (x) { /* sin storage */ }
+        S.dirty = true;
+        setSheet(sheetScroll(`<div class="text-center py-8"><div class="success-pop w-16 h-16 mx-auto rounded-full bg-ok text-white grid place-items-center"><i class="ph-bold ph-check text-3xl"></i></div>
+          <h2 class="mt-4 text-[1.5rem] font-extrabold">¡Gracias por responder!</h2><p class="mt-2 text-ink-soft max-w-sm mx-auto">Tu respuesta ya suma a los resultados. Compartí la encuesta: cuantas más personas respondan, más confiables son los datos.</p></div>`)
+          + sheetFoot(`<a href="https://wa.me/?text=${encodeURIComponent(`Respondé la Encuesta Laboral ${SV_ED} de +Humanos: es anónima y tarda 5 minutos. ${baseUrl()}#/encuesta`)}" target="_blank" rel="noopener" class="btn btn-outline h-14 flex-1"><i class="ph-fill ph-whatsapp-logo text-xl text-[#25D366]"></i>Compartir</a><button data-close-sheet class="btn btn-primary h-14 flex-1">Ver resultados</button>`));
+      };
+    });
+  }
+
+  // Página pública: encuesta arriba, resultados abajo
+  function SurveyPage() {
+    surveySeed();
+    const F = S.svF || (S.svF = { prov: 'Tucumán', lv: '', area: '' });
+    const all = Store.surveys().filter(x => x.ed === SV_ED), done = (() => { try { return localStorage.getItem('emplea.survey.done') === String(SV_ED); } catch (e) { return false; } })();
+    const closeTxt = new Date(SV_CLOSE + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
+    const provs = [...new Set(all.map(x => x.province).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
+    const html = `<section class="bg-white border-b border-line">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16 grid md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] gap-10 items-center">
+          <div>
+            <span class="inline-flex items-center gap-2 rounded-full bg-mint text-ok px-3 py-1 font-semibold text-[0.92rem]"><span class="w-2 h-2 rounded-full bg-ok animate-pulse"></span>Edición ${SV_ED} abierta hasta el ${closeTxt}</span>
+            <h1 class="mt-4 text-[2.3rem] sm:text-[3.2rem] leading-[1.04] font-extrabold tracking-tight">Encuesta Laboral ${SV_ED}</h1>
+            <p class="mt-3 text-[1.15rem] text-ink-soft max-w-xl">Cómo trabajamos en Tucumán y el NOA: cuánto se cobra, qué beneficios hay, qué tan conformes estamos y cómo se consigue trabajo. Respondé en 5 minutos y mirá los resultados en vivo.</p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <button type="button" id="sv-start" class="btn ${done ? 'btn-outline' : 'btn-primary'} h-14 px-7 text-[1.05rem]"><i class="ph-bold ${done ? 'ph-arrow-counter-clockwise' : 'ph-clipboard-text'}"></i>${done ? 'Responder de nuevo' : 'Responder la encuesta'}</button>
+              <button type="button" id="sv-see" class="btn btn-outline h-14 px-6"><i class="ph-bold ph-chart-bar"></i>Ver resultados</button>
+            </div>
+            ${done ? '<p class="mt-3 text-ok font-semibold"><i class="ph-fill ph-check-circle"></i> Ya respondiste esta edición. ¡Gracias!</p>' : ''}
+          </div>
+          <ul class="grid grid-cols-2 gap-3">
+            ${[['ph-users-three', all.length.toLocaleString('es-AR'), 'respuestas'], ['ph-timer', '5 min', 'para responder'], ['ph-shield-check', '100 %', 'anónima'], ['ph-calendar-check', 'Anual', 'para comparar año a año']]
+              .map(([ic, n, l]) => `<li class="rounded-[22px] bg-surface p-5"><i class="ph-fill ${ic} text-2xl text-brand"></i><p class="mt-2 text-[1.7rem] font-extrabold leading-none">${n}</p><p class="mt-1 text-ink-soft">${l}</p></li>`).join('')}
+          </ul>
+        </div>
+      </section>
+      <section id="sv-res" class="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-14 scroll-mt-20">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div><h2 class="text-[1.9rem] font-extrabold tracking-tight leading-tight">Resultados en vivo</h2><p class="text-ink-soft mt-1">Se actualizan con cada respuesta. Montos netos por mes, en pesos.</p></div>
+        </div>
+        <div class="mt-5 flex flex-col gap-2.5 lg:flex-row lg:flex-wrap lg:items-center">
+          <select id="svf-prov" data-dd class="input bg-white lg:w-56" aria-label="Provincia"><option value="">Todo el NOA</option>${provs.map(p => `<option ${p === F.prov ? 'selected' : ''}>${esc(p)}</option>`).join('')}</select>
+          <select id="svf-area" data-dd class="input bg-white lg:w-64" aria-label="Área"><option value="">Todas las áreas</option>${AREAS.map(a => `<option value="${a.id}" ${a.id === F.area ? 'selected' : ''}>${esc(a.label)}</option>`).join('')}</select>
+          <div class="flex flex-wrap gap-2" role="group" aria-label="Experiencia">${[['', 'Toda experiencia'], ...SAL_LV].map(([k, l]) => `<button type="button" data-svl="${k}" aria-pressed="${F.lv === k}" class="chip h-9 px-3.5 text-[0.9rem] ${F.lv === k ? 'chip-on' : ''}">${l}</button>`).join('')}</div>
+        </div>
+        <div id="sv-charts" class="mt-6"></div>
+        <div class="mt-8 rounded-[22px] bg-white border border-line p-5 sm:p-6 grid md:grid-cols-[minmax(0,1fr)_auto] gap-4 items-center">
+          <div><h3 class="font-extrabold text-[1.15rem]">Cómo se hace</h3><p class="mt-1 text-ink-soft text-[0.95rem]">Es anónima y abierta a cualquier persona que trabaje o busque trabajo en el NOA. Mostramos medianas (el valor del medio) y no promedios, para que unos pocos sueldos muy altos no distorsionen. Con menos de 5 respuestas no mostramos sueldos.${all.some(x => x.demo) ? ' <b class="text-ink">Esta demo incluye respuestas de ejemplo.</b>' : ''}</p></div>
+          <button type="button" id="sv-csv" class="btn btn-outline btn-sm"><i class="ph-bold ph-download-simple"></i>Descargar datos (CSV)</button>
+        </div>
+      </section>
+      ${siteFooter()}`;
+    return {
+      title: 'Encuesta Laboral', html,
+      mount() {
+        $('#sv-start').onclick = openSurvey;
+        $('#sv-see').onclick = () => $('#sv-res').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const qt = (arr, p) => { const a = [...arr].sort((x, y) => x - y); if (!a.length) return 0; const i = (a.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i); return a[lo] + (a[hi] - a[lo]) * (i - lo); };
+        const pct = (n, t) => t ? Math.round(n / t * 100) : 0;
+        const card = (t, sub, inner, cls = '') => `<section class="rounded-[22px] bg-white border border-line p-5 sm:p-6 ${cls}"><h3 class="font-extrabold text-[1.15rem] leading-tight">${t}</h3>${sub ? `<p class="text-ink-mute text-[0.9rem] mt-0.5">${sub}</p>` : ''}<div class="mt-4">${inner}</div></section>`;
+        // Barras horizontales de porcentaje (una sola serie: color de marca; el valor va en texto)
+        const bars = (rows, total, tip = '') => `<ul class="space-y-2.5">${rows.map(([l, n]) => `<li title="${esc(l)}: ${pct(n, total)} % (${n} ${tip || 'respuestas'})"><div class="flex items-baseline justify-between gap-3 text-[0.95rem]"><span class="text-ink-soft truncate">${esc(l)}</span><span class="font-bold shrink-0">${pct(n, total)} %</span></div>
+          <div class="mt-1 h-2.5 rounded-full bg-surface"><span class="block h-full rounded-full bg-brand" style="width:${Math.max(n ? 2 : 0, pct(n, total))}%"></span></div></li>`).join('')}</ul>`;
+        const count = (L, f, keys) => keys.map(k => [k, L.filter(x => f(x) === k || (Array.isArray(f(x)) && f(x).includes(k))).length]).sort((a, b) => b[1] - a[1]);
+        const range = (rows, lo, hi) => { const sp = Math.max(1, hi - lo), P = v => ((v - lo) / sp * 92 + 4).toFixed(1); return `<ul class="space-y-3">${rows.map(g => `<li title="${esc(g.l)}: mediana ${pesos(g.med)} · rango medio ${moneyK(g.p25)} a ${moneyK(g.p75)} · ${g.n} respuestas">
+          <div class="flex items-baseline justify-between gap-3 text-[0.95rem]"><span class="text-ink-soft truncate">${esc(g.l)} <span class="text-ink-mute text-[0.82rem]">(${g.n})</span></span><span class="font-bold shrink-0">${pesos(g.med)}</span></div>
+          <div class="relative mt-1 h-3 rounded-full bg-surface"><span class="absolute top-0 h-3 rounded-full bg-brand/25" style="left:${P(g.p25)}%;width:${Math.max(1.5, P(g.p75) - P(g.p25))}%"></span><span class="absolute -top-1 w-1.5 h-5 rounded-full bg-brand" style="left:calc(${P(g.med)}% - 3px)"></span></div></li>`).join('')}</ul>
+          <p class="mt-3 text-[0.82rem] text-ink-mute flex items-center gap-3"><span class="inline-flex items-center gap-1.5"><span class="w-5 h-2.5 rounded-full bg-brand/25"></span>Rango medio (P25–P75)</span><span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-3.5 rounded-full bg-brand"></span>Mediana</span></p>`; };
+        const draw = () => {
+          const L = all.filter(x => (!F.prov || x.province === F.prov) && (!F.area || x.area === F.area) && (!F.lv || x.level === F.lv)), W = L.filter(x => x.net), el = $('#sv-charts');
+          if (L.length < 5) { el.innerHTML = emptyState('ph-chart-bar', 'Todavía hay pocas respuestas con estos filtros', 'Probá con todo el NOA o con todas las áreas. Y si todavía no respondiste, ¡sumá la tuya!'); return; }
+          const nets = W.map(x => x.net), med = qt(nets, 0.5), satAvg = W.length ? W.reduce((a, x) => a + x.sat + 1, 0) / W.length : 0, chg = pct(W.filter(x => x.change === 'si').length, W.length);
+          const tile = (n, l, ic) => `<div class="rounded-[20px] bg-white border border-line p-4 sm:p-5"><i class="ph-fill ${ic} text-xl text-brand"></i><p class="mt-2 text-[1.6rem] font-extrabold leading-none">${n}</p><p class="mt-1 text-ink-soft text-[0.92rem] leading-tight">${l}</p></div>`;
+          // sueldo por área (o por experiencia si se filtró un área)
+          const grp = (key, list) => list.map(([k, l]) => { const v = W.filter(x => x[key] === k).map(x => x.net); return { l, n: v.length, p25: qt(v, 0.25), med: qt(v, 0.5), p75: qt(v, 0.75) }; }).filter(g => g.n >= 5);
+          const byArea = F.area ? grp('level', SAL_LV) : grp('area', AREAS.map(a => [a.id, a.label])).sort((a, b) => b.med - a.med);
+          const lo = Math.min(...byArea.map(g => g.p25), Infinity), hi = Math.max(...byArea.map(g => g.p75), 0);
+          // modalidad apilada
+          const mods = SV_MOD.map(([k, l]) => [k, l, W.filter(x => x.mod === k).length]), mt = mods.reduce((a, m) => a + m[2], 0);
+          const modBar = `<div class="flex h-9 rounded-xl overflow-hidden gap-[2px] bg-white" role="img" aria-label="${mods.map(m => `${m[1]} ${pct(m[2], mt)} %`).join(', ')}">${mods.filter(m => m[2]).map(m => `<span title="${m[1]}: ${pct(m[2], mt)} %" class="h-full first:rounded-l-xl last:rounded-r-xl" style="width:${pct(m[2], mt)}%;background:${SV_MOD_C[m[0]]}"></span>`).join('')}</div>
+            <ul class="mt-3 grid grid-cols-3 gap-2">${mods.map(m => `<li><span class="flex items-center gap-1.5 text-ink-soft text-[0.9rem]"><span class="w-3 h-3 rounded-sm shrink-0" style="background:${SV_MOD_C[m[0]]}"></span>${m[1]}</span><span class="block text-[1.3rem] font-extrabold">${pct(m[2], mt)} %</span></li>`).join('')}</ul>`;
+          const satRows = SV_SAT.map((l, i) => [`${i + 1} · ${l}`, W.filter(x => x.sat === i).length]);
+          const satBar = `<div class="grid grid-cols-5 gap-2 items-end h-36">${satRows.map(([l, n]) => `<div class="flex flex-col items-center justify-end h-full" title="${esc(l)}: ${pct(n, W.length)} %"><span class="text-[0.85rem] font-bold">${pct(n, W.length)} %</span><span class="mt-1 w-full max-w-12 rounded-t-md bg-brand" style="height:${Math.max(2, pct(n, W.length) * 1.6)}%"></span></div>`).join('')}</div>
+            <div class="grid grid-cols-5 gap-2 mt-1.5 border-t border-line pt-1.5">${SV_SAT.map((l, i) => `<span class="text-center text-[0.75rem] text-ink-mute leading-tight">${i + 1}<br>${l}</span>`).join('')}</div>`;
+          // pretensión vs. sueldo actual (de "Pretensión salarial")
+          const want = Store.salaries().filter(x => (!F.prov || x.province === F.prov) && (!F.area || x.area === F.area) && (!F.lv || x.level === F.lv) && x.shift !== 'part').map(x => x.net), haveFull = W.filter(x => x.shift !== 'part').map(x => x.net);
+          const gap = want.length >= 5 && haveFull.length >= 5 ? Math.round((qt(want, 0.5) / qt(haveFull, 0.5) - 1) * 100) : null;
+          el.innerHTML = `<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              ${tile(L.length.toLocaleString('es-AR'), 'respuestas con estos filtros', 'ph-users-three')}
+              ${tile(W.length >= 5 ? pesos(med) : '—', 'sueldo neto mediano', 'ph-wallet')}
+              ${tile(W.length ? satAvg.toLocaleString('es-AR', { maximumFractionDigits: 1 }) + ' / 5' : '—', 'conformidad promedio', 'ph-smiley')}
+              ${tile(W.length ? chg + ' %' : '—', 'busca cambiar de trabajo', 'ph-arrows-left-right')}
+            </div>
+            <div class="mt-4 grid gap-4 lg:grid-cols-2">
+              ${card(F.area ? `Sueldo neto en ${esc(areaOf(F.area).label)}, por experiencia` : 'Sueldo neto por área', 'Mediana y rango medio. Solo áreas con 5 respuestas o más.', byArea.length ? range(byArea, lo, hi) : '<p class="text-ink-mute">Todavía hay pocas respuestas para comparar.</p>', 'lg:row-span-2')}
+              ${card('Modalidad de trabajo', `${mt} personas que trabajan`, modBar)}
+              ${card('Aumentos en los últimos 12 meses', '', bars(SV_RAISE.map(k => [k === 'Ninguno' ? 'Ninguno' : k === '1' ? '1 aumento' : `${k} aumentos`, W.filter(x => x.raises === k).length]), W.length))}
+              ${card('Beneficios más comunes', 'Porcentaje de personas que lo tienen', bars(count(W, x => x.benefits, SV_BEN), W.length))}
+              ${card('¿Qué tan conformes estamos?', 'Del 1 (nada) al 5 (muy conforme)', satBar)}
+              ${card('Por qué quieren cambiar de trabajo', 'Entre quienes buscan o lo están pensando', bars(count(W.filter(x => x.why), x => x.why, SV_WHY), W.filter(x => x.why).length))}
+              ${card('Cómo se consigue trabajo', 'Por dónde llegaron a su trabajo actual o último', bars(count(L, x => x.channel, SV_CH), L.length))}
+              ${card('Cuánto se tarda en conseguirlo', '', bars(SV_TIME.map(k => [k, L.filter(x => x.took === k).length]), L.length))}
+              ${card('Qué pesa más al elegir un trabajo', 'Cada persona eligió hasta 3', bars(count(L, x => x.pri, SV_PRI), L.length))}
+              ${gap !== null ? card('Lo que se pide vs. lo que se cobra', 'Jornada completa. Pretensión de candidatos de +Humanos frente a la encuesta.', `<div class="flex items-end gap-6"><div><p class="text-ink-mute text-[0.9rem]">Se cobra</p><p class="text-[1.5rem] font-extrabold">${pesos(qt(haveFull, 0.5))}</p></div><div><p class="text-ink-mute text-[0.9rem]">Se pide</p><p class="text-[1.5rem] font-extrabold">${pesos(qt(want, 0.5))}</p></div></div>
+                <p class="mt-3 text-ink-soft">Quienes buscan trabajo piden un <b class="text-ink">${Math.abs(gap)} % ${gap >= 0 ? 'más' : 'menos'}</b> de lo que se cobra hoy (medianas).</p>`) : ''}
+            </div>`;
+        };
+        draw();
+        $('#svf-prov').onchange = e => { F.prov = e.target.value; draw(); };
+        $('#svf-area').onchange = e => { F.area = e.target.value; draw(); };
+        $$('[data-svl]').forEach(b => b.onclick = () => { F.lv = b.dataset.svl; $$('[data-svl]').forEach(x => { const on = x === b; x.setAttribute('aria-pressed', on); x.classList.toggle('chip-on', on); }); draw(); });
+        $('#sv-csv').onclick = () => {
+          const qv = v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`;
+          const rows = [['Fecha', 'Situación', 'Área', 'Rubro', 'Experiencia', 'Tamaño', 'Provincia', 'Modalidad', 'Jornada', 'Neto mensual', 'Aumentos', 'Beneficios', 'Conformidad (1-5)', 'Cambiar de trabajo', 'Motivo', 'Cómo consiguió trabajo', 'Cuánto tardó', 'Qué pesa más'],
+            ...all.map(x => [(x.at || '').slice(0, 10), svLabel(SV_SIT, x.sit), areaOf(x.area).label, x.industry || '', salLv(x.level), x.size || '', x.province, x.mod ? svLabel(SV_MOD, x.mod) : '', x.shift ? salSh(x.shift) : '', x.net || '', x.raises || '', (x.benefits || []).join(', '), x.sat >= 0 ? x.sat + 1 : '', x.change ? svLabel(SV_CHG, x.change) : '', x.why || '', x.channel, x.took, (x.pri || []).join(', ')])];
+          const blob = new Blob(['﻿' + rows.map(r => r.map(qv).join(';')).join('\n')], { type: 'text/csv;charset=utf-8' });
+          const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `encuesta-laboral-${SV_ED}.csv`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+          toast('Descargaste los datos', 'ph-download-simple');
+        };
+      }
+    };
+  }
+
   /* ================= ADMIN: EMPRESAS Y CONSULTORAS ADHERIDAS =================
      Lista todo lo que aparece en "Empresas adheridas": cuentas registradas, perfiles cargados a mano por el admin
      y las cuentas de ejemplo. Desde acá se agrega una empresa a mano, se edita su perfil o se oculta de la página. */
@@ -8206,10 +8445,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const ROUTES = {
     '/': Welcome, '/chat': Chat, '/vacantes': Jobs, '/guardadas': Saved, '/postulaciones': MyApps, '/notificaciones': Notifs,
     '/empresa': CoHome, '/empresa/busquedas': CoDash, '/empresa/b': JobSpace, '/empresa/candidatos': CoCands,
-    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/acceso': AccessPage, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
+    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/acceso': AccessPage, '/encuesta': SurveyPage, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
     '/nosotros': AboutPage, '/vacante': JobPage, '/empresas': Employers, '/faqs': () => InfoPage('faqs'), '/terminos': () => InfoPage('terminos'), '/privacidad': () => InfoPage('privacidad'), '/admin': AdminPage, '/cafe': CafePage, '/cafe/nota': CafePost
   };
-  const TITLES = { '/admin': 'Admin', '/acceso': 'Acceso', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
+  const TITLES = { '/admin': 'Admin', '/acceso': 'Acceso', '/encuesta': 'Encuesta Laboral', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
 
   function render(opts = {}) {
     const { path, params } = parseHash();
