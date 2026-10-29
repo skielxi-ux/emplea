@@ -6991,10 +6991,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const own = new Set(), keep = x => (own.add(x), x);
       const baseMat = keep(new T.MeshLambertMaterial({ map: tex({ '3,7': '#E4DCCF' }) }));
       const WALLS = ['#F4E6CC', '#F7D3B1', '#EEDDC0', '#F3C7A2', '#EDE4D6', '#F6DCBE'], ROOFS = ['#CF6A43', '#BF5B3B', '#D97B4C', '#C4664A'], ACC = ['#86B26B', '#E2A33B', '#5E9FAE', '#D9785A'];
-      const variants = {};
+      const variants = {}, varMats = [];
+      // Mapa de luces: los vidrios (bloque 3,1 del colormap) brillan cálidos de noche
+      const winTex = (() => { const c2 = document.createElement('canvas'); c2.width = src.width; c2.height = src.height; const x2 = c2.getContext('2d'); x2.fillStyle = '#000'; x2.fillRect(0, 0, c2.width, c2.height); x2.fillStyle = '#FFC864'; x2.fillRect(32, 384, 32, 128); const t = new T.CanvasTexture(c2); t.flipY = false; if (T.sRGBEncoding) t.encoding = T.sRGBEncoding; t.magFilter = T.NearestFilter; t.minFilter = T.NearestFilter; t.generateMipmaps = false; return t; })();
       // Las casas del barrio (sin ficha) van en tonos apagados para que las empresas resalten
       const WALLS_M = ['#EEE8DE', '#E8DFD0', '#F1EBE2'], ROOFS_M = ['#DDB6A0', '#D3AE97', '#E2C3B0'];
-      const variant = (h, muted, roof) => { const k = (muted ? 'm' : '') + (roof || '') + h % (WALLS.length * ROOFS.length); if (!variants[k]) { const w = muted ? WALLS_M[h % 3] : WALLS[h % WALLS.length], r = muted ? ROOFS_M[Math.floor(h / 3) % 3] : ROOFS[Math.floor((h % (WALLS.length * ROOFS.length)) / WALLS.length) % ROOFS.length]; variants[k] = keep(new T.MeshLambertMaterial({ map: tex({ '3,7': roof || r, '2,9': w, '2,15': w, '3,11': w, '2,3': muted ? '#BFD2A8' : ACC[h % ACC.length] }) })); } return variants[k]; };
+      const variant = (h, muted, roof) => { const k = (muted ? 'm' : '') + (roof || '') + h % (WALLS.length * ROOFS.length); if (!variants[k]) { const w = muted ? WALLS_M[h % 3] : WALLS[h % WALLS.length], r = muted ? ROOFS_M[Math.floor(h / 3) % 3] : ROOFS[Math.floor((h % (WALLS.length * ROOFS.length)) / WALLS.length) % ROOFS.length]; variants[k] = keep(new T.MeshLambertMaterial({ map: tex({ '3,7': roof || r, '2,9': w, '2,15': w, '3,11': w, '2,3': muted ? '#BFD2A8' : ACC[h % ACC.length] }), emissiveMap: winTex, emissive: 0x000000 })); varMats.push(variants[k]); } return variants[k]; };
       const loader = new T.GLTFLoader(), models = {}, height = {}, front = {};
       Promise.all(Object.entries(KIT_FILES).map(([n, u]) => new Promise((ok, ko) => loader.load(u, g => {
         g.scene.traverse(o => { if (o.isMesh) { keep(o.geometry); o.material = baseMat; o.castShadow = n.startsWith('building') || n.includes('trees') || n.includes('fountain') || n.includes('lightposts'); o.receiveShadow = true; } });
@@ -7004,6 +7006,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         ok();
       }, undefined, ko)))).then(() => res({
         height, front, cube: keep(new T.BoxGeometry(1, 1, 1)), plane: keep(new T.PlaneGeometry(1, 1)), owns: x => own.has(x),
+        night(k) { varMats.forEach(m => m.emissive.setScalar(k)); },
         clone(n, h, muted, roof) { const o = models[n].clone(true); if (h !== undefined) { const m = variant(h, muted, roof); o.traverse(x => { if (x.isMesh) x.material = m; }); } return o; }
       }), rej);
     };
@@ -7063,6 +7066,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <button type="button" id="city-zin" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Acercar"><i class="ph-bold ph-plus"></i></button>
         <button type="button" id="city-zout" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Alejar"><i class="ph-bold ph-minus"></i></button>
         <button type="button" id="city-home" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Ver toda la ciudad"><i class="ph-bold ph-arrows-out"></i></button>
+        <button type="button" id="city-sky" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Día y noche: según la hora" title="Día y noche: según la hora"><i class="ph-bold ph-circle-half"></i></button>
       </div>
       <aside id="city-card" class="hidden absolute z-10 rounded-[22px] bg-white border border-line shadow-lift max-sm:left-3 max-sm:right-3 max-sm:bottom-3 sm:right-5 sm:bottom-5 sm:w-[23rem] max-sm:max-h-[62%] max-sm:overflow-y-auto overscroll-contain" aria-live="polite"></aside>
     </div>`;
@@ -7103,6 +7107,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           try { S.map3d = buildCity(box, streets, { onSelect: showCard, insets, kit }); } catch (er) { console.error(er); cityFallback(box, streets); }
           $('#city-load').remove();
           const want = params && params.get('e'); if (want && S.map3d) S.map3d.selectByName(want);
+          if (S.map3d) skyBtn(S.map3d.sky());
         }).catch(() => { $('#city-load').remove(); cityFallback(box, streets); });
         // Filtros: solo empresas con búsquedas abiertas, y empresas que buscan un puesto o área
         const F = { open: false, q: '' };
@@ -7123,6 +7128,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         $('#city-zin').onclick = () => S.map3d && S.map3d.zoom(1.35);
         $('#city-zout').onclick = () => S.map3d && S.map3d.zoom(1 / 1.35);
         $('#city-home').onclick = () => S.map3d && S.map3d.home();
+        // Día y noche: según la hora de Tucumán → siempre de día → siempre de noche
+        const SKYS = { auto: ['ph-circle-half', 'según la hora'], day: ['ph-sun', 'siempre de día'], night: ['ph-moon-stars', 'siempre de noche'] };
+        const skyBtn = m => { const b = $('#city-sky'); if (!b) return; b.innerHTML = `<i class="ph-bold ${SKYS[m][0]}"></i>`; b.setAttribute('aria-label', `Día y noche: ${SKYS[m][1]}`); b.title = `Día y noche: ${SKYS[m][1]}`; };
+        $('#city-sky').onclick = () => { if (!S.map3d) return; const nx = { auto: 'day', day: 'night', night: 'auto' }[S.map3d.sky()]; S.map3d.sky(nx); skyBtn(nx); toast(`Mapa ${SKYS[nx][1]}`, SKYS[nx][0]); };
         const q = $('#city-q');
         const find = () => { const t = norm(q.value.trim()); if (!t || !S.map3d) return; const e = streets.flatMap(s => s.cos).find(x => norm(x.name).includes(t)); if (e) { S.map3d.selectByName(e.name); q.blur(); } else toast('No encontramos esa empresa en el mapa', 'ph-magnifying-glass'); };
         q.addEventListener('change', find); q.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); find(); } });
@@ -7171,7 +7180,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     ctl.touches = { ONE: T.TOUCH.PAN, TWO: T.TOUCH.DOLLY_ROTATE }; ctl.mouseButtons = { LEFT: T.MOUSE.PAN, MIDDLE: T.MOUSE.DOLLY, RIGHT: T.MOUSE.ROTATE };
     ctl.update();
     // Luces cálidas
-    scene.add(new T.HemisphereLight(0xFFFBF2, 0xD9CBB8, 0.82));
+    const hemi = new T.HemisphereLight(0xFFFBF2, 0xD9CBB8, 0.82); scene.add(hemi);
     const sun = new T.DirectionalLight(0xFFF1DE, 0.62); sun.position.set(cx - 90, 170, cz + 120); sun.target.position.set(cx, 0, cz);
     sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0008;
     const sc = sun.shadow.camera, half = Math.max(len, depth) * 0.85 + 30; sc.left = -half; sc.right = half; sc.top = half; sc.bottom = -half; sc.near = 1; sc.far = 600;
@@ -7244,7 +7253,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       });
     }
     // Calles, avenidas y esquinas
-    const used = new Set(), key = (c, r) => c + ',' + r, tags = [];
+    const used = new Set(), key = (c, r) => c + ',' + r, tags = [], lamps = [];
     const roadY = 0.06 * S, white = mat(0xFFFFFF);
     streets.forEach((s, si) => {
       const r = si * 3 + 1;
@@ -7252,6 +7261,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         used.add(key(c, r));
         if (isAve(c)) { put('road-intersection', c, r); continue; }
         put(c % (BLK + 1) === 2 ? 'road-straight-lightposts' : 'road-straight', c, r, Math.PI / 2);
+        if (c % (BLK + 1) === 2) [-1, 1].forEach(d => lamps.push([X(c), Z(r) + d * 0.28 * S]));
         // Senda peatonal junto a cada esquina
         if (isAve(c - 1) || isAve(c + 1)) { const ex = X(c) + (isAve(c - 1) ? -0.36 : 0.36) * S; for (let j = -2; j <= 2; j++) box3(white, ex, roadY, Z(r) + j * 0.13 * S, 0.17 * S, 0.02, 0.065 * S); }
       }
@@ -7330,17 +7340,69 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       if (!busy && h % 100 < 60) { const g = kit.clone(homes[(h >>> 3) % homes.length], h >>> 5, true); g.position.set(X(c), 0, Z(r)); g.rotation.y = r % 3 === 0 ? 0 : Math.PI; g.scale.setScalar(S); scene.add(g); continue; }
       put(fill[(h >>> 4) % fill.length], c, r, (h % 4) * Math.PI / 2);
     }
-    // Autitos que recorren las calles
-    const CAR = [0xE4572E, 0x3B7DD8, 0xF2C14E, 0xFFFFFF, 0x6BAA75, 0x2E3A59].map(mat), glass = mat(0xCFE3F1), tire = mat(0x3A3533), cars = [];
-    streets.forEach((s, si) => [0, 1].forEach(j => {
-      const g = new T.Group(), m = CAR[(si * 2 + j) % CAR.length];
+    // Autitos por calles (eje x) y avenidas (eje z). Frenan en el semáforo en rojo.
+    const CAR = [0xE4572E, 0x3B7DD8, 0xF2C14E, 0xFFFFFF, 0x6BAA75, 0x2E3A59].map(mat), glass = mat(0xCFE3F1), tire = mat(0x3A3533), headM = new T.MeshBasicMaterial({ color: 0xFFF3C4 }), tailM = new T.MeshBasicMaterial({ color: 0xE23B2E }), cars = [];
+    const aves = [...Array(cols).keys()].filter(isAve).map(X), roads = streets.map((_, si) => Z(si * 3 + 1));
+    const makeCar = m => {
+      const g = new T.Group();
       const b = new T.Mesh(kit.cube, m); b.scale.set(3.4, 1.1, 1.7); b.position.y = 0.95; const t = new T.Mesh(kit.cube, glass); t.scale.set(1.8, 0.9, 1.5); t.position.set(-0.2, 1.9, 0);
       const t2 = new T.Mesh(kit.cube, m); t2.scale.set(1.9, 0.18, 1.6); t2.position.set(-0.2, 2.4, 0);
       [-1.1, 1.1].forEach(x => [-0.8, 0.8].forEach(z => { const w = new T.Mesh(kit.cube, tire); w.scale.set(0.8, 0.8, 0.3); w.position.set(x, 0.45, z); g.add(w); }));
-      g.add(b, t, t2); g.traverse(o => { if (o.isMesh) o.castShadow = true; });
-      const dir = j ? -1 : 1; g.rotation.y = dir > 0 ? 0 : Math.PI; g.position.set(0, roadY, Z(si * 3 + 1) + dir * 0.13 * S); scene.add(g);
-      cars.push({ g, dir, speed: 7 + (si * 3 + j * 5) % 5, x: (hash(s.ind + j) % (len + 1)) });
+      [-0.5, 0.5].forEach(z => { const hl = new T.Mesh(kit.cube, headM); hl.scale.set(0.1, 0.3, 0.35); hl.position.set(1.71, 1.05, z); const tl = new T.Mesh(kit.cube, tailM); tl.scale.set(0.1, 0.25, 0.3); tl.position.set(-1.71, 1.05, z); g.add(hl, tl); });
+      g.add(b, t, t2); g.traverse(o => { if (o.isMesh && o.material !== headM && o.material !== tailM) o.castShadow = true; }); scene.add(g); return g;
+    };
+    streets.forEach((s, si) => [0, 1].forEach(j => {
+      const dir = j ? -1 : 1, g = makeCar(CAR[(si * 2 + j) % CAR.length]); g.rotation.y = dir > 0 ? 0 : Math.PI;
+      cars.push({ g, axis: 'x', dir, lane: roads[si] + dir * 0.13 * S, min: -S / 2, span: len + S, speed: 7 + (si * 3 + j * 5) % 5, t: hash(s.ind + j) % (len + 1), stops: aves });
     }));
+    aves.forEach((ax, ai) => [0, 1].forEach(j => {
+      const dir = j ? -1 : 1, g = makeCar(CAR[(ai * 3 + j + 2) % CAR.length]); g.rotation.y = dir > 0 ? -Math.PI / 2 : Math.PI / 2;
+      cars.push({ g, axis: 'z', dir, lane: ax - dir * 0.13 * S, min: -S / 2, span: depth + S, speed: 7 + (ai * 2 + j * 3) % 4, t: (ai * 37 + j * 71) % (depth + 1), stops: roads });
+    }));
+    // Semáforos en cada esquina: uno para las calles y otro para las avenidas, que se alternan
+    const LT = { x: {}, z: {} }, LC = { r: 0xFF3B30, y: 0xFFC107, g: 0x2ED573 };
+    ['x', 'z'].forEach(a => ['r', 'y', 'g'].forEach(c => { LT[a][c] = new T.MeshBasicMaterial({ color: LC[c] }); }));
+    const poleM = mat(0x55524E), boxM = mat(0x2B2B30), lampGeo = new T.SphereGeometry(0.3, 10, 8);
+    const trafficLight = (x, z, a) => {
+      const g = new T.Group(); const p = new T.Mesh(kit.cube, poleM); p.scale.set(0.25, 5.2, 0.25); p.position.y = 2.6; p.castShadow = true;
+      const hd = new T.Mesh(kit.cube, boxM); hd.scale.set(0.9, 2.3, 0.9); hd.position.y = 5.9; hd.castShadow = true; g.add(p, hd);
+      ['r', 'y', 'g'].forEach((c, i) => [[0.47, 0], [0, 0.47]].forEach(([dx, dz]) => { const l = new T.Mesh(lampGeo, LT[a][c]); l.position.set(dx, 6.65 - i * 0.72, dz); g.add(l); }));
+      g.position.set(x, roadY, z); scene.add(g);
+    };
+    streets.forEach((_, si) => aves.forEach(ax => { trafficLight(ax + 0.43 * S, roads[si] + 0.43 * S, 'x'); trafficLight(ax - 0.43 * S, roads[si] - 0.43 * S, 'z'); }));
+    const CYCLE = 10, lightState = now => { const t = (now / 1000) % CYCLE; return { x: t < 4 ? 'g' : t < 5 ? 'y' : 'r', z: t < 5 ? 'r' : t < 9 ? 'g' : 'y' }; };
+    // Gente caminando por las veredas
+    const SHIRT = [0xE4572E, 0x3B7DD8, 0xF2C14E, 0x6BAA75, 0x9B59B6, 0xFFFFFF, 0x1B2550, 0xF2715A].map(mat), SKIN = [0xF1C7A5, 0xD9A27E, 0xA8714F, 0xFAD9C1].map(mat), PANTS = [0x2E3A59, 0x5B4636, 0x3A3533].map(mat);
+    const bodyGeo = new T.CylinderGeometry(0.42, 0.5, 1.3, 8), headGeo = new T.SphereGeometry(0.42, 10, 8), people = [];
+    streets.forEach((s, si) => [0, 1, 2, 3].forEach(j => {
+      const g = new T.Group(), hh = hash(s.ind + 'p' + j);
+      const legs = new T.Mesh(kit.cube, PANTS[hh % 3]); legs.scale.set(0.7, 0.9, 0.55); legs.position.y = 0.45;
+      const body = new T.Mesh(bodyGeo, SHIRT[(hh >>> 2) % SHIRT.length]); body.position.y = 1.55;
+      const head = new T.Mesh(headGeo, SKIN[(hh >>> 5) % SKIN.length]); head.position.y = 2.6;
+      g.add(legs, body, head); g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+      const side = j % 2 ? 1 : -1, dir = j < 2 ? 1 : -1; g.rotation.y = dir > 0 ? Math.PI / 2 : -Math.PI / 2; scene.add(g);
+      people.push({ g, dir, z: roads[si] + side * 0.425 * S, speed: 1.6 + (hh % 10) / 8, t: (hh >>> 3) % (len + S), ph: hh % 7 });
+    }));
+    cars.forEach(c => { const p = c.min + c.t; if (c.axis === 'x') c.g.position.set(p, roadY, c.lane); else c.g.position.set(c.lane, roadY, p); });
+    // Día y noche: sigue la hora de Tucumán (o el modo elegido). De noche se prenden ventanas, faroles y luces de los autos.
+    const lc = document.createElement('canvas'); lc.width = lc.height = 64; { const x = lc.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,226,150,1)'); gr.addColorStop(0.3, 'rgba(255,214,120,.55)'); gr.addColorStop(1, 'rgba(255,214,120,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); }
+    const lampTex = new T.CanvasTexture(lc), lampMat = new T.SpriteMaterial({ map: lampTex, transparent: true, depthWrite: false, opacity: 0 });
+    const poolMat = new T.MeshBasicMaterial({ map: lampTex, transparent: true, depthWrite: false, opacity: 0 }), poolGeo = new T.PlaneGeometry(1, 1);
+    lamps.forEach(([x, z]) => { const sp = new T.Sprite(lampMat); sp.position.set(x, 0.53 * S, z); sp.scale.set(8, 8, 1); scene.add(sp); const pool = new T.Mesh(poolGeo, poolMat); pool.rotation.x = -Math.PI / 2; pool.position.set(x, roadY + 0.05, z); pool.scale.set(0.75 * S, 0.75 * S, 1); scene.add(pool); });
+    const SKY = { day: new T.Color(0xFFFFFF), night: new T.Color(0x1A2140) }, HEMI = { day: new T.Color(0xFFFBF2), night: new T.Color(0x8C9BD6) }, HG = { day: new T.Color(0xD9CBB8), night: new T.Color(0x2A2F4A) }, SUN = { day: new T.Color(0xFFF1DE), night: new T.Color(0x9DB0FF) };
+    const tmp = new T.Color();
+    let skyMode = 'auto'; try { skyMode = localStorage.getItem('emplea.citySky') || 'auto'; } catch (e) {}
+    const autoNight = () => { const d = new Date(), h = ((d.getUTCHours() - 3 + 24) % 24) + d.getUTCMinutes() / 60, ss = (a, b, v) => Math.min(1, Math.max(0, (v - a) / (b - a))); return h < 12 ? 1 - ss(6, 7.5, h) : ss(19, 20.5, h); };
+    const skyTarget = () => skyMode === 'night' ? 1 : skyMode === 'day' ? 0 : autoNight();
+    let nk = skyTarget();
+    const applySky = k => {
+      renderer.setClearColor(tmp.copy(SKY.day).lerp(SKY.night, k)); box.style.background = '#' + tmp.getHexString();
+      hemi.intensity = 0.82 - 0.54 * k; hemi.color.copy(HEMI.day).lerp(HEMI.night, k); hemi.groundColor.copy(HG.day).lerp(HG.night, k);
+      sun.intensity = 0.62 - 0.5 * k; sun.color.copy(SUN.day).lerp(SUN.night, k);
+      kit.night(k * 0.95); lampMat.opacity = k; poolMat.opacity = k * 0.55; headM.color.setHex(k > 0.5 ? 0xFFF7D6 : 0xFFF3C4);
+      ground.material.opacity = 0.13 * (1 - k * 0.6); ao.material.opacity = 0.55 * (1 - k);
+    };
+    applySky(nk);
     // Zeppelin de +Humanos dando vueltas sobre la ciudad, con la cantidad de búsquedas abiertas
     const zep = new T.Group(), zBody = mat(0xF3EFE8), zAcc = mat(0xF2715A), zDark = mat(0x1B2550);
     { const body = new T.Mesh(new T.SphereGeometry(1, 28, 16), zBody); body.scale.set(17, 5.6, 5.6); body.castShadow = true; zep.add(body);
@@ -7394,7 +7456,16 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         ctl.target.lerpVectors(anim.from, anim.to, ease); cam.position.copy(ctl.target).add(anim.off);
         cam.zoom = anim.z0 + (anim.z1 - anim.z0) * ease; cam.updateProjectionMatrix(); if (k >= 1) anim = null;
       }
-      cars.forEach(c => { c.x = (c.x + c.dir * c.speed * dt + len + S) % (len + S); c.g.position.x = c.x - S / 2; });
+      const tk = skyTarget(); if (Math.abs(tk - nk) > 0.002) { nk += Math.sign(tk - nk) * Math.min(Math.abs(tk - nk), dt * 1.2); applySky(nk); }
+      const ls = lightState(now);
+      ['x', 'z'].forEach(a => ['r', 'y', 'g'].forEach(c => LT[a][c].color.setHex(ls[a] === c ? LC[c] : 0x3A3A3E)));
+      cars.forEach(c => {
+        let p = c.min + c.t;
+        if (ls[c.axis] !== 'g') { const front = p + c.dir * 1.7; const hold = c.stops.some(st => { const d = (st - c.dir * (0.5 * S + 1.2) - front) * c.dir; return d > 0 && d < 2.2; }); if (hold) return; }
+        c.t = (c.t + c.dir * c.speed * dt + c.span) % c.span; p = c.min + c.t;
+        if (c.axis === 'x') c.g.position.set(p, roadY, c.lane); else c.g.position.set(c.lane, roadY, p);
+      });
+      people.forEach(m => { m.t = (m.t + m.dir * m.speed * dt + len + S) % (len + S); m.g.position.set(m.t - S / 2, roadY + Math.abs(Math.sin(now / 160 + m.ph)) * 0.18, m.z); });
       fireworks.forEach(f => {
         const t = ((now / 1000 + f.off) % 3) , a = f.pts.geometry.attributes.position;
         f.pts.visible = t < 1.5 && !f.b.userData.off; if (!f.pts.visible) return;
@@ -7416,6 +7487,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       home: () => { select(null); flyTo(home, 1); },
       street: n => { const i = streets.findIndex(s => s.n === n); if (i >= 0) { const last = Math.max(0, Math.ceil(streets[i].cos.length / 2) - 1); select(null); flyTo(new T.Vector3((X(lotCols[0]) + X(lotCols[last])) / 2, 0, Z(i * 3 + 1)), focusZoom(Math.max(4, last + 3))); } },
       filter,
+      sky(mode) { if (mode) { skyMode = mode; try { localStorage.setItem('emplea.citySky', mode); } catch (e) {} } return skyMode; },
       selectByName: name => { const b = buildings.find(x => x.userData.e.name === name); if (b) select(b); },
       destroy() {
         alive = false; cancelAnimationFrame(raf); removeEventListener('resize', onResize); if (ro) ro.disconnect(); ctl.dispose();

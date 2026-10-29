@@ -339,6 +339,8 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Búsqueda nueva:** si la empresa publicó en las últimas 48 h, salen fuegos artificiales de su edificio cada pocos segundos.
 - **Solo con búsquedas abiertas:** un interruptor en el panel apaga en gris los edificios sin búsquedas.
 - **Iluminar por puesto o área:** al escribir un puesto, área o skill, quedan en color solo las empresas que lo buscan, con un anillo amarillo que late, y el panel dice cuántas son.
+- **Día y noche:** sigue la hora de Tucumán (anochece de 19 a 20:30 y amanece de 6 a 7:30). El botón con medio círculo, debajo del zoom, cambia entre "según la hora", "siempre de día" y "siempre de noche", y se recuerda en el navegador. De noche se prenden las ventanas, los faroles y las luces de los autos.
+- **Tránsito y gente:** autos por calles y avenidas, semáforos en cada esquina que se alternan cada 10 segundos (los autos frenan en rojo) y gente caminando por las veredas.
 - **Modelos:** [City Builder Kit de Kenney](https://kenney.nl) (licencia CC0), en `assets/models/`. La paleta cálida está en `colormap.png` y se recolorea en el navegador por bloques para cada fachada.
 - **Navegación:** se arrastra para moverse, se pellizca o se usa la rueda para acercar, y con dos dedos o el botón derecho se gira. Tiene botones de acercar, alejar y ver toda la ciudad.
 - **Panel de calles:** cada calle es un botón que lleva hasta ella, y hay un buscador de empresas.
