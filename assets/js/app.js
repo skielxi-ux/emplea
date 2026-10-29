@@ -541,7 +541,7 @@
      Izquierda: Inicio · Nosotros · Empresas. Derecha: Enviar CV · Empresa · Candidato. En pantallas chicas, menú. */
   function renderPublicTop(path) {
     const co = Store.company(), cand = Store.candidate(), nU = cand ? notifUnread() : 0;
-    const L = [['/', 'Inicio'], ['/nosotros', 'Nosotros'], ['/empresas', 'Empresas']];
+    const L = [['/', 'Inicio'], ['/nosotros', 'Nosotros'], ['/empresas', 'Empresas'], ['/mapa', 'Mapa']];
     const on = h => h === '/' ? path === '/' : path === h || (h === '/empresas' && path === '/e');
     const badge = n => n ? `<span class="min-w-5 h-5 px-1 rounded-full bg-bad text-white text-[0.7rem] font-bold grid place-items-center">${n}</span>` : '';
     const candItems = cand
@@ -1147,7 +1147,7 @@
         </aside>
         <section aria-labelledby="em-count" class="min-w-0">
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <p id="em-count" class="font-semibold text-ink-soft" aria-live="polite"></p>
+            <div class="flex items-center gap-3 flex-wrap"><p id="em-count" class="font-semibold text-ink-soft" aria-live="polite"></p><a href="#/mapa" class="btn btn-soft btn-sm"><i class="ph ph-map-trifold text-lg"></i>Ver en el mapa</a></div>
             <label class="flex items-center gap-2"><span class="sr-only">Ordenar por</span>
               <select id="em-sort" data-dd class="input h-11 py-0 w-auto bg-white font-semibold">
                 ${[['activas', 'Más búsquedas abiertas'], ['az', 'Nombre (A a Z)']].map(([v, l]) => `<option value="${v}" ${v === F.sort ? 'selected' : ''}>${l}</option>`).join('')}
@@ -5840,7 +5840,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             <div class="min-w-0 flex-1 sm:pb-1">
               <h1 class="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight leading-tight flex items-center gap-2 flex-wrap">${esc(name)}${vBadge(name, 'text-[0.8em]')}</h1>
               <p class="text-ink-soft mt-1">${meta.map(esc).join(' · ')}</p>
-              <p class="text-ink-mute mt-1 text-[0.95rem]"><b class="text-ink">${followersOf(name)}</b> seguidor${followersOf(name) === 1 ? '' : 'es'}${isVerified(name) ? ' · <span class="text-[#1D9BF0] font-semibold">Verificada por +Humanos</span>' : ''}</p>
+              <p class="text-ink-mute mt-1 text-[0.95rem]"><b class="text-ink">${followersOf(name)}</b> seguidor${followersOf(name) === 1 ? '' : 'es'}${isVerified(name) ? ' · <span class="text-[#1D9BF0] font-semibold">Verificada por +Humanos</span>' : ''} · <a href="#/mapa?e=${encodeURIComponent(name)}" class="font-semibold text-brand hover:underline"><i class="ph ph-map-trifold"></i> Ver en el mapa</a></p>
             </div>
             ${own ? '' : followBtn(name, 'h-12 px-6 shrink-0 self-start sm:self-end')}
             ${links.length ? `<div class="flex gap-2">${links.map(([u, ic, l]) => `<a href="${esc(u)}" target="_blank" rel="noopener" class="icon-btn border border-line w-12 h-12" aria-label="${l}" title="${l}"><i class="ph ${ic} text-2xl"></i></a>`).join('')}</div>` : ''}
@@ -6951,6 +6951,255 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     };
   }
 
+  /* ================= MAPA: CIUDAD DE EMPRESAS EN 3D =================
+     Cada edificio es una empresa o consultora; cada calle, un rubro (número fijo según la lista INDUSTRIES).
+     Three.js se carga recién al entrar a esta página. Tocar un edificio acerca la cámara y abre su ficha. */
+  const THREE_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  const ORBIT_SRC = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js';
+  const loadScript = src => new Promise((res, rej) => { if ([...document.scripts].some(s => s.src === src)) return res(); const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  let threeReady = null;
+  const loadThree = () => threeReady || (threeReady = loadScript(THREE_SRC).then(() => loadScript(ORBIT_SRC)).catch(e => { threeReady = null; throw e; }));
+  const streetNo = ind => INDUSTRIES.indexOf(ind) + 1;
+  function cityData() {
+    const by = {};
+    employersData().forEach(e => { const ind = e.industry || 'Otro'; (by[ind] = by[ind] || []).push(e); });
+    return INDUSTRIES.filter(i => by[i]).map(i => ({ ind: i, n: streetNo(i), cos: by[i].sort((a, b) => a.name.localeCompare(b.name, 'es')) }));
+  }
+
+  function MapPage(params) {
+    const streets = cityData(), total = streets.reduce((a, s) => a + s.cos.length, 0);
+    const html = `<div class="relative bg-[#E4E8F6] overflow-hidden" style="height:calc(100dvh - 4rem)">
+      <div id="city" class="absolute inset-0 touch-none" aria-label="Mapa 3D de empresas. Cada edificio es una empresa."></div>
+      <div id="city-load" class="absolute inset-0 grid place-items-center text-ink-soft font-semibold"><span><i class="ph ph-spinner animate-spin text-xl align-middle"></i> Armando la ciudad…</span></div>
+      <section class="absolute left-3 top-3 sm:left-5 sm:top-5 w-[calc(100%-1.5rem)] sm:w-[21rem] rounded-[20px] bg-white/95 backdrop-blur border border-line shadow-lift" aria-label="Calles">
+        <div class="p-4 pb-3">
+          <div class="flex items-start gap-3">
+            <div class="min-w-0 flex-1"><h1 class="text-[1.3rem] font-extrabold leading-tight">Ciudad +Humanos</h1>
+              <p class="text-ink-soft text-[0.92rem] leading-snug">Cada edificio es una empresa y cada calle, un rubro. Tocá un edificio para ver sus búsquedas.</p></div>
+            <button type="button" id="city-tog" class="sm:hidden icon-btn w-10 h-10 border border-line shrink-0" aria-expanded="false" aria-controls="city-panel" aria-label="Ver calles"><i class="ph-bold ph-caret-down"></i></button>
+          </div>
+          <div class="relative mt-3"><i class="ph ph-magnifying-glass text-lg text-ink-mute absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+            <input id="city-q" type="search" class="input h-11 pl-10" placeholder="Buscar una empresa" list="city-names" aria-label="Buscar una empresa en el mapa">
+            <datalist id="city-names">${streets.flatMap(s => s.cos).map(e => `<option value="${esc(e.name)}">`).join('')}</datalist></div>
+        </div>
+        <div id="city-panel" class="max-sm:hidden border-t border-line max-h-[40vh] sm:max-h-[calc(100dvh-17rem)] overflow-y-auto overscroll-contain">
+          <p class="px-4 pt-3 text-[0.85rem] text-ink-mute">${streets.length} calle${streets.length === 1 ? '' : 's'}, ${total} empresa${total === 1 ? '' : 's'}</p>
+          <ul class="p-2">${streets.map(s => `<li><button type="button" data-street="${s.n}" class="w-full flex items-center gap-3 rounded-xl px-2.5 py-2 text-left hover:bg-surface">
+            <span class="w-10 h-10 rounded-lg bg-navy text-white grid place-items-center font-bold shrink-0 leading-none text-[0.95rem]" style="background:#1B2550">${s.n}</span>
+            <span class="min-w-0 flex-1"><span class="block font-semibold leading-tight truncate">Calle ${s.n}</span><span class="block text-[0.88rem] text-ink-soft truncate">${esc(s.ind)}</span></span>
+            <span class="text-[0.85rem] text-ink-mute shrink-0">${s.cos.length}</span></button></li>`).join('')}</ul>
+        </div>
+      </section>
+      <div class="absolute right-3 sm:right-5 top-3 sm:top-5 flex flex-col gap-2 max-sm:top-auto max-sm:bottom-3">
+        <button type="button" id="city-zin" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Acercar"><i class="ph-bold ph-plus"></i></button>
+        <button type="button" id="city-zout" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Alejar"><i class="ph-bold ph-minus"></i></button>
+        <button type="button" id="city-home" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Ver toda la ciudad"><i class="ph-bold ph-arrows-out"></i></button>
+      </div>
+      <aside id="city-card" class="hidden absolute z-10 rounded-[22px] bg-white border border-line shadow-lift max-sm:left-3 max-sm:right-3 max-sm:bottom-3 sm:right-5 sm:bottom-5 sm:w-[23rem] max-sm:max-h-[62%] max-sm:overflow-y-auto overscroll-contain" aria-live="polite"></aside>
+    </div>`;
+    return {
+      title: 'Mapa de empresas', html,
+      mount() {
+        const box = $('#city'), card = $('#city-card');
+        $('#city-tog').onclick = e => { const p = $('#city-panel'), open = p.classList.toggle('max-sm:hidden'); e.currentTarget.setAttribute('aria-expanded', String(!open)); e.currentTarget.innerHTML = `<i class="ph-bold ${open ? 'ph-caret-down' : 'ph-caret-up'}"></i>`; };
+        const showCard = e => {
+          const pan = document.querySelector('[aria-label="Calles"]');
+          if (!e) { card.classList.add('hidden'); pan.classList.remove('max-sm:hidden'); return; }
+          pan.classList.add('max-sm:hidden');
+          const jobs = Store.activeJobs().filter(j => j.company === e.name).sort((a, b) => b.postedAt.localeCompare(a.postedAt));
+          const n = streetNo(e.industry || 'Otro'), loc = [e.city, e.home].filter(Boolean).join(', ');
+          card.innerHTML = `<div class="p-5">
+            <div class="flex items-start gap-3">${logo(e.name, 'w-14 h-14 text-base')}
+              <div class="min-w-0 flex-1"><p class="font-extrabold text-[1.2rem] leading-tight flex items-center gap-1.5"><span class="truncate">${esc(e.name)}</span>${vBadge(e.name)}</p>
+                <p class="text-ink-soft text-[0.92rem] mt-0.5">Calle ${n}, ${esc(e.industry || 'Otro')}</p>${loc ? `<p class="text-ink-mute text-[0.88rem]"><i class="ph ph-map-pin"></i> ${esc(loc)}</p>` : ''}</div>
+              <button type="button" id="cc-x" class="icon-btn w-9 h-9 -mr-1 -mt-1 shrink-0" aria-label="Cerrar"><i class="ph-bold ph-x"></i></button></div>
+            <p class="mt-4 font-semibold">${jobs.length ? `${jobs.length} búsqueda${jobs.length === 1 ? '' : 's'} abierta${jobs.length === 1 ? '' : 's'}` : 'Sin búsquedas abiertas por ahora'}</p>
+            ${jobs.length ? `<ul class="mt-2 divide-y divide-line rounded-xl border border-line">${jobs.slice(0, 4).map(j => `<li><a href="#/vacante?id=${j.id}" class="flex items-center gap-3 px-3.5 py-2.5 hover:bg-surface"><span class="min-w-0 flex-1"><span class="block font-semibold leading-tight truncate">${esc(j.title)}</span><span class="block text-[0.86rem] text-ink-mute truncate">${esc(j.city)}, ${esc(j.province)} · ${esc(j.modality)}</span></span><i class="ph-bold ph-caret-right text-ink-mute"></i></a></li>`).join('')}</ul>` : '<p class="text-ink-soft text-[0.95rem] mt-1">Seguila y te avisamos cuando publique una.</p>'}
+            <div class="mt-4 flex flex-wrap gap-2">
+              <a href="#/e?n=${encodeURIComponent(e.name)}" class="btn btn-primary btn-sm flex-1 justify-center">${jobs.length > 4 ? `Ver las ${jobs.length} búsquedas` : 'Ver su página'}</a>
+              ${followBtn(e.name, 'btn-sm')}
+            </div></div>`;
+          card.classList.remove('hidden');
+          $('#cc-x', card).onclick = () => { if (S.map3d) S.map3d.select(null); };
+        };
+        loadThree().then(() => {
+          if (!$('#city')) return;
+          const insets = () => {
+            const r = box.getBoundingClientRect(), pan = document.querySelector('[aria-label="Calles"]'), cd = $('#city-card');
+            const ins = { l: 0, r: 0, t: 0, b: 0 }; if (!pan) return ins; const p = pan.getBoundingClientRect();
+            if (r.width >= 640) { ins.l = p.right - r.left; if (cd && !cd.classList.contains('hidden')) ins.r = r.right - cd.getBoundingClientRect().left; }
+            else { ins.t = p.bottom - r.top; if (cd && !cd.classList.contains('hidden')) ins.b = r.bottom - cd.getBoundingClientRect().top; }
+            return ins;
+          };
+          try { S.map3d = buildCity(box, streets, { onSelect: showCard, insets }); } catch (er) { cityFallback(box, streets); }
+          $('#city-load').remove();
+          const want = params && params.get('e'); if (want && S.map3d) S.map3d.selectByName(want);
+        }).catch(() => { $('#city-load').remove(); cityFallback(box, streets); });
+        $$('[data-street]').forEach(b => b.onclick = () => { if (S.map3d) S.map3d.street(+b.dataset.street); if (innerWidth < 640) $('#city-tog').click(); });
+        $('#city-zin').onclick = () => S.map3d && S.map3d.zoom(1.35);
+        $('#city-zout').onclick = () => S.map3d && S.map3d.zoom(1 / 1.35);
+        $('#city-home').onclick = () => S.map3d && S.map3d.home();
+        const q = $('#city-q');
+        const find = () => { const t = norm(q.value.trim()); if (!t || !S.map3d) return; const e = streets.flatMap(s => s.cos).find(x => norm(x.name).includes(t)); if (e) { S.map3d.selectByName(e.name); q.blur(); } else toast('No encontramos esa empresa en el mapa', 'ph-magnifying-glass'); };
+        q.addEventListener('change', find); q.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); find(); } });
+      }
+    };
+  }
+
+  // Sin WebGL (o sin conexión para cargar el 3D): la misma ciudad como lista
+  function cityFallback(box, streets) {
+    box.classList.remove('touch-none');
+    box.innerHTML = `<div class="h-full overflow-y-auto pt-[15rem] sm:pt-6 sm:pl-[24rem] px-4 pb-6"><p class="text-ink-soft mb-3">No pudimos cargar el mapa en 3D en este dispositivo. Estas son las calles:</p>
+      ${streets.map(s => `<section class="mb-4"><h2 class="font-extrabold">Calle ${s.n} <span class="font-semibold text-ink-soft">${esc(s.ind)}</span></h2>
+      <ul class="mt-2 grid sm:grid-cols-2 gap-2">${s.cos.map(e => `<li><a href="#/e?n=${encodeURIComponent(e.name)}" class="flex items-center gap-3 rounded-xl bg-white border border-line p-3">${logo(e.name, 'w-10 h-10 text-[0.75rem]')}<span class="font-semibold flex items-center gap-1">${esc(e.name)}${vBadge(e.name)}</span></a></li>`).join('')}</ul></section>`).join('')}</div>`;
+  }
+
+  function buildCity(box, streets, opts) {
+    const T = window.THREE;
+    const W = () => box.clientWidth, H = () => box.clientHeight;
+    const renderer = new T.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setSize(W() || 300, H() || 300);
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
+    renderer.setClearColor(new T.Color(0xE4E8F6)); if (T.sRGBEncoding) renderer.outputEncoding = T.sRGBEncoding;
+    box.appendChild(renderer.domElement);
+    const scene = new T.Scene();
+    // Medidas de la ciudad
+    const GAP = 30, LOT = 13, BW = 9, BH = 10, ROAD = 8, START = 14;
+    const maxN = Math.max(1, ...streets.map(s => Math.ceil(s.cos.length / 2)));
+    const len = START + maxN * LOT + 10, depth = Math.max(1, streets.length) * GAP;
+    const cx = len / 2 - 4, cz = (streets.length - 1) * GAP / 2;
+    // Cámara isométrica
+    const cam = new T.OrthographicCamera(-1, 1, 1, -1, -1000, 2000);
+    const fitSize = () => Math.max(len * 0.9, depth * 0.75 + 30) * (W() < 640 ? 0.85 : 0.8);
+    // El centro de la vista se corre para que los paneles (calles y ficha) no tapen la ciudad
+    const setFrustum = () => {
+      const a = (W() || 1) / (H() || 1), s = fitSize(), ins = opts.insets ? opts.insets() : { l: 0, r: 0, t: 0, b: 0 };
+      const wpp = s / (H() || 1) / (cam.zoom || 1), ox = (ins.l - ins.r) / 2 * wpp, oy = (ins.t - ins.b) / 2 * wpp;
+      cam.left = -s * a / 2 - ox; cam.right = s * a / 2 - ox; cam.top = s / 2 + oy; cam.bottom = -s / 2 + oy; cam.updateProjectionMatrix();
+    };
+    setFrustum();
+    cam.position.set(cx + 120, 120, cz + 120); cam.lookAt(cx, 0, cz);
+    const ctl = new T.OrbitControls(cam, renderer.domElement);
+    ctl.target.set(cx, 0, cz); ctl.enableDamping = true; ctl.dampingFactor = 0.12; ctl.screenSpacePanning = false;
+    ctl.minZoom = 0.6; ctl.maxZoom = 4.5; ctl.minPolarAngle = 0.55; ctl.maxPolarAngle = 1.05;
+    ctl.touches = { ONE: T.TOUCH.PAN, TWO: T.TOUCH.DOLLY_ROTATE }; ctl.mouseButtons = { LEFT: T.MOUSE.PAN, MIDDLE: T.MOUSE.DOLLY, RIGHT: T.MOUSE.ROTATE };
+    ctl.update();
+    // Luces
+    scene.add(new T.HemisphereLight(0xffffff, 0xC9D2EE, 0.95));
+    const sun = new T.DirectionalLight(0xffffff, 0.55); sun.position.set(cx - 60, 120, cz + 80); sun.target.position.set(cx, 0, cz);
+    sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+    const sc = sun.shadow.camera; sc.left = -len; sc.right = len; sc.top = depth + 40; sc.bottom = -depth - 40; sc.far = 400;
+    scene.add(sun, sun.target);
+    // Suelo
+    const mat = c => new T.MeshLambertMaterial({ color: new T.Color(c).convertSRGBToLinear() });
+    const ground = new T.Mesh(new T.PlaneGeometry(len + 600, depth + 600), mat(0xE4E8F6)); ground.rotation.x = -Math.PI / 2; ground.position.set(cx, -0.05, cz); ground.receiveShadow = true; scene.add(ground);
+    const blockGeo = new T.BoxGeometry(1, 1, 1);
+    const add = (g, m, x, y, z, sx, sy, sz, shadow) => { const o = new T.Mesh(g, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); if (shadow) { o.castShadow = true; o.receiveShadow = true; } scene.add(o); return o; };
+    // Carteles con texto (canvas → textura)
+    const label = (lines, o = {}) => {
+      const cv = document.createElement('canvas'), k = 2, padX = 22, lh = o.big ? 46 : 34;
+      const ctx = cv.getContext('2d'); const fonts = lines.map((l, i) => `${i === 0 ? 700 : 500} ${(i === 0 ? (o.big ? 38 : 26) : 22)}px Figtree, Poppins, sans-serif`);
+      let w = 0; lines.forEach((l, i) => { ctx.font = fonts[i]; w = Math.max(w, ctx.measureText(l).width + (i === 0 && o.check ? 34 : 0)); });
+      cv.width = (w + padX * 2) * k; cv.height = (lh * lines.length + 22) * k; ctx.scale(k, k);
+      const cw = cv.width / k, ch = cv.height / k, r = 14;
+      ctx.fillStyle = o.bg || '#ffffff'; ctx.beginPath(); ctx.moveTo(r, 0); ctx.arcTo(cw, 0, cw, ch, r); ctx.arcTo(cw, ch, 0, ch, r); ctx.arcTo(0, ch, 0, 0, r); ctx.arcTo(0, 0, cw, 0, r); ctx.fill();
+      if (!o.bg) { ctx.strokeStyle = '#E3E6EF'; ctx.lineWidth = 2; ctx.stroke(); }
+      lines.forEach((l, i) => { ctx.font = fonts[i]; ctx.fillStyle = o.fg ? o.fg[i] || o.fg[0] : (i === 0 ? '#1B2550' : '#6B7090'); ctx.textBaseline = 'middle'; ctx.fillText(l, padX, 11 + lh * i + lh / 2);
+        if (i === 0 && o.check) { const x = padX + ctx.measureText(l).width + 16, y = 11 + lh / 2; ctx.fillStyle = '#1D9BF0'; ctx.beginPath(); ctx.arc(x, y, 12, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x - 1.5, y + 5); ctx.lineTo(x + 6.5, y - 5); ctx.stroke(); } });
+      const tex = new T.CanvasTexture(cv); tex.anisotropy = 4; if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
+      const sp = new T.Sprite(new T.SpriteMaterial({ map: tex, depthTest: false, transparent: true })); sp.renderOrder = 10;
+      const s = (o.scale || 0.06); sp.scale.set(cw * s, ch * s, 1); sp.center.set(0.5, 0); return sp;
+    };
+    // Fachada con ventanas e inicial de la empresa
+    const facade = (name, color) => {
+      const cv = document.createElement('canvas'); cv.width = 256; cv.height = 288; const x = cv.getContext('2d');
+      x.fillStyle = '#F7F8FC'; x.fillRect(0, 0, 256, 288);
+      x.fillStyle = '#C9D6F2'; for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) x.fillRect(22 + c * 56, 120 + r * 50, 38, 32);
+      x.fillStyle = color; x.beginPath(); x.roundRect ? x.roundRect(78, 22, 100, 80, 16) : x.rect(78, 22, 100, 80); x.fill();
+      x.fillStyle = '#fff'; x.font = '700 40px Figtree, Poppins, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillText(name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase(), 128, 64);
+      const t = new T.CanvasTexture(cv); if (T.sRGBEncoding) t.encoding = T.sRGBEncoding; return t;
+    };
+    const roadMat = mat(0xB9C2DC), walkMat = mat(0xFAFBFE), lineMat = mat(0xFFFFFF), roofMat = mat(0xD5DDF2), sideMat = mat(0xF4F6FC), selRoof = mat(0xF2715A), lotMat = mat(0xF0F2FA);
+    const treeTop = mat(0x9FD3B8), trunk = mat(0xC8B8A6), coneGeo = new T.ConeGeometry(1, 1, 7), cylGeo = new T.CylinderGeometry(1, 1, 1, 6);
+    const tree = (x, z, s = 1) => { add(cylGeo, trunk, x, 0.6 * s, z, 0.25 * s, 1.2 * s, 0.25 * s, true); add(coneGeo, treeTop, x, 2.4 * s, z, 1.3 * s, 2.8 * s, 1.3 * s, true); };
+    const buildings = [];
+    streets.forEach((s, si) => {
+      const z = si * GAP;
+      add(blockGeo, roadMat, cx, 0.1, z, len + 14, 0.2, ROAD, false).receiveShadow = true;
+      add(blockGeo, walkMat, cx, 0.22, z - ROAD / 2 - 1, len + 14, 0.44, 2, false).receiveShadow = true;
+      add(blockGeo, walkMat, cx, 0.22, z + ROAD / 2 + 1, len + 14, 0.44, 2, false).receiveShadow = true;
+      for (let x = -2; x < len + 4; x += 6) add(blockGeo, lineMat, x, 0.22, z, 2.8, 0.02, 0.35, false);
+      // Número pintado en la calle y cartel
+      const plate = label([`${s.n}`], { bg: '#1B2550', fg: ['#ffffff'], scale: 0.09 }); plate.position.set(-3, 0.4, z); scene.add(plate);
+      add(cylGeo, mat(0x8F99B8), 6, 2.6, z - ROAD / 2 - 1.6, 0.14, 5.2, 0.14, true);
+      const sg = label([`Calle ${s.n}`, s.ind], { scale: 0.06 }); sg.position.set(6, 5.3, z - ROAD / 2 - 1.6); scene.add(sg);
+      s.cos.forEach((e, k) => {
+        const side = k % 2 ? 1 : -1, bx = START + Math.floor(k / 2) * LOT, bz = z + side * (ROAD / 2 + 2 + BW / 2 + 1.6);
+        const color = companyOf(e.name).color || '#3B5BFD';
+        const front = new T.MeshLambertMaterial({ map: facade(e.name, color) });
+        // Caras: +x, -x, +y, -y, +z, -z. La fachada mira a la calle.
+        const mats = [sideMat, sideMat, roofMat, sideMat, side < 0 ? front : sideMat, side > 0 ? front : sideMat];
+        add(blockGeo, lotMat, bx, 0.2, bz, BW + 2.6, 0.4, BW + 2.4, false).receiveShadow = true;
+        const b = new T.Mesh(new T.BoxGeometry(BW, BH, BW), mats); b.position.set(bx, BH / 2 + 0.4, bz); b.castShadow = true; b.receiveShadow = true; scene.add(b);
+        const cap = add(blockGeo, roofMat, bx, BH + 0.4 + 0.25, bz, BW + 0.6, 0.5, BW + 0.6, true);
+        const lb = label([e.name.length > 22 ? e.name.slice(0, 21) + '…' : e.name], { check: isVerified(e.name), scale: 0.06 }); lb.position.set(bx, BH + 1.9, bz); scene.add(lb);
+        b.userData = { e, cap, lb, baseY: b.position.y }; buildings.push(b);
+        if (k % 2 === 0) tree(bx + LOT / 2, bz + side * (BW / 2 - 1.5), 0.9);
+      });
+      tree(-6, z - ROAD / 2 - 4, 1.1); tree(-6, z + ROAD / 2 + 4, 1.1);
+    });
+    // Animación de la cámara
+    let anim = null, sel = null, raf = 0, alive = true;
+    const flyTo = (target, zoom, ms = 650) => { anim = { t0: performance.now(), ms, from: ctl.target.clone(), to: target.clone(), z0: cam.zoom, z1: zoom, off: cam.position.clone().sub(ctl.target) }; };
+    const select = b => {
+      if (sel) { sel.userData.cap.material = roofMat; sel.position.y = sel.userData.baseY; }
+      sel = b || null;
+      if (sel) { sel.userData.cap.material = selRoof; flyTo(new T.Vector3(sel.position.x, 0, sel.position.z), Math.max(cam.zoom, W() < 640 ? 2 : 1.9)); }
+      opts.onSelect(sel ? sel.userData.e : null);
+    };
+    // Tocar un edificio (sin arrastrar)
+    const ray = new T.Raycaster(), ptr = new T.Vector2(); let down = null;
+    const el = renderer.domElement;
+    const onDown = e => { down = { x: e.clientX, y: e.clientY }; };
+    const onUp = e => {
+      if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down = null; return; } down = null;
+      const r = el.getBoundingClientRect(); ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(ptr, cam);
+      const hit = ray.intersectObjects([...buildings, ...buildings.map(b => b.userData.cap), ...buildings.map(b => b.userData.lb)])[0];
+      const b = hit && (buildings.find(x => x === hit.object || x.userData.cap === hit.object || x.userData.lb === hit.object));
+      select(b || null);
+    };
+    const onMove = e => { if (e.pointerType !== 'mouse') return; const r = el.getBoundingClientRect(); ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ptr, cam); el.style.cursor = ray.intersectObjects(buildings).length ? 'pointer' : 'grab'; };
+    el.addEventListener('pointerdown', onDown); el.addEventListener('pointerup', onUp); el.addEventListener('pointermove', onMove);
+    const onResize = () => { if (!W() || !H()) return; renderer.setSize(W(), H()); setFrustum(); };
+    addEventListener('resize', onResize);
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(onResize) : null; if (ro) ro.observe(box);
+    const loop = now => {
+      if (!alive) return;
+      if (anim) {
+        const k = Math.min(1, (now - anim.t0) / anim.ms), ease = 1 - Math.pow(1 - k, 3);
+        ctl.target.lerpVectors(anim.from, anim.to, ease); cam.position.copy(ctl.target).add(anim.off);
+        cam.zoom = anim.z0 + (anim.z1 - anim.z0) * ease; cam.updateProjectionMatrix(); if (k >= 1) anim = null;
+      }
+      if (sel) sel.position.y = sel.userData.baseY + Math.abs(Math.sin(now / 260)) * 0.5;
+      setFrustum(); ctl.update(); renderer.render(scene, cam); raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    const home = new T.Vector3(cx, 0, cz);
+    return {
+      select, zoom: f => flyTo(ctl.target, Math.min(ctl.maxZoom, Math.max(ctl.minZoom, cam.zoom * f)), 300),
+      home: () => { select(null); flyTo(home, 1); },
+      street: n => { const i = streets.findIndex(s => s.n === n); if (i >= 0) { select(null); flyTo(new T.Vector3(START + LOT, 0, i * GAP), W() < 640 ? 1.8 : 1.5); } },
+      selectByName: name => { const b = buildings.find(x => x.userData.e.name === name); if (b) select(b); },
+      destroy() {
+        alive = false; cancelAnimationFrame(raf); removeEventListener('resize', onResize); if (ro) ro.disconnect(); ctl.dispose();
+        scene.traverse(o => { if (o.geometry) o.geometry.dispose(); const m = o.material; (Array.isArray(m) ? m : m ? [m] : []).forEach(x => { if (x.map) x.map.dispose(); x.dispose(); }); });
+        renderer.dispose(); el.remove();
+      }
+    };
+  }
+
   /* ================= ADMIN: EMPRESAS Y CONSULTORAS ADHERIDAS =================
      Lista todo lo que aparece en "Empresas adheridas": cuentas registradas, perfiles cargados a mano por el admin
      y las cuentas de ejemplo. Desde acá se agrega una empresa a mano, se edita su perfil o se oculta de la página. */
@@ -7281,10 +7530,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const ROUTES = {
     '/': Welcome, '/chat': Chat, '/vacantes': Jobs, '/guardadas': Saved, '/postulaciones': MyApps, '/notificaciones': Notifs,
     '/empresa': CoHome, '/empresa/busquedas': CoDash, '/empresa/b': JobSpace, '/empresa/candidatos': CoCands,
-    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
+    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
     '/nosotros': AboutPage, '/vacante': JobPage, '/empresas': Employers, '/faqs': () => InfoPage('faqs'), '/terminos': () => InfoPage('terminos'), '/privacidad': () => InfoPage('privacidad'), '/admin': AdminPage, '/cafe': CafePage, '/cafe/nota': CafePost
   };
-  const TITLES = { '/admin': 'Admin', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
+  const TITLES = { '/admin': 'Admin', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
 
   function render(opts = {}) {
     const { path, params } = parseHash();
@@ -7299,11 +7548,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     if (path === '/chat') { location.replace('#/notificaciones'); setTimeout(() => openAlertForm(), 250); return; }
     S.dirty = false;
     destroySwipers();
+    if (S.map3d) { try { S.map3d.destroy(); } catch (e) { /* nada */ } S.map3d = null; }
     closeSheet(true);
     document.body.classList.remove('has-tbar');
     if (path !== '/chat') chatToken++;
     // Pantalla de ingreso del candidato: sin el menú de candidato hasta que ingrese
-    const mode = path === '/admin' ? 'admin' : path.startsWith('/terna') ? 'terna' : (path === '/empresa' || path.startsWith('/empresa/')) ? 'company' : path === '/' || path === '/empresas' || path === '/recomendacion' || INFO_PATHS.includes(path) ? 'home' : path === '/chat' ? 'chat'
+    const mode = path === '/admin' ? 'admin' : path.startsWith('/terna') ? 'terna' : (path === '/empresa' || path.startsWith('/empresa/')) ? 'company' : path === '/' || path === '/empresas' || path === '/mapa' || path === '/recomendacion' || INFO_PATHS.includes(path) ? 'home' : path === '/chat' ? 'chat'
       : (path === '/postulaciones' || path === '/notificaciones') && !Store.candidate() ? 'login' : 'candidate';
     { const src = params.get('src'), jid = params.get('id') || params.get('job'); if (src && jid && CHANNELS.some(c => c[0] === src)) { try { sessionStorage.setItem('emplea.src.' + jid, src); } catch (e) { /* sin storage */ } } }
     checkAlerts(); // Fedfu revisa si hay vacantes nuevas para las alertas del candidato

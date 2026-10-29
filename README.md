@@ -322,3 +322,13 @@ Nueva pestaña **Admin → Empresas**:
   - En Notificaciones aparece la lista "Empresas que seguís", con opción de dejar de seguir.
   - La página de la empresa muestra cuántos seguidores tiene. En el demo, las empresas de ejemplo tienen una base de seguidores para que se vea el número.
 - **Publicar en LinkedIn:** un toque desde "Compartir" o desde "⋯ Más" en cada búsqueda. Copia un texto sugerido, porque LinkedIn no permite precargarlo, y abre LinkedIn con el link del aviso, que lleva `&src=linkedin` para Reportes.
+
+## Mapa (ciudad en 3D)
+Pestaña **Mapa** (`#/mapa`) en la barra pública.
+- **La ciudad:** cada empresa o consultora es un edificio y cada calle es un rubro. El número de calle es fijo según `INDUSTRIES` (Calle 1 Agro y alimentos, Calle 2 Comercio y retail…). Solo aparecen las calles que tienen empresas.
+- **Estilo:** maqueta isométrica con edificios blancos, la fachada con el color y la inicial de la empresa, cartel con el nombre (y el tilde si está verificada), y cartel con el número y el rubro de cada calle.
+- **Navegación:** se arrastra para moverse, se pellizca o se usa la rueda para acercar, y con dos dedos o el botón derecho se gira. Tiene botones de acercar, alejar y ver toda la ciudad.
+- **Panel de calles:** cada calle es un botón que lleva hasta ella, y hay un buscador de empresas.
+- **Al tocar un edificio:** la cámara se acerca, el techo se pone coral y se abre una ficha con el logo, el rubro, las búsquedas abiertas (enlazadas a cada aviso), "Ver su página" y "Seguir".
+- **Desde otras páginas:** `#/mapa?e=Nombre` abre el mapa con esa empresa elegida. Se usa en "Ver en el mapa" de la página de la empresa y de "Empresas adheridas".
+- **Carga y respaldo:** Three.js (r128) se carga desde cdnjs recién al entrar al mapa. Sin WebGL o sin conexión, se muestra la misma ciudad como lista.
