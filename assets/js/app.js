@@ -1696,7 +1696,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <div class="space-y-3">
           <div class="relative"><i class="ph ph-user absolute left-4 top-1/2 -translate-y-1/2 text-xl text-ink-mute"></i><input id="sc-name" class="input pl-12" placeholder="Nombre y apellido" autocomplete="name" value="${esc(contact.name || cand.name || '')}" aria-label="Nombre y apellido"></div>
           <div class="relative"><i class="ph ph-whatsapp-logo absolute left-4 top-1/2 -translate-y-1/2 text-xl text-ink-mute"></i><input id="sc-phone" type="tel" inputmode="tel" class="input pl-12" placeholder="Celular / WhatsApp" autocomplete="tel" value="${esc(cand.phone || contact.phone || '')}" aria-label="Celular o WhatsApp"></div>
-          <div class="relative"><i class="ph ph-envelope-simple absolute left-4 top-1/2 -translate-y-1/2 text-xl text-ink-mute"></i><input id="sc-email" type="email" inputmode="email" class="input pl-12" placeholder="Email (opcional)" autocomplete="email" value="${esc(contact.email || '')}" aria-label="Email"></div>
+          <div class="relative"><i class="ph ph-envelope-simple absolute left-4 top-1/2 -translate-y-1/2 text-xl text-ink-mute"></i><input id="sc-email" type="email" inputmode="email" class="input pl-12" placeholder="Email" required autocomplete="email" value="${esc(contact.email || '')}" aria-label="Email"></div>
           <div class="grid grid-cols-2 gap-3">
             <select id="sc-prov" class="input" aria-label="Provincia"><option value="">Provincia</option>${optP}</select>
             <select id="sc-area" class="input" aria-label="Área"><option value="">Área</option>${optA}</select>
@@ -1740,7 +1740,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         if (!A.file) { show(err, 'Subí tu CV en PDF o Word.'); zone.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
         if (name.length < 3) return show(err2, 'Escribí tu nombre y apellido.');
         if (digits(phone).length < 8) return show(err2, 'Dejanos un celular válido para que te contacten por WhatsApp.');
-        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return show(err2, 'Revisá el email, parece incompleto.');
+        if (!email) return show(err2, 'Dejanos tu email.');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return show(err2, 'Revisá el email, parece incompleto.');
         if (!$('#sc-ok', c).checked) return show(err2, 'Para enviarlo, aceptá que las empresas vean tu CV.');
         const btn = $('#sc-send', c); btn.disabled = true; btn.innerHTML = '<i class="ph-bold ph-circle-notch spin text-xl"></i>Enviando…';
         const id = 'sp' + Date.now(), ext = cvExt(A.file);
