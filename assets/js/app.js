@@ -6994,20 +6994,31 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const variants = {};
       // Las casas del barrio (sin ficha) van en tonos apagados para que las empresas resalten
       const WALLS_M = ['#EEE8DE', '#E8DFD0', '#F1EBE2'], ROOFS_M = ['#DDB6A0', '#D3AE97', '#E2C3B0'];
-      const variant = (h, muted) => { const k = (muted ? 'm' : '') + h % (WALLS.length * ROOFS.length); if (!variants[k]) { const w = muted ? WALLS_M[h % 3] : WALLS[h % WALLS.length], r = muted ? ROOFS_M[Math.floor(h / 3) % 3] : ROOFS[Math.floor((h % (WALLS.length * ROOFS.length)) / WALLS.length) % ROOFS.length]; variants[k] = keep(new T.MeshLambertMaterial({ map: tex({ '3,7': r, '2,9': w, '2,15': w, '3,11': w, '2,3': muted ? '#BFD2A8' : ACC[h % ACC.length] }) })); } return variants[k]; };
-      const loader = new T.GLTFLoader(), models = {}, height = {};
+      const variant = (h, muted, roof) => { const k = (muted ? 'm' : '') + (roof || '') + h % (WALLS.length * ROOFS.length); if (!variants[k]) { const w = muted ? WALLS_M[h % 3] : WALLS[h % WALLS.length], r = muted ? ROOFS_M[Math.floor(h / 3) % 3] : ROOFS[Math.floor((h % (WALLS.length * ROOFS.length)) / WALLS.length) % ROOFS.length]; variants[k] = keep(new T.MeshLambertMaterial({ map: tex({ '3,7': roof || r, '2,9': w, '2,15': w, '3,11': w, '2,3': muted ? '#BFD2A8' : ACC[h % ACC.length] }) })); } return variants[k]; };
+      const loader = new T.GLTFLoader(), models = {}, height = {}, front = {};
       Promise.all(Object.entries(KIT_FILES).map(([n, u]) => new Promise((ok, ko) => loader.load(u, g => {
         g.scene.traverse(o => { if (o.isMesh) { keep(o.geometry); o.material = baseMat; o.castShadow = n.startsWith('building') || n.includes('trees') || n.includes('fountain') || n.includes('lightposts'); o.receiveShadow = true; } });
-        models[n] = g.scene; height[n] = new T.Box3().setFromObject(g.scene).max.y; ok();
+        models[n] = g.scene; height[n] = new T.Box3().setFromObject(g.scene).max.y;
+        // Dónde está la pared del frente (para pegar el logo)
+        if (n.startsWith('building')) { g.scene.updateMatrixWorld(true); const rc = new T.Raycaster(new T.Vector3(0, height[n] * 0.7, 3), new T.Vector3(0, 0, -1)); const hit = rc.intersectObject(g.scene, true)[0]; front[n] = hit ? hit.point.z : 0.4; }
+        ok();
       }, undefined, ko)))).then(() => res({
-        height, cube: keep(new T.BoxGeometry(1, 1, 1)), owns: x => own.has(x),
-        clone(n, h, muted) { const o = models[n].clone(true); if (h !== undefined) { const m = variant(h, muted); o.traverse(x => { if (x.isMesh) x.material = m; }); } return o; }
+        height, front, cube: keep(new T.BoxGeometry(1, 1, 1)), plane: keep(new T.PlaneGeometry(1, 1)), owns: x => own.has(x),
+        clone(n, h, muted, roof) { const o = models[n].clone(true); if (h !== undefined) { const m = variant(h, muted, roof); o.traverse(x => { if (x.isMesh) x.material = m; }); } return o; }
       }), rej);
     };
     img.onerror = rej; img.src = KIT_COLORMAP;
   }).catch(e => { kitReady = null; throw e; }));
 
   const streetNo = ind => INDUSTRIES.indexOf(ind) + 1;
+  // Cada rubro tiene su color: cartel de la calle, cordón de las veredas y techos de sus empresas
+  const IND_COLOR = {
+    'Agro y alimentos': '#5E9E3A', 'Comercio y retail': '#E4572E', 'Construcción e inmobiliaria': '#C98516', 'Consultoría de RRHH': '#3B5BDB', 'Educación': '#7B4FD6',
+    'Energía y minería': '#C2416B', 'Estudios contables y jurídicos': '#46607A', 'Finanzas y seguros': '#1F7A6B', 'Gastronomía y hotelería': '#D9488A', 'Gobierno y ONG': '#5C6B8A',
+    'Industria y manufactura': '#8A5A3C', 'Logística y transporte': '#2F86C9', 'Marketing y comunicación': '#B04BC0', 'Salud': '#16A085', 'Servicios profesionales': '#6B7A2E',
+    'Tecnología y software': '#0E8FB0', 'Telecomunicaciones': '#4A4FB8', 'Turismo': '#D9792A', 'Otro': '#7A808C'
+  };
+  const indColor = ind => IND_COLOR[ind] || IND_COLOR['Otro'];
   function cityData() {
     const by = {};
     employersData().forEach(e => { const ind = e.industry || 'Otro'; (by[ind] = by[ind] || []).push(e); });
@@ -7033,7 +7044,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <div id="city-panel" class="max-sm:hidden border-t border-line max-h-[40vh] sm:max-h-[calc(100dvh-17rem)] overflow-y-auto overscroll-contain">
           <p class="px-4 pt-3 text-[0.85rem] text-ink-mute">${streets.length} calle${streets.length === 1 ? '' : 's'}, ${total} empresa${total === 1 ? '' : 's'}</p>
           <ul class="p-2">${streets.map(s => `<li><button type="button" data-street="${s.n}" class="w-full flex items-center gap-3 rounded-xl px-2.5 py-2 text-left hover:bg-surface">
-            <span class="w-10 h-10 rounded-lg bg-navy text-white grid place-items-center font-bold shrink-0 leading-none text-[0.95rem]" style="background:#1B2550">${s.n}</span>
+            <span class="w-10 h-10 rounded-lg bg-navy text-white grid place-items-center font-bold shrink-0 leading-none text-[0.95rem]" style="background:${indColor(s.ind)}">${s.n}</span>
             <span class="min-w-0 flex-1"><span class="block font-semibold leading-tight truncate">Calle ${s.n}</span><span class="block text-[0.88rem] text-ink-soft truncate">${esc(s.ind)}</span></span>
             <span class="text-[0.85rem] text-ink-mute shrink-0">${s.cos.length}</span></button></li>`).join('')}</ul>
         </div>
@@ -7143,12 +7154,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const mat = c => new T.MeshLambertMaterial({ color: new T.Color(c).convertSRGBToLinear() });
     const box3 = (m, x, y, z, sx, sy, sz, shadow) => { const o = new T.Mesh(kit.cube, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); if (shadow) { o.castShadow = true; o.receiveShadow = true; } scene.add(o); return o; };
     // Maqueta: base gruesa con pasto arriba, tierra a los costados y sombra suave sobre blanco
-    const M = 7, TH = 7, bw = len + S + M * 2, bd = depth + S + M * 2;
+    const M = 7, TH = 7, MW = 70, bw = len + S + M * 2 + MW, bd = depth + S + M * 2, bx = cx - MW / 2;
     const base = new T.Mesh(kit.cube, [mat(0xDCC3A0), mat(0xDCC3A0), mat(0xB9D68F), mat(0xC9AE88), mat(0xE5CFAE), mat(0xE5CFAE)]);
-    base.position.set(cx, -TH / 2 - 0.02, cz); base.scale.set(bw, TH, bd); base.receiveShadow = true; scene.add(base);
+    base.position.set(bx, -TH / 2 - 0.02, cz); base.scale.set(bw, TH, bd); base.receiveShadow = true; scene.add(base);
     const ground = new T.Mesh(new T.PlaneGeometry(bw * 6, bd * 6), new T.ShadowMaterial({ opacity: 0.13 }));
-    ground.rotation.x = -Math.PI / 2; ground.position.set(cx, -TH, cz); ground.receiveShadow = true; scene.add(ground);
-    const ao = box3(new T.MeshBasicMaterial({ color: 0xE9E4DC }), cx + 2, -TH - 0.01, cz + 2, bw + 3, 0.01, bd + 3); ao.material.transparent = true; ao.material.opacity = 0.55;
+    ground.rotation.x = -Math.PI / 2; ground.position.set(bx, -TH, cz); ground.receiveShadow = true; scene.add(ground);
+    const ao = box3(new T.MeshBasicMaterial({ color: 0xE9E4DC }), bx + 2, -TH - 0.01, cz + 2, bw + 3, 0.01, bd + 3); ao.material.transparent = true; ao.material.opacity = 0.55;
     const put = (name, c, r, rot = 0, sc2 = 1) => { const o = kit.clone(name); o.position.set(X(c), 0, Z(r)); o.rotation.y = rot; o.scale.setScalar(S * sc2); scene.add(o); return o; };
     // Carteles con texto (canvas → textura)
     const label = (lines, o = {}) => {
@@ -7165,6 +7176,48 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const sp = new T.Sprite(new T.SpriteMaterial({ map: tex, depthTest: false, transparent: true })); sp.renderOrder = 10;
       const s = (o.scale || 0.05); sp.scale.set(cw * s, ch * s, 1); sp.center.set(0.5, 0); return sp;
     };
+    // Logo de cada empresa: el que subió en su perfil o, si no tiene, sus iniciales sobre su color
+    const logoMats = {};
+    const logoMat = name => {
+      if (logoMats[name]) return logoMats[name];
+      const cv = document.createElement('canvas'); cv.width = cv.height = 256; const x = cv.getContext('2d'), co = companyOf(name).color || '#3B5BFD';
+      const tex = new T.CanvasTexture(cv); if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding; tex.anisotropy = 4;
+      const frame = bg => { x.clearRect(0, 0, 256, 256); x.fillStyle = bg; x.beginPath(); x.moveTo(36, 8); x.arcTo(248, 8, 248, 248, 28); x.arcTo(248, 248, 8, 248, 28); x.arcTo(8, 248, 8, 8, 28); x.arcTo(8, 8, 248, 8, 28); x.fill(); };
+      frame(co); x.fillStyle = '#fff'; x.font = '700 104px Poppins, Figtree, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(initials(name), 128, 136);
+      const src = Store.logoOf(name);
+      if (src) { const im = new Image(); im.onload = () => { frame('#ffffff'); const k = Math.min(200 / im.width, 200 / im.height), w = im.width * k, h = im.height * k; x.drawImage(im, 128 - w / 2, 128 - h / 2, w, h); tex.needsUpdate = true; }; im.src = src; }
+      return (logoMats[name] = new T.MeshBasicMaterial({ map: tex, transparent: true }));
+    };
+    // Poste alto con el logo y el nombre (empresas verificadas). Medidas en unidades del lote.
+    const logoPole = (e, top) => {
+      const g = new T.Group(), co = companyOf(e.name).color || '#3B5BFD', h = Math.max(1.3, top + 0.55);
+      const post = new T.Mesh(new T.CylinderGeometry(0.03, 0.04, h, 10), mat(0xE8E6E1)); post.position.y = h / 2; post.castShadow = true;
+      const foot = new T.Mesh(kit.cube, mat(0xB9B3AA)); foot.scale.set(0.16, 0.08, 0.16); foot.position.y = 0.04;
+      const side = mat(co), lm = logoMat(e.name);
+      const panel = new T.Mesh(kit.cube, [side, side, side, side, lm, lm]); panel.scale.set(0.5, 0.5, 0.06); panel.position.y = h + 0.22; panel.castShadow = true;
+      const cv = document.createElement('canvas'), x = cv.getContext('2d'); cv.width = 512; cv.height = 128; x.fillStyle = co; x.fillRect(0, 0, 512, 128);
+      x.fillStyle = '#fff'; let fs = 64; do { x.font = `800 ${fs}px Poppins, Figtree, sans-serif`; fs -= 4; } while (x.measureText(e.name).width > 470 && fs > 26);
+      x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(e.name, 256, 68);
+      const nt = new T.CanvasTexture(cv); if (T.sRGBEncoding) nt.encoding = T.sRGBEncoding; nt.anisotropy = 4; const nm = new T.MeshBasicMaterial({ map: nt });
+      const strip = new T.Mesh(kit.cube, [side, side, side, side, nm, nm]); strip.scale.set(0.66, 0.17, 0.08); strip.position.y = h - 0.12; strip.castShadow = true;
+      g.add(post, foot, panel, strip); g.rotation.y = Math.PI / 4; return g;
+    };
+    // Zoom para ver unas cuantas cuadras de cerca
+    const focusZoom = tiles => { const a = (W() || 1) / (H() || 1), vis = fitSize() * Math.min(a, 1.6); return Math.min(ctl.maxZoom, Math.max(1.5, vis / (tiles * S * 1.25))); };
+    // Cordón de montañas low-poly al oeste, sobre la misma base
+    const hills = [mat(0x8DB66C), mat(0x7FAA61), mat(0x9CC07A), mat(0x739F58)], rock = mat(0xA89B8C), snow = mat(0xFAFAF7);
+    const mx0 = -S * 0.5 - M - 6, rnd = (() => { let t = 11; return () => (t = (t * 9301 + 49297) % 233280) / 233280; })();
+    for (let zz = -S * 0.5 - M + 8, i = 0; zz < depth + S * 0.5 + M - 6; zz += 13 + rnd() * 8, i++) {
+      [0, 1].forEach(row => {
+        const big = row === 1, hgt = (big ? 38 : 20) + rnd() * (big ? 34 : 14), rad = (big ? 17 : 12) + rnd() * 6;
+        const geo = new T.ConeGeometry(rad, hgt, 6 + Math.floor(rnd() * 3), 1); const pos = geo.attributes.position;
+        for (let v = 0; v < pos.count; v++) if (pos.getY(v) < hgt / 2 - 0.01) { pos.setX(v, pos.getX(v) * (0.8 + rnd() * 0.35)); pos.setZ(v, pos.getZ(v) * (0.8 + rnd() * 0.35)); }
+        geo.computeVertexNormals();
+        const m = new T.Mesh(geo, big && hgt > 52 ? rock : hills[(i + row) % hills.length]); m.position.set(mx0 - (big ? 30 : 12) - rnd() * 8, hgt / 2, zz + (big ? 6 : 0)); m.rotation.y = rnd() * 6;
+        m.castShadow = true; m.receiveShadow = true; scene.add(m);
+        if (big && hgt > 52) { const cap = new T.Mesh(new T.ConeGeometry(rad * 0.36, hgt * 0.36, geo.parameters.radialSegments, 1), snow); cap.position.set(m.position.x, hgt * 0.82 + 0.3, m.position.z); cap.rotation.y = m.rotation.y; scene.add(cap); }
+      });
+    }
     // Calles, avenidas y esquinas
     const used = new Set(), key = (c, r) => c + ',' + r, tags = [];
     const roadY = 0.06 * S, white = mat(0xFFFFFF);
@@ -7178,8 +7231,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         if (isAve(c - 1) || isAve(c + 1)) { const ex = X(c) + (isAve(c - 1) ? -0.36 : 0.36) * S; for (let j = -2; j <= 2; j++) box3(white, ex, roadY, Z(r) + j * 0.13 * S, 0.17 * S, 0.02, 0.065 * S); }
       }
       // Cartel de la calle en el borde de la maqueta
-      const sg = label([`Calle ${s.n}`, s.ind], { bg: '#1B2550', fg: ['#ffffff', '#C9D1F0'], scale: 0.05 }); sg.position.set(-S * 0.5 - M / 2, 6, Z(r)); scene.add(sg); tags.push(sg);
-      box3(mat(0x8F8780), -S * 0.5 - M / 2, 3, Z(r), 0.3, 6, 0.3, true);
+      const col = indColor(s.ind), curb = mat(col);
+      [-S * 0.5 - M / 2, len + S * 0.5 + M / 2].forEach(x => {
+        const sg = label([`Calle ${s.n}`, s.ind], { bg: col, fg: ['#ffffff', 'rgba(255,255,255,.85)'], scale: 0.05 }); sg.position.set(x, 6, Z(r)); scene.add(sg); tags.push(sg);
+        box3(mat(0x8F8780), x, 3, Z(r), 0.3, 6, 0.3, true);
+      });
+      for (let c = 0; c < cols; c++) if (!isAve(c)) [-1, 1].forEach(d => box3(curb, X(c), 0.55, Z(r) + d * 0.455 * S, S, 0.9, 0.5, false));
     });
     for (let c = 0; c < cols; c++) if (isAve(c)) for (let r = 0; r < rows; r++) if (!used.has(key(c, r))) { used.add(key(c, r)); put('road-straight', c, r); }
     // Edificios: el modelo depende del rubro; los colores de fachada y techo, de la empresa
@@ -7199,9 +7256,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     streets.forEach((s, si) => s.cos.forEach((e, k) => {
       const north = k % 2 === 0, r = si * 3 + (north ? 0 : 2), c = lotCols[Math.floor(k / 2)], h = hash(e.name);
       const list = MODEL[s.ind] || ALL, name = list[(Math.floor(k / 2) + (north ? 0 : 1)) % list.length];
-      const g = kit.clone(name, h); g.position.set(X(c), 0, Z(r)); g.rotation.y = north ? 0 : Math.PI; g.scale.setScalar(S); scene.add(g); used.add(key(c, r));
+      const g = kit.clone(name, h, false, indColor(s.ind)); g.position.set(X(c), 0, Z(r)); g.rotation.y = north ? 0 : Math.PI; g.scale.setScalar(S); scene.add(g); used.add(key(c, r));
       const top = kit.height[name] * S;
-      const lb = label([e.name.length > 20 ? e.name.slice(0, 19) + '…' : e.name], { check: isVerified(e.name), scale: 0.045 }); lb.position.set(X(c), top + 2.2, Z(r)); scene.add(lb);
+      if (isVerified(e.name)) { const pole = logoPole(e, kit.height[name]); pole.position.set(0.44, 0, 0.46); g.add(pole); }
+      else [1, -1].forEach(d => { const f = new T.Mesh(kit.plane, logoMat(e.name)); f.scale.setScalar(0.34); f.position.set(0, kit.height[name] * 0.68, d * (kit.front[name] + 0.012)); f.rotation.y = d > 0 ? 0 : Math.PI; g.add(f); });
+      const lb = label([e.name.length > 20 ? e.name.slice(0, 19) + '…' : e.name], { check: isVerified(e.name), scale: 0.045 }); if (isVerified(e.name)) { const d = north ? 1 : -1; lb.position.set(X(c) + d * 0.44 * S, Math.max(1.3, top / S + 0.55) * S + 5.2, Z(r) + d * 0.46 * S); } else lb.position.set(X(c), top + 2.2, Z(r)); scene.add(lb);
       g.userData = { e, lb, baseY: 0, top }; buildings.push(g); tags.push(lb);
     }));
     // Lotes libres: casas del barrio (sin ficha), plazas, árboles y una fuente en el centro
@@ -7211,7 +7270,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       if (used.has(key(c, r))) continue;
       const centre = !fountain && c >= cols / 2 - 1 && r >= (rows - 1) / 2 - 1, h = hash(c * 7 + ':' + r * 13);
       if (centre) { fountain = true; put('pavement-fountain', c, r); continue; }
-      if (h % 100 < 52) { const g = kit.clone(homes[(h >>> 3) % homes.length], h >>> 5, true); g.position.set(X(c), 0, Z(r)); g.rotation.y = r % 3 === 0 ? 0 : Math.PI; g.scale.setScalar(S); scene.add(g); continue; }
+      const si = Math.floor(r / 3), blk = Math.floor(c / (BLK + 1)), busy = streets[si] && streets[si].cos.some((e, k) => Math.floor(lotCols[Math.floor(k / 2)] / (BLK + 1)) === blk);
+      if (!busy && h % 100 < 60) { const g = kit.clone(homes[(h >>> 3) % homes.length], h >>> 5, true); g.position.set(X(c), 0, Z(r)); g.rotation.y = r % 3 === 0 ? 0 : Math.PI; g.scale.setScalar(S); scene.add(g); continue; }
       put(fill[(h >>> 4) % fill.length], c, r, (h % 4) * Math.PI / 2);
     }
     // Autitos que recorren las calles
@@ -7231,7 +7291,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const select = b => {
       if (sel) sel.position.y = 0;
       sel = b || null; ring.visible = !!sel;
-      if (sel) { ring.position.set(sel.position.x, 0.35, sel.position.z); flyTo(new T.Vector3(sel.position.x, 0, sel.position.z), Math.max(cam.zoom, W() < 640 ? 2.2 : 2)); }
+      if (sel) { ring.position.set(sel.position.x, 0.35, sel.position.z); flyTo(new T.Vector3(sel.position.x, 0, sel.position.z), Math.max(cam.zoom, focusZoom(7))); }
       opts.onSelect(sel ? sel.userData.e : null);
     };
     const owner = o => { while (o && !(o.userData && o.userData.e)) o = o.parent; return o; };
@@ -7256,7 +7316,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       }
       cars.forEach(c => { c.x = (c.x + c.dir * c.speed * dt + len + S) % (len + S); c.g.position.x = c.x - S / 2; });
       if (sel) sel.position.y = Math.abs(Math.sin(now / 260)) * 1.2;
-      const f = Math.max(1, 1.6 / cam.zoom); tags.forEach(t => { if (!t.userData.s) t.userData.s = t.scale.clone(); t.scale.set(t.userData.s.x * f, t.userData.s.y * f, 1); });
+      const f = cam.zoom < 1.6 ? 1.6 / cam.zoom : cam.zoom > 2.6 ? 2.6 / cam.zoom : 1; tags.forEach(t => { if (!t.userData.s) t.userData.s = t.scale.clone(); t.scale.set(t.userData.s.x * f, t.userData.s.y * f, 1); });
       setFrustum(); ctl.update(); renderer.render(scene, cam); raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
@@ -7264,7 +7324,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     return {
       select, zoom: f => flyTo(ctl.target, Math.min(ctl.maxZoom, Math.max(ctl.minZoom, cam.zoom * f)), 300),
       home: () => { select(null); flyTo(home, 1); },
-      street: n => { const i = streets.findIndex(s => s.n === n); if (i >= 0) { select(null); flyTo(new T.Vector3(X(lotCols[1]), 0, Z(i * 3 + 1)), W() < 640 ? 1.9 : 1.6); } },
+      street: n => { const i = streets.findIndex(s => s.n === n); if (i >= 0) { const last = Math.max(0, Math.ceil(streets[i].cos.length / 2) - 1); select(null); flyTo(new T.Vector3((X(lotCols[0]) + X(lotCols[last])) / 2, 0, Z(i * 3 + 1)), focusZoom(Math.max(4, last + 3))); } },
       selectByName: name => { const b = buildings.find(x => x.userData.e.name === name); if (b) select(b); },
       destroy() {
         alive = false; cancelAnimationFrame(raf); removeEventListener('resize', onResize); if (ro) ro.disconnect(); ctl.dispose();
