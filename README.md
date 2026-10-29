@@ -332,6 +332,8 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Logos:** las empresas verificadas tienen un poste alto con su logo y un cartel con su nombre. Las demás llevan el logo en la fachada. Se usa el logo que la empresa sube en su perfil; si no tiene, van sus iniciales sobre su color. No se dibujan logos de marcas que no los hayan subido.
 - **Montañas:** un cordón de cerros low-poly al oeste, sobre la misma base, con picos de roca nevados atrás.
 - **Ir a una calle:** el botón de cada calle acerca la cámara a sus empresas.
+- **Búsquedas abiertas:** las empresas con búsquedas activas tienen una antena en el techo con una luz roja que titila.
+- **Zeppelin:** un dirigible de +Humanos da vueltas sobre la ciudad con un cartel que dice cuántas búsquedas abiertas hay en total.
 - **Modelos:** [City Builder Kit de Kenney](https://kenney.nl) (licencia CC0), en `assets/models/`. La paleta cálida está en `colormap.png` y se recolorea en el navegador por bloques para cada fachada.
 - **Navegación:** se arrastra para moverse, se pellizca o se usa la rueda para acercar, y con dos dedos o el botón derecho se gira. Tiene botones de acercar, alejar y ver toda la ciudad.
 - **Panel de calles:** cada calle es un botón que lleva hasta ella, y hay un buscador de empresas.

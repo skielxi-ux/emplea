@@ -7252,7 +7252,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const hash = t => { let h = 7; for (const ch of t) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
     const ring = new T.Mesh(new T.RingGeometry(0.56 * S, 0.68 * S, 40), new T.MeshBasicMaterial({ color: new T.Color(0xF2715A).convertSRGBToLinear(), transparent: true, opacity: 0.95, depthWrite: false }));
     ring.rotation.x = -Math.PI / 2; ring.visible = false; ring.renderOrder = 2; scene.add(ring);
-    const buildings = [];
+    const buildings = [], halos = [], openBy = {};
+    Store.activeJobs().forEach(j => { openBy[j.company] = (openBy[j.company] || 0) + 1; });
+    const bulbGeo = new T.SphereGeometry(0.045, 12, 8), bulbMat = new T.MeshBasicMaterial({ color: 0xFF2D2D });
+    const hc = document.createElement('canvas'); hc.width = hc.height = 64; { const x = hc.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,60,50,.9)'); gr.addColorStop(0.35, 'rgba(255,60,50,.35)'); gr.addColorStop(1, 'rgba(255,60,50,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); }
+    const haloMat = new T.SpriteMaterial({ map: new T.CanvasTexture(hc), transparent: true, depthWrite: false });
     streets.forEach((s, si) => s.cos.forEach((e, k) => {
       const north = k % 2 === 0, r = si * 3 + (north ? 0 : 2), c = lotCols[Math.floor(k / 2)], h = hash(e.name);
       const list = MODEL[s.ind] || ALL, name = list[(Math.floor(k / 2) + (north ? 0 : 1)) % list.length];
@@ -7262,6 +7266,14 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       else [1, -1].forEach(d => { const f = new T.Mesh(kit.plane, logoMat(e.name)); f.scale.setScalar(0.34); f.position.set(0, kit.height[name] * 0.68, d * (kit.front[name] + 0.012)); f.rotation.y = d > 0 ? 0 : Math.PI; g.add(f); });
       const lb = label([e.name.length > 20 ? e.name.slice(0, 19) + '…' : e.name], { check: isVerified(e.name), scale: 0.045 }); if (isVerified(e.name)) { const d = north ? 1 : -1; lb.position.set(X(c) + d * 0.44 * S, Math.max(1.3, top / S + 0.55) * S + 5.2, Z(r) + d * 0.46 * S); } else lb.position.set(X(c), top + 2.2, Z(r)); scene.add(lb);
       g.userData = { e, lb, baseY: 0, top }; buildings.push(g); tags.push(lb);
+      // Antena con luz roja que titila: la empresa tiene búsquedas abiertas
+      if (openBy[e.name]) {
+        const a = new T.Group(), hgt = 0.42;
+        const mast = new T.Mesh(new T.CylinderGeometry(0.012, 0.022, hgt, 6), mat(0x9A948C)); mast.position.y = hgt / 2; mast.castShadow = true;
+        const bulb = new T.Mesh(bulbGeo, bulbMat); bulb.position.y = hgt + 0.03;
+        const halo = new T.Sprite(haloMat); halo.position.y = hgt + 0.03; halo.scale.set(0.3, 0.3, 1); halo.userData.halo = true;
+        a.add(mast, bulb, halo); a.position.set(-0.22, kit.height[name] - 0.02, -0.18); g.add(a); halos.push(halo);
+      }
     }));
     // Lotes libres: casas del barrio (sin ficha), plazas, árboles y una fuente en el centro
     const fill = ['grass-trees', 'grass-trees-tall', 'grass', 'pavement', 'grass-trees'], homes = ['building-small-a', 'building-small-b', 'building-small-d', 'building-small-c', 'building-small-a', 'building-garage'];
@@ -7285,6 +7297,19 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const dir = j ? -1 : 1; g.rotation.y = dir > 0 ? 0 : Math.PI; g.position.set(0, roadY, Z(si * 3 + 1) + dir * 0.13 * S); scene.add(g);
       cars.push({ g, dir, speed: 7 + (si * 3 + j * 5) % 5, x: (hash(s.ind + j) % (len + 1)) });
     }));
+    // Zeppelin de +Humanos dando vueltas sobre la ciudad, con la cantidad de búsquedas abiertas
+    const zep = new T.Group(), zBody = mat(0xF3EFE8), zAcc = mat(0xF2715A), zDark = mat(0x1B2550);
+    { const body = new T.Mesh(new T.SphereGeometry(1, 28, 16), zBody); body.scale.set(17, 5.6, 5.6); body.castShadow = true; zep.add(body);
+      const band = new T.Mesh(new T.CylinderGeometry(1, 1, 1, 28, 1, true), zAcc); band.rotation.z = Math.PI / 2; band.scale.set(5.72, 1.6, 5.72); band.position.x = 9.5; zep.add(band);
+      [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(([y, z]) => { const f = new T.Mesh(kit.cube, zAcc); f.scale.set(5, y ? 4.2 : 0.4, z ? 4.2 : 0.4); f.position.set(-14, y * 4.2, z * 4.2); f.castShadow = true; zep.add(f); });
+      const gon = new T.Mesh(kit.cube, zDark); gon.scale.set(5, 1.6, 2); gon.position.set(1, -6.2, 0); gon.castShadow = true; zep.add(gon);
+      const total = Object.values(openBy).reduce((a, b) => a + b, 0), cv = document.createElement('canvas'), x = cv.getContext('2d'); cv.width = 1024; cv.height = 192;
+      x.fillStyle = '#1B2550'; x.fillRect(0, 0, 1024, 192); x.fillStyle = '#F2715A'; x.font = '800 92px Poppins, Figtree, sans-serif'; x.textBaseline = 'middle'; x.fillText('+', 40, 100);
+      x.fillStyle = '#fff'; x.font = '700 64px Poppins, Figtree, sans-serif'; x.fillText(`Humanos · ${total} búsqueda${total === 1 ? '' : 's'}`, 112, 100);
+      const bt = new T.CanvasTexture(cv); if (T.sRGBEncoding) bt.encoding = T.sRGBEncoding; bt.anisotropy = 4;
+      [1, -1].forEach(d => { const b = new T.Mesh(kit.plane, new T.MeshBasicMaterial({ map: bt, side: T.FrontSide })); b.scale.set(19, 3.6, 1); b.position.set(0, 0, d * 5.65); if (d < 0) b.rotation.y = Math.PI; zep.add(b); }); }
+    zep.scale.setScalar(1.3); scene.add(zep);
+    const zr = { x: len * 0.55 + 20, z: depth * 0.5 + 20 }, zy = 62;
     // Animación de la cámara
     let anim = null, sel = null, raf = 0, alive = true, last = performance.now();
     const flyTo = (target, zoom, ms = 650) => { anim = { t0: performance.now(), ms, from: ctl.target.clone(), to: target.clone(), z0: cam.zoom, z1: zoom, off: cam.position.clone().sub(ctl.target) }; };
@@ -7315,6 +7340,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         cam.zoom = anim.z0 + (anim.z1 - anim.z0) * ease; cam.updateProjectionMatrix(); if (k >= 1) anim = null;
       }
       cars.forEach(c => { c.x = (c.x + c.dir * c.speed * dt + len + S) % (len + S); c.g.position.x = c.x - S / 2; });
+      const blink = (now % 1400) < 700, pul = 0.24 + 0.1 * Math.sin(now / 110);
+      bulbMat.color.setHex(blink ? 0xFF2D2D : 0x7A1E1E); halos.forEach(h => { h.visible = blink; h.scale.set(pul, pul, 1); });
+      const ang = now / 26000, px = cx + Math.cos(ang) * zr.x, pz = cz + Math.sin(ang) * zr.z;
+      zep.position.set(px, zy + Math.sin(now / 1500) * 1.5, pz); zep.rotation.y = Math.atan2(-Math.cos(ang) * zr.z, -Math.sin(ang) * zr.x);
       if (sel) sel.position.y = Math.abs(Math.sin(now / 260)) * 1.2;
       const f = cam.zoom < 1.6 ? 1.6 / cam.zoom : cam.zoom > 2.6 ? 2.6 / cam.zoom : 1; tags.forEach(t => { if (!t.userData.s) t.userData.s = t.scale.clone(); t.scale.set(t.userData.s.x * f, t.userData.s.y * f, 1); });
       setFrustum(); ctl.update(); renderer.render(scene, cam); raf = requestAnimationFrame(loop);
