@@ -311,8 +311,8 @@ Nueva pestaña **Admin → Empresas**:
 - **El aviso** muestra "Responsabilidades" y "Calificaciones".
 
 ## Rubros de las empresas
-- **Lista fija de rubros:** `INDUSTRIES` en data.js. Se elige de esa lista al cargar o editar una empresa, tanto desde el Admin como desde el perfil de la empresa.
-- **Rubros escritos a mano antes de la lista:** se reconocen por palabras clave (`INDUSTRY_KW`). Por ejemplo, "Construccion" pasa a "Construcción e inmobiliaria" y "Software" a "Tecnología y software".
+- **Lista fija de rubros:** `INDUSTRIES` en data.js, 18 rubros en este orden: Salud, Construcción, Inmobiliarias, Automotriz, Retail, Logística/Transporte, Tech, Telefonía/Comunicación, Hotelería/Turismo, Call center, Consultoras RRHH, Agroindustria, Alimenticia, Educación, Energía/Minería, Finanzas/Seguros, Industria/Manufactura y Gastronomía. No hay rubro "Otro": un rubro escrito a mano o de la lista anterior se traduce con `INDUSTRY_KW`, y si no encaja queda sin rubro (no aparece en el filtro ni en el mapa). Los rubros nuevos se suman recién cuando se suma una empresa de ese tipo. Se elige de esa lista al cargar o editar una empresa, tanto desde el Admin como desde el perfil de la empresa.
+- **Rubros escritos a mano antes de la lista:** se reconocen por palabras clave (`INDUSTRY_KW`). Por ejemplo, "Construccion" pasa a "Construcción" y "Software" a "Tech".
 - **Filtro en "Empresas adheridas":** desplegable "Rubro" con "Todos los rubros" y la cantidad de empresas de cada uno. Los rubros sin empresas no aparecen.
 
 ## Empresa verificada, seguir empresas y LinkedIn
@@ -325,16 +325,16 @@ Nueva pestaña **Admin → Empresas**:
 
 ## Mapa (ciudad en 3D)
 Pestaña **Mapa** (`#/mapa`) en la barra pública.
-- **La ciudad:** cada empresa o consultora es un edificio y cada calle es un rubro. El número de calle es fijo según `INDUSTRIES` (Calle 1 Agro y alimentos, Calle 2 Comercio y retail…). Solo aparecen las calles que tienen empresas.
+- **La ciudad:** cada empresa o consultora es un edificio y cada calle es un rubro. El número de calle es fijo según `INDUSTRIES` (Calle 1 Salud, Calle 2 Construcción… Calle 11 Consultoras RRHH, Calle 18 Gastronomía). Solo aparecen las calles que tienen empresas.
 - **Estilo:** maqueta isométrica sobre fondo blanco, con base gruesa de pasto y tierra, cuadras, avenidas, sendas peatonales, faroles, árboles, una fuente y autitos que circulan. Paleta cálida: techos terracota y fachadas crema o durazno.
-- **Edificios según el rubro:** Salud y Educación usan el edificio alto; Comercio, Gastronomía y Turismo, el local con toldo; Industria, Logística y Agro, el galpón; Tecnología, Telecom y Construcción, el edificio de oficinas; RRHH, estudios y servicios, el edificio de dos pisos. Los colores de cada empresa salen de su nombre. Los lotes libres se llenan con casas del barrio en tonos apagados (no se pueden tocar) y plazas, para que las empresas resalten. Cada empresa tiene su cartel con el nombre (y el tilde si está verificada), y cada calle, un cartel con número y rubro en el borde de la maqueta.
+- **Edificios según el rubro:** Salud, Educación, Finanzas y Hotelería usan el edificio alto; Retail, Gastronomía y Automotriz, el local con toldo; Industria, Logística, Agroindustria, Alimenticia y Energía, el galpón; Tech, Telefonía, Call center y Construcción, el edificio de oficinas; Consultoras e Inmobiliarias, el edificio de dos pisos. Los colores de cada empresa salen de su nombre. Los lotes libres se llenan con casas del barrio en tonos apagados (no se pueden tocar) y plazas, para que las empresas resalten. Cada empresa tiene su cartel con el nombre (y el tilde si está verificada), y cada calle, un cartel con número y rubro en el borde de la maqueta.
 - **Color por rubro:** cada rubro tiene su color (`IND_COLOR`). Lo usan el número de la calle en el panel, los carteles de las dos puntas de la calle, el cordón de las veredas y los techos de sus empresas. Las casas del barrio solo aparecen en cuadras donde no hay empresas, para que no se mezclen.
 - **Logos:** las empresas verificadas tienen un poste alto con su logo y un cartel con su nombre. Las demás llevan el logo en la fachada. Se usa el logo que la empresa sube en su perfil; si no tiene, van sus iniciales sobre su color. No se dibujan logos de marcas que no los hayan subido.
 - **Montañas:** un cordón de cerros low-poly al oeste, sobre la misma base, con picos de roca nevados atrás.
 - **Ir a una calle:** el botón de cada calle acerca la cámara a sus empresas.
 - **Búsquedas abiertas:** las empresas con búsquedas activas tienen una antena en el techo con una luz roja que titila.
 - **Zeppelin:** un dirigible de +Humanos da vueltas sobre la ciudad con un cartel que dice cuántas búsquedas abiertas hay en total.
-- **Avenida de las consultoras:** las cuentas de tipo Consultora van todas a "Av. Consultoras", la primera calle de la ciudad, en coral. Las empresas siguen en la calle de su rubro.
+- **Consultoras:** todas las cuentas de tipo Consultora van a la Calle 11, Consultoras RRHH, en coral. Las empresas van a la calle de su rubro; las que no tienen rubro no aparecen en el mapa.
 - **Cuántas búsquedas:** sobre la antena hay un globito rojo con la cantidad de búsquedas abiertas.
 - **Búsqueda nueva:** si la empresa publicó en las últimas 48 h, salen fuegos artificiales de su edificio cada pocos segundos.
 - **Solo con búsquedas abiertas:** un interruptor en el panel apaga en gris los edificios sin búsquedas.

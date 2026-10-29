@@ -42,7 +42,7 @@
   // Imagen de una nota o slide: 'lib:p2' (foto propia), data URL, ruta local o id de Unsplash
   const imgSrc = (id, w = 1600) => !id ? '' : id.startsWith('lib:') ? (LOCAL_IMG[id.slice(4)] || '') : /^(assets\/|data:|https?:)/.test(id) ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
   // Rubro de la lista fija (los escritos a mano antes se reconocen por palabras clave)
-  const industryOf = t => { t = String(t || '').trim(); if (!t) return ''; if (INDUSTRIES.includes(t)) return t; const n = norm(t); const hit = INDUSTRY_KW.find(([rx]) => rx.test(n)); return hit ? hit[1] : 'Otro'; };
+  const industryOf = t => { t = String(t || '').trim(); if (!t) return ''; if (INDUSTRIES.includes(t)) return t; const n = norm(t); const hit = INDUSTRY_KW.find(([rx]) => rx.test(n)); return hit && hit[1] || ''; };
   const industryOpts = sel => `<option value="">Elegí un rubro</option>${INDUSTRIES.map(x => `<option ${industryOf(sel) === x ? 'selected' : ''}>${x}</option>`).join('')}`;
   // Insignia de empresa verificada (la da el equipo de +Humanos desde el Admin)
   const isVerified = name => { const v = Store.coProfile(name).verified; return v === undefined ? !!(COMPANIES[name] || {}).verified : !!v; };
@@ -7013,18 +7013,17 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const streetNo = ind => INDUSTRIES.indexOf(ind) + 1;
   // Cada rubro tiene su color: cartel de la calle, cordón de las veredas y techos de sus empresas
   const IND_COLOR = {
-    'Agro y alimentos': '#5E9E3A', 'Comercio y retail': '#E4572E', 'Construcción e inmobiliaria': '#C98516', 'Consultoría de RRHH': '#3B5BDB', 'Educación': '#7B4FD6',
-    'Energía y minería': '#C2416B', 'Estudios contables y jurídicos': '#46607A', 'Finanzas y seguros': '#1F7A6B', 'Gastronomía y hotelería': '#D9488A', 'Gobierno y ONG': '#5C6B8A',
-    'Industria y manufactura': '#8A5A3C', 'Logística y transporte': '#2F86C9', 'Marketing y comunicación': '#B04BC0', 'Salud': '#16A085', 'Servicios profesionales': '#6B7A2E',
-    'Tecnología y software': '#0E8FB0', 'Telecomunicaciones': '#4A4FB8', 'Turismo': '#D9792A', 'Otro': '#7A808C', 'Consultoras': '#F2715A'
+    'Salud': '#16A085', 'Construcción': '#C98516', 'Inmobiliarias': '#A0522D', 'Automotriz': '#C0392B', 'Retail': '#E4572E', 'Logística/Transporte': '#2F86C9',
+    'Tech': '#0E8FB0', 'Telefonía/Comunicación': '#4A4FB8', 'Hotelería/Turismo': '#D9792A', 'Call center': '#B04BC0', 'Consultoras RRHH': '#F2715A',
+    'Agroindustria': '#5E9E3A', 'Alimenticia': '#8E9A1E', 'Educación': '#7B4FD6', 'Energía/Minería': '#C2416B', 'Finanzas/Seguros': '#1F7A6B',
+    'Industria/Manufactura': '#8A5A3C', 'Gastronomía': '#D9488A'
   };
-  const indColor = ind => IND_COLOR[ind] || IND_COLOR['Otro'];
+  const indColor = ind => IND_COLOR[ind] || '#7A808C';
   function cityData() {
-    // Las consultoras tienen su propia avenida (arriba de todo); las empresas van a la calle de su rubro
-    const by = {}, cons = [], az = (a, b) => a.name.localeCompare(b.name, 'es');
-    employersData().forEach(e => { if (e.type === 'Consultora') return cons.push(e); const ind = e.industry || 'Otro'; (by[ind] = by[ind] || []).push(e); });
-    const list = INDUSTRIES.filter(i => by[i]).map(i => ({ ind: i, n: streetNo(i), name: `Calle ${streetNo(i)}`, sub: i, cos: by[i].sort(az) }));
-    return cons.length ? [{ ind: 'Consultoras', n: 0, name: 'Av. Consultoras', sub: 'Consultoras de RRHH', cos: cons.sort(az) }, ...list] : list;
+    // Las consultoras van todas a la calle "Consultoras RRHH"; las empresas, a la calle de su rubro. Sin rubro, no entran al mapa.
+    const by = {}, az = (a, b) => a.name.localeCompare(b.name, 'es');
+    employersData().forEach(e => { const ind = e.type === 'Consultora' ? 'Consultoras RRHH' : e.industry; if (ind) (by[ind] = by[ind] || []).push(e); });
+    return INDUSTRIES.filter(i => by[i]).map(i => ({ ind: i, n: streetNo(i), name: `Calle ${streetNo(i)}`, sub: i, cos: by[i].sort(az) }));
   }
 
   function MapPage(params) {
@@ -7081,7 +7080,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           card.innerHTML = `<div class="p-5">
             <div class="flex items-start gap-3">${logo(e.name, 'w-14 h-14 text-base')}
               <div class="min-w-0 flex-1"><p class="font-extrabold text-[1.2rem] leading-tight flex items-center gap-1.5"><span class="truncate">${esc(e.name)}</span>${vBadge(e.name)}</p>
-                <p class="text-ink-soft text-[0.92rem] mt-0.5">${esc(st.name)}, ${esc(st.n ? st.sub : 'Consultora de RRHH')}</p>${loc ? `<p class="text-ink-mute text-[0.88rem]"><i class="ph ph-map-pin"></i> ${esc(loc)}</p>` : ''}</div>
+                <p class="text-ink-soft text-[0.92rem] mt-0.5">${esc(st.name)}, ${esc(st.sub)}</p>${loc ? `<p class="text-ink-mute text-[0.88rem]"><i class="ph ph-map-pin"></i> ${esc(loc)}</p>` : ''}</div>
               <button type="button" id="cc-x" class="icon-btn w-9 h-9 -mr-1 -mt-1 shrink-0" aria-label="Cerrar"><i class="ph-bold ph-x"></i></button></div>
             <p class="mt-4 font-semibold">${jobs.length ? `${jobs.length} búsqueda${jobs.length === 1 ? '' : 's'} abierta${jobs.length === 1 ? '' : 's'}` : 'Sin búsquedas abiertas por ahora'}</p>
             ${jobs.length ? `<ul class="mt-2 divide-y divide-line rounded-xl border border-line">${jobs.slice(0, 4).map(j => `<li><a href="#/vacante?id=${j.id}" class="flex items-center gap-3 px-3.5 py-2.5 hover:bg-surface"><span class="min-w-0 flex-1"><span class="block font-semibold leading-tight truncate">${esc(j.title)}</span><span class="block text-[0.86rem] text-ink-mute truncate">${esc(j.city)}, ${esc(j.province)} · ${esc(j.modality)}</span></span><i class="ph-bold ph-caret-right text-ink-mute"></i></a></li>`).join('')}</ul>` : '<p class="text-ink-soft text-[0.95rem] mt-1">Seguila y te avisamos cuando publique una.</p>'}
@@ -7267,12 +7266,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     for (let c = 0; c < cols; c++) if (isAve(c)) for (let r = 0; r < rows; r++) if (!used.has(key(c, r))) { used.add(key(c, r)); put('road-straight', c, r); }
     // Edificios: el modelo depende del rubro; los colores de fachada y techo, de la empresa
     const MODEL = {
-      'Salud': ['building-small-c'], 'Agro y alimentos': ['building-garage', 'building-small-d'], 'Industria y manufactura': ['building-garage'], 'Logística y transporte': ['building-garage'],
-      'Energía y minería': ['building-garage', 'building-small-b'], 'Construcción e inmobiliaria': ['building-small-b', 'building-garage'],
-      'Comercio y retail': ['building-small-d'], 'Gastronomía y hotelería': ['building-small-d', 'building-small-c'], 'Turismo': ['building-small-d', 'building-small-a'],
-      'Tecnología y software': ['building-small-b', 'building-small-c'], 'Telecomunicaciones': ['building-small-b'], 'Finanzas y seguros': ['building-small-c', 'building-small-b'],
-      'Consultoría de RRHH': ['building-small-a', 'building-small-c'], 'Estudios contables y jurídicos': ['building-small-a'], 'Consultoras': ['building-small-c', 'building-small-a', 'building-small-b'], 'Servicios profesionales': ['building-small-a', 'building-small-b'],
-      'Marketing y comunicación': ['building-small-a', 'building-small-d'], 'Educación': ['building-small-c', 'building-small-a'], 'Gobierno y ONG': ['building-small-c']
+      'Salud': ['building-small-c'], 'Construcción': ['building-small-b', 'building-garage'], 'Inmobiliarias': ['building-small-a', 'building-small-b'],
+      'Automotriz': ['building-garage', 'building-small-d'], 'Retail': ['building-small-d'], 'Logística/Transporte': ['building-garage'], 'Tech': ['building-small-b', 'building-small-c'],
+      'Telefonía/Comunicación': ['building-small-b'], 'Hotelería/Turismo': ['building-small-c', 'building-small-d'], 'Call center': ['building-small-b', 'building-small-a'],
+      'Consultoras RRHH': ['building-small-a', 'building-small-c', 'building-small-b'], 'Agroindustria': ['building-garage', 'building-small-d'],
+      'Alimenticia': ['building-garage', 'building-small-d'], 'Educación': ['building-small-c', 'building-small-a'], 'Energía/Minería': ['building-garage', 'building-small-b'],
+      'Finanzas/Seguros': ['building-small-c', 'building-small-b'], 'Industria/Manufactura': ['building-garage'], 'Gastronomía': ['building-small-d']
     };
     const ALL = ['building-small-a', 'building-small-b', 'building-small-c', 'building-small-d', 'building-garage'];
     const hash = t => { let h = 7; for (const ch of t) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };

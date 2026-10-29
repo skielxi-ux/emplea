@@ -49,16 +49,16 @@ const MODALITIES = ['Presencial', 'Híbrido', 'Remoto'];
 const JOB_TYPES = ['Full time', 'Part time', 'Por proyecto'];
 
 const COMPANIES = {
-  'Talento Norte':      { verified: true, industry: 'Consultoría de RRHH', type: 'Consultora', color: '#0866FF', benefits: ['Obra social', 'Capacitaciones', 'Bono por desempeño'] },
-  'Selecta RRHH':       { verified: true, industry: 'Consultoría de RRHH', type: 'Consultora', color: '#7B3FE4', benefits: ['Obra social', 'Plan de carrera'] },
-  'Bit Solutions':      { verified: true, industry: 'Tecnología y software', type: 'Empresa',    color: '#0F9D8A', benefits: ['Home office', 'Clases de inglés', 'Semana extra de vacaciones'] },
-  'Grupo Andino':       { verified: true, industry: 'Construcción e inmobiliaria', type: 'Empresa',    color: '#E2582B', benefits: ['Obra social', 'Comedor', 'Uniforme'] },
-  'Logística Federal':  { industry: 'Logística y transporte', type: 'Empresa',    color: '#1F6FB2', benefits: ['Premio por presentismo', 'Obra social'] },
+  'Talento Norte':      { verified: true, industry: 'Consultoras RRHH', type: 'Consultora', color: '#0866FF', benefits: ['Obra social', 'Capacitaciones', 'Bono por desempeño'] },
+  'Selecta RRHH':       { verified: true, industry: 'Consultoras RRHH', type: 'Consultora', color: '#7B3FE4', benefits: ['Obra social', 'Plan de carrera'] },
+  'Bit Solutions':      { verified: true, industry: 'Tech', type: 'Empresa',    color: '#0F9D8A', benefits: ['Home office', 'Clases de inglés', 'Semana extra de vacaciones'] },
+  'Grupo Andino':       { verified: true, industry: 'Construcción', type: 'Empresa',    color: '#E2582B', benefits: ['Obra social', 'Comedor', 'Uniforme'] },
+  'Logística Federal':  { industry: 'Logística/Transporte', type: 'Empresa',    color: '#1F6FB2', benefits: ['Premio por presentismo', 'Obra social'] },
   'Clínica del Parque': { verified: true, industry: 'Salud', type: 'Empresa',    color: '#D23B6E', benefits: ['Obra social premium', 'Capacitación continua'] },
-  'Sabores del Sur':    { industry: 'Gastronomía y hotelería', type: 'Empresa',    color: '#C9821B', benefits: ['Comida en el turno', 'Propinas'] },
-  'Agro Pampa':         { industry: 'Agro y alimentos', type: 'Empresa',    color: '#3B8C3A', benefits: ['Transporte', 'Obra social', 'Comedor'] },
-  'Retail Plus':        { industry: 'Comercio y retail', type: 'Empresa',    color: '#E0245E', benefits: ['Descuentos en compras', 'Obra social'] },
-  'Andes Energía':      { industry: 'Energía y minería', type: 'Empresa',    color: '#2B4C7E', benefits: ['Prepaga', 'Bono anual', 'Movilidad'] },
+  'Sabores del Sur':    { industry: 'Gastronomía', type: 'Empresa',    color: '#C9821B', benefits: ['Comida en el turno', 'Propinas'] },
+  'Agro Pampa':         { industry: 'Agroindustria', type: 'Empresa',    color: '#3B8C3A', benefits: ['Transporte', 'Obra social', 'Comedor'] },
+  'Retail Plus':        { industry: 'Retail', type: 'Empresa',    color: '#E0245E', benefits: ['Descuentos en compras', 'Obra social'] },
+  'Andes Energía':      { industry: 'Energía/Minería', type: 'Empresa',    color: '#2B4C7E', benefits: ['Prepaga', 'Bono anual', 'Movilidad'] },
   'Instituto Horizonte':{ industry: 'Educación', type: 'Empresa',    color: '#5A6ACF', benefits: ['Horario flexible', 'Capacitación docente'] }
 };
 
@@ -806,18 +806,19 @@ const SEED_HUB_REQS = [
 
 
 // Rubros de las empresas (lista fija para el filtro de "Empresas adheridas" y los formularios)
-const INDUSTRIES = ['Agro y alimentos', 'Comercio y retail', 'Construcción e inmobiliaria', 'Consultoría de RRHH', 'Educación', 'Energía y minería',
-  'Estudios contables y jurídicos', 'Finanzas y seguros', 'Gastronomía y hotelería', 'Gobierno y ONG', 'Industria y manufactura', 'Logística y transporte',
-  'Marketing y comunicación', 'Salud', 'Servicios profesionales', 'Tecnología y software', 'Telecomunicaciones', 'Turismo', 'Otro'];
-// Para rubros escritos a mano antes de la lista: palabra clave → rubro de la lista
+const INDUSTRIES = ['Salud', 'Construcción', 'Inmobiliarias', 'Automotriz', 'Retail', 'Logística/Transporte', 'Tech', 'Telefonía/Comunicación',
+  'Hotelería/Turismo', 'Call center', 'Consultoras RRHH', 'Agroindustria', 'Alimenticia', 'Educación', 'Energía/Minería', 'Finanzas/Seguros',
+  'Industria/Manufactura', 'Gastronomía'];
+// Para rubros escritos a mano o de la lista anterior: palabra clave → rubro de la lista (null = sin rubro). El orden importa.
 const INDUSTRY_KW = [
-  [/construc|inmobil|arquitect|desarrollos? inmob/, 'Construcción e inmobiliaria'], [/retail|comercio|supermerc|tienda|venta|mayorist|minorist/, 'Comercio y retail'],
-  [/software|tecnolog|sistemas|informat|\bit\b|desarroll/, 'Tecnología y software'], [/recursos humanos|rrhh|consultora|seleccion|reclut/, 'Consultoría de RRHH'],
-  [/salud|clinic|medic|hospital|farmac|sanator|odont/, 'Salud'], [/agro|aliment|azucar|citric|bodega|vino|limon|frut|ingenio/, 'Agro y alimentos'],
-  [/energ|petrol|miner|gas\b/, 'Energía y minería'], [/logist|transport|distribu|deposito/, 'Logística y transporte'],
-  [/educa|institut|escuela|colegio|universi|capacit/, 'Educación'], [/gastron|hotel|restaur|bar\b|cafe/, 'Gastronomía y hotelería'],
-  [/contab|contador|jurid|abogad|legal|estudio/, 'Estudios contables y jurídicos'], [/banc|financ|segur|credito/, 'Finanzas y seguros'],
-  [/industri|manufact|fabric|metal|textil|plast|produc/, 'Industria y manufactura'], [/marketing|publicid|comunic|medios|prensa/, 'Marketing y comunicación'],
-  [/turism|viaje/, 'Turismo'], [/telecom|telefon|internet/, 'Telecomunicaciones'], [/gobier|ong\b|fundaci|municip|ministerio|asociacion/, 'Gobierno y ONG'],
-  [/servicio|consultor/, 'Servicios profesionales']
+  [/marketing|publicid|contab|contador|jurid|abogad|gobier|ong\b|fundaci|municip|ministerio/, null],
+  [/gastron|restaur|\bbar\b|cafe|comida|parrill|pizzer/, 'Gastronomía'], [/salud|clinic|medic|hospital|farmac|sanator|odont/, 'Salud'],
+  [/construc|arquitect|obra civil/, 'Construcción'], [/inmobil|propiedad|desarrollos? inmob/, 'Inmobiliarias'],
+  [/automot|concesionar|\bautos?\b|vehicul|taller mecan|repuesto/, 'Automotriz'], [/call ?center|contact center|atencion al cliente|telemarket/, 'Call center'],
+  [/recursos humanos|rrhh|consultora|seleccion|reclut/, 'Consultoras RRHH'], [/retail|comercio|supermerc|tienda|venta|mayorist|minorist/, 'Retail'],
+  [/logist|transport|distribu|deposito/, 'Logística/Transporte'], [/software|tecnolog|sistemas|informat|\bit\b|tech/, 'Tech'],
+  [/telecom|telefon|internet|comunicac/, 'Telefonía/Comunicación'], [/hotel|turism|viaje/, 'Hotelería/Turismo'],
+  [/agro|ingenio|citric|limon|frut|azucar|campo|ganad/, 'Agroindustria'], [/aliment|bodega|vino|bebida|frigor/, 'Alimenticia'],
+  [/educa|institut|escuela|colegio|universi|capacit/, 'Educación'], [/energ|petrol|miner|\bgas\b/, 'Energía/Minería'],
+  [/banc|financ|segur|credito/, 'Finanzas/Seguros'], [/industri|manufact|fabric|metal|textil|plast|produc/, 'Industria/Manufactura']
 ];
