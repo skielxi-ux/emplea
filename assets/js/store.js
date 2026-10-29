@@ -106,6 +106,7 @@ const Store = (() => {
 
   const KCAND = 'emplea.cand', KSEEN = 'emplea.candseen', KACC = 'emplea.coaccounts';
   const KSP = 'emplea.spontcvs';
+  const KSAL = 'emplea.salaries';
   const KUL = 'emplea.unlocks';
   const KDR = 'emplea.delreqs';
   const KER = 'emplea.erased';
@@ -339,6 +340,12 @@ const Store = (() => {
     // Alertas de vacantes del candidato y avisos de Fedfu
     // CVs enviados desde "Enviar CV" (sin postularse a una vacante): van a "Toda la plataforma"
     spontCvs: () => read(KSP, []),
+    // Pretensiones salariales (anónimas: solo se usan agrupadas). ckey = celular del candidato, para que pueda editar la suya.
+    salaries: () => read(KSAL, []),
+    mySalary: ck => ck ? read(KSAL, []).find(x => x.ckey === ck) || null : null,
+    saveSalary(x) { const l = read(KSAL, []).filter(o => !(x.ckey && o.ckey === x.ckey)); l.unshift(x); write(KSAL, l); },
+    unlinkSalary(ck) { if (!ck) return; write(KSAL, read(KSAL, []).map(o => o.ckey === ck ? { ...o, ckey: null } : o)); },
+    seedSalaries(list) { const l = read(KSAL, []); if (l.some(x => x.demo)) return; write(KSAL, [...l, ...list]); },
     updateSpontCv(id, patch) { write(KSP, read(KSP, []).map(o => o.id === id ? { ...o, ...patch } : o)); },
     removeSpontCv(id) { write(KSP, read(KSP, []).filter(o => o.id !== id)); },
     addSpontCv(x) { const l = read(KSP, []).filter(o => !(x.phone && o.phone && o.phone.replace(/\D/g, '').slice(-10) === x.phone.replace(/\D/g, '').slice(-10))); l.unshift(x); write(KSP, l); },

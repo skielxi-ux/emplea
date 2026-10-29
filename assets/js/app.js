@@ -550,6 +550,7 @@
     const item = ([h, ic, l, n]) => `<a href="#${h}" class="flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold hover:bg-surface ${path === h ? 'text-brand' : 'text-ink'}"><i class="ph ${ic} text-xl ${path === h ? '' : 'text-ink-soft'} shrink-0"></i><span class="flex-1">${l}</span>${badge(n)}</a>`;
     const pop = 'hidden absolute right-0 top-full mt-2 z-50 w-64 bg-white rounded-2xl border border-line shadow-[0_24px_48px_-20px_rgba(20,18,58,.35)] p-1.5 dd-pop';
     const candHead = cand ? `<div class="px-3 pt-2 pb-2.5 mb-1 border-b border-line"><p class="font-bold leading-tight">${esc(cand.name || 'Mi cuenta')}</p><p class="text-ink-mute text-[0.9rem]">${esc(cand.phone || '')}</p></div>` : '';
+    const candSal = cand ? `<button type="button" data-salary class="w-full flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold text-ink hover:bg-surface"><i class="ph ph-currency-circle-dollar text-xl text-ink-soft shrink-0"></i><span class="flex-1 text-left">Pretensión salarial</span>${Store.mySalary(candKey()) ? '' : '<span class="rounded-full bg-sun px-2 py-0.5 text-[0.72rem] font-bold">Nuevo</span>'}</button>` : '';
     const candOut = cand ? `<button type="button" data-cand-out class="w-full flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold text-ink-soft hover:bg-surface"><i class="ph ph-sign-out text-xl shrink-0"></i>Salir</button>` : '';
     topbar.innerHTML = `
       <div class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-line">
@@ -561,7 +562,7 @@
             <a href="#/empresa" class="hidden lg:inline-flex btn btn-outline btn-sm" title="${co ? `Panel de ${esc(co.name)}` : 'Ingresar como empresa o consultora'}"><i class="ph ph-buildings text-lg"></i>Empresa</a>
             <div class="relative hidden lg:block" data-menu-wrap>
               <button type="button" data-menu="cand" class="btn btn-outline btn-sm relative" aria-haspopup="true" aria-expanded="false">${cand ? `<span class="w-6 h-6 rounded-full bg-brand-soft text-brand grid place-items-center"><i class="ph-fill ph-user"></i></span>${esc((cand.name || '').split(' ')[0] || 'Candidato')}` : '<i class="ph ph-user text-lg"></i>Candidato'}<i class="ph-bold ph-caret-down text-ink-mute"></i>${nU ? `<span class="absolute -top-1.5 -right-1.5">${badge(nU)}</span>` : ''}</button>
-              <div data-menu-panel="cand" class="${pop}">${candHead}${candItems.map(item).join('')}${candOut}</div>
+              <div data-menu-panel="cand" class="${pop}">${candHead}${candItems.map(item).join('')}${candSal}${candOut}</div>
             </div>
             <div class="relative lg:hidden" data-menu-wrap>
               <button type="button" data-menu="mob" class="icon-btn border border-line relative shrink-0" aria-label="Menú" aria-haspopup="true" aria-expanded="false"><i class="ph-bold ph-list text-xl"></i>${nU ? '<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-bad ring-2 ring-white"></span>' : ''}</button>
@@ -570,7 +571,7 @@
                 <div class="my-1.5 border-t border-line"></div>
                 <a href="#/empresa" class="flex items-center gap-3 px-3 min-h-[2.75rem] py-2 leading-tight rounded-xl font-semibold hover:bg-surface"><i class="ph ph-buildings text-xl text-ink-soft shrink-0"></i>Empresa${co ? ` <span class="text-ink-mute font-normal truncate">· ${esc(co.name)}</span>` : ''}</a>
                 <p class="px-3 pt-2 pb-1 text-[0.8rem] font-bold uppercase tracking-wide text-ink-mute">Candidato${cand ? ` · ${esc((cand.name || '').split(' ')[0])}` : ''}</p>
-                ${candItems.map(item).join('')}${candOut}
+                ${candItems.map(item).join('')}${candSal}${candOut}
               </div>
             </div>
           </div>
@@ -582,6 +583,7 @@
       closeMenus(); if (open) { panel.classList.remove('hidden'); b.setAttribute('aria-expanded', 'true'); }
     });
     $$('[data-menu-panel] a', topbar).forEach(a => a.addEventListener('click', () => closeMenus()));
+    $$('[data-salary]', topbar).forEach(b => b.onclick = () => { closeMenus(); openSalary(); });
     $$('[data-cand-out]', topbar).forEach(b => b.onclick = async () => { closeMenus(); if (await askConfirm({ title: '¿Salir de tu cuenta?', text: 'Tus postulaciones quedan guardadas. Para volver a verlas, ingresá con tu celular.', ok: 'Salir', icon: 'ph-sign-out' })) { Store.logoutCandidate(); toast('Saliste de tu cuenta', 'ph-sign-out'); location.hash = '#/'; render(); } });
   }
   function closeMenus() { $$('[data-menu-panel]').forEach(p => p.classList.add('hidden')); $$('[data-menu]').forEach(b => b.setAttribute('aria-expanded', 'false')); }
@@ -2112,6 +2114,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       <div class="mt-5 grid gap-4 md:grid-cols-2 items-start" id="ma-cards">
         ${cards.length ? cards.join('') : `<div class="md:col-span-2 grid">${emptyState('ph-paper-plane-tilt', 'Todavía no tenés postulaciones', 'Cuando envíes tu CV a una vacante, acá vas a ver si lo leyeron, si seguís en proceso o si sos finalista.', '<div class="flex flex-wrap justify-center gap-2"><a href="#/vacantes" class="btn btn-primary">Buscar vacantes</a><button type="button" id="cl-demo-apps" class="btn btn-outline">Ver un ejemplo</button></div>')}</div>`}
       </div>
+      <section class="mt-8 rounded-[22px] bg-white border border-line p-5 flex flex-col sm:flex-row sm:items-center gap-4" aria-label="Pretensión salarial">
+        <span class="w-12 h-12 rounded-2xl bg-sun grid place-items-center shrink-0"><i class="ph-fill ph-currency-circle-dollar text-2xl"></i></span>
+        <div class="flex-1 min-w-0"><p class="font-bold text-[1.05rem]">${Store.mySalary(candKey()) ? `Tu pretensión: ${pesos(Store.mySalary(candKey()).net)} netos` : '¿Cuánto querés cobrar?'}</p>
+          <p class="text-ink-soft text-[0.95rem]">${Store.mySalary(candKey()) ? 'Actualizala cuando cambie. Es anónima: no la ven las empresas.' : 'Cargá tu pretensión salarial. Es anónima y nos ayuda a mostrar cuánto se paga en Tucumán.'}</p></div>
+        <button type="button" id="ma-sal" class="btn ${Store.mySalary(candKey()) ? 'btn-outline' : 'btn-primary'} btn-sm shrink-0">${Store.mySalary(candKey()) ? 'Actualizar' : 'Cargar pretensión'}</button>
+      </section>
       <section class="mt-12 pt-6 border-t border-line flex flex-col sm:flex-row sm:items-center gap-3 justify-between" aria-label="Tus datos">
         <div><p class="font-semibold flex items-center gap-2"><i class="ph ph-shield-check text-lg text-ink-soft"></i>Tus datos</p>
           <p class="text-ink-mute text-[0.92rem]">Podés borrar tu CV, tus postulaciones y tus datos de contacto cuando quieras.</p></div>
@@ -2122,6 +2130,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       html, mount() {
         $('#cl-out').onclick = async () => { if (await askConfirm({ title: '¿Salir de tu cuenta?', text: 'Para volver a ver tus postulaciones vas a ingresar con un código por WhatsApp.', ok: 'Salir', icon: 'ph-sign-out' })) { Store.logoutCandidate(); render(); } };
         $('#ma-erase').onclick = eraseMyData;
+        $('#ma-sal').onclick = openSalary;
         // Borrar del historial una postulación ya cerrada (resultado final o búsqueda cerrada)
         $('#ma-cards').addEventListener('click', async e => {
           const b = e.target.closest('[data-app-del]'); if (!b) return;
@@ -6294,6 +6303,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const ok = await askConfirm({ title: '¿Borrar todos tus datos?', text: 'Se borran tu CV, tus postulaciones, tus alertas y tus datos de contacto, también para las consultoras a las que te postulaste. No se puede deshacer.', ok: 'Borrar todo', danger: true, icon: 'ph-trash' });
     if (!ok) return;
     const m = { phone: cand.phone || ct.phone, email: ct.email };
+    Store.unlinkSalary(candKey());
     const r = await Store.erasePerson(m, null);
     Store.alerts().forEach(a => Store.removeAlert(a.id));
     ['emplea.profile', 'emplea.contact', 'emplea.cvmeta', 'emplea.saved'].forEach(k => { try { localStorage.removeItem(k); } catch (e) { /* nada */ } });
@@ -7499,6 +7509,160 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     };
   }
 
+  /* ================= PRETENSIÓN SALARIAL =================
+     El candidato con cuenta carga área, puesto, experiencia, jornada, provincia y su pretensión neta mensual.
+     Es anónima: nunca se muestra a empresas ni consultoras. El Admin ve los rangos agrupados (Admin → Salarios). */
+  const SAL_LV = [['sin', 'Sin experiencia'], ['jr', 'Junior'], ['ssr', 'Semi senior'], ['sr', 'Senior']];
+  const SAL_SH = [['full', 'Jornada completa'], ['part', 'Part-time']];
+  const salLv = k => (SAL_LV.find(x => x[0] === k) || [, ''])[1], salSh = k => (SAL_SH.find(x => x[0] === k) || [, ''])[1];
+  const pesos = n => '$' + Math.round(n).toLocaleString('es-AR');
+  const moneyK = n => n >= 1e6 ? '$' + (n / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 2 }) + ' M' : '$' + Math.round(n / 1e3) + ' mil';
+  const candKey = () => { const c = Store.candidate(); return c && c.phone ? digits(c.phone).slice(-10) : ''; };
+  const cap1 = t => t.charAt(0).toUpperCase() + t.slice(1);
+  // Sugerencias de puesto para un área: títulos de vacantes de esa área y palabras clave del área
+  const areaTitles = id => { const a = AREAS.find(x => x.id === id); return [...new Set([...Store.jobs().filter(j => j.area === id).map(j => j.title), ...((a && a.kw) || []).filter(w => w.length > 4 && !/\s(de|del)$/.test(w)).map(cap1)])].slice(0, 40); };
+
+  function openSalary() {
+    const cand = Store.candidate(); if (!cand) { location.hash = '#/postulaciones'; return; }
+    const ck = candKey(), prev = Store.mySalary(ck) || {}, ct = Store.contact() || {};
+    const st = { lv: prev.level || '', sh: prev.shift || 'full' };
+    const prov0 = prev.province || cand.province || ct.province || 'Tucumán';
+    const chips = (list, key, cur) => list.map(([k, l]) => `<button type="button" data-${key}="${k}" aria-pressed="${cur === k}" class="chip ${cur === k ? 'chip-on' : ''}">${l}</button>`).join('');
+    const body = `<h2 class="text-[1.6rem] font-extrabold pr-10 leading-tight">Pretensión salarial</h2>
+      <p class="mt-2 text-ink-soft">Contanos cuánto querés cobrar. Con estos datos armamos el mapa de sueldos de Tucumán.</p>
+      <p class="mt-3 flex gap-2 rounded-xl bg-mint text-ok px-3 py-2.5 text-[0.92rem] font-medium"><i class="ph-fill ph-shield-check text-lg shrink-0"></i><span>Es anónima: no la ven las empresas ni las consultoras, ni se adjunta a tus postulaciones.</span></p>
+      <div class="mt-5 space-y-4">
+        <div><label class="label" for="sal-area">Área</label><select id="sal-area" class="input"><option value="">Elegí un área</option>${AREAS.map(a => `<option value="${a.id}" ${prev.area === a.id ? 'selected' : ''}>${esc(a.label)}</option>`).join('')}</select></div>
+        <div><label class="label" for="sal-title">Puesto o profesión</label><input id="sal-title" class="input" list="sal-titles" placeholder="Ej.: Administrativo contable" value="${esc(prev.title || '')}" autocomplete="off"><datalist id="sal-titles"></datalist></div>
+        <div><p class="label">Experiencia</p><div class="flex flex-wrap gap-2" role="group" aria-label="Experiencia">${chips(SAL_LV, 'lv', st.lv)}</div></div>
+        <div><p class="label">Jornada</p><div class="flex flex-wrap gap-2" role="group" aria-label="Jornada">${chips(SAL_SH, 'sh', st.sh)}</div></div>
+        <div><label class="label" for="sal-net">Pretensión neta mensual</label>
+          <div class="relative"><span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-ink-soft">$</span><input id="sal-net" inputmode="numeric" class="input pl-9 text-[1.1rem] font-semibold" placeholder="0" value="${prev.net ? Number(prev.net).toLocaleString('es-AR') : ''}" aria-describedby="sal-net-h"></div>
+          <p id="sal-net-h" class="mt-1.5 text-[0.88rem] text-ink-mute">En mano, por mes, después de descuentos.</p></div>
+        <div><label class="label" for="sal-prov">Provincia donde querés trabajar</label><select id="sal-prov" class="input">${PROVINCES.map(p => `<option ${p === prov0 ? 'selected' : ''}>${esc(p)}</option>`).join('')}</select></div>
+      </div>
+      <p id="sal-err" class="err hidden"></p>
+      ${prev.at ? `<p class="mt-3 text-[0.88rem] text-ink-mute">La cargaste el ${fmtDate(prev.at)}. Podés actualizarla cuando quieras.</p>` : ''}`;
+    openSheet(sheetScroll(body) + sheetFoot(`<button id="sal-save" class="btn btn-primary w-full h-14"><i class="ph-bold ph-check"></i>${prev.at ? 'Actualizar' : 'Guardar'}</button>`), c => {
+      const fillTitles = () => { $('#sal-titles', c).innerHTML = areaTitles($('#sal-area', c).value).map(t => `<option value="${esc(t)}">`).join(''); };
+      fillTitles(); $('#sal-area', c).onchange = fillTitles;
+      c.addEventListener('click', e => {
+        const b = e.target.closest('[data-lv],[data-sh]'); if (!b) return;
+        const k = b.dataset.lv ? 'lv' : 'sh'; st[k] = b.dataset[k];
+        $$(`[data-${k}]`, c).forEach(x => { const on = x === b; x.setAttribute('aria-pressed', on); x.classList.toggle('chip-on', on); });
+      });
+      const net = $('#sal-net', c);
+      net.oninput = () => { const d = digits(net.value).slice(0, 9); net.value = d ? Number(d).toLocaleString('es-AR') : ''; };
+      $('#sal-save', c).onclick = () => {
+        const er = $('#sal-err', c), err = m => { er.textContent = m; er.classList.remove('hidden'); };
+        const area = $('#sal-area', c).value, title = $('#sal-title', c).value.trim(), n = Number(digits(net.value));
+        if (!area) return err('Elegí un área.');
+        if (title.length < 3) return err('Escribí tu puesto o profesión.');
+        if (!st.lv) return err('Elegí tu experiencia.');
+        if (!n) return err('Escribí tu pretensión neta mensual.');
+        if (n < 100000 || n > 50000000) return err('Revisá el monto: escribilo en pesos, por mes y en neto (por ejemplo, 1.200.000).');
+        S.dirty = true;
+        Store.saveSalary({ id: prev.id || 'sal' + Date.now().toString(36), ckey: ck, area, title, level: st.lv, shift: st.sh, net: n, province: $('#sal-prov', c).value, at: new Date().toISOString() });
+        setSheet(sheetScroll(`<div class="text-center py-8"><div class="success-pop w-16 h-16 mx-auto rounded-full bg-ok text-white grid place-items-center"><i class="ph-bold ph-check text-3xl"></i></div>
+          <h2 class="mt-4 text-[1.5rem] font-extrabold">¡Gracias!</h2><p class="mt-2 text-ink-soft max-w-sm mx-auto">Guardamos tu pretensión de <b class="text-ink">${pesos(n)}</b> netos por mes como ${esc(title)}. Nos ayuda a mostrar cuánto se paga de verdad en la provincia.</p></div>`)
+          + sheetFoot('<button data-close-sheet class="btn btn-primary w-full h-14">Listo</button>'));
+      };
+    });
+  }
+
+  // Respuestas de ejemplo para el demo (se marcan demo: true)
+  function seedSalaryDemo() {
+    if (Store.salaries().some(x => x.demo)) return;
+    const MULT = { tecnologia: 1.55, ingenieria: 1.45, arquitectura: 1.2, finanzas: 1.15, comex: 1.15, salud: 1.1, rrhh: 1.05, marketing: 1, ventas: 1, oficios: 1, administracion: 0.95, produccion: 0.95, logistica: 0.95, educacion: 0.9, atencion: 0.88, gastronomia: 0.85 };
+    const BASE = { sin: 780000, jr: 950000, ssr: 1300000, sr: 1850000 }, PM = { 'Tucumán': 1, 'Salta': 0.97, 'Jujuy': 0.95, 'Santiago del Estero': 0.93, 'Córdoba': 1.1, 'Buenos Aires': 1.2 };
+    let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+    const provs = ['Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Tucumán', 'Salta', 'Jujuy', 'Santiago del Estero', 'Córdoba', 'Buenos Aires'];
+    const out = [];
+    AREAS.forEach(a => {
+      const titles = areaTitles(a.id).slice(0, 5), n = a.id in { administracion: 1, ventas: 1, atencion: 1, tecnologia: 1, salud: 1, gastronomia: 1, logistica: 1 } ? 26 : 13;
+      for (let i = 0; i < n; i++) {
+        const lv = SAL_LV[Math.floor(rnd() * 4)][0], sh = rnd() < 0.15 ? 'part' : 'full', pv = provs[Math.floor(rnd() * provs.length)];
+        const v = BASE[lv] * (MULT[a.id] || 1) * (PM[pv] || 1) * (0.88 + rnd() * 0.24) * (sh === 'part' ? 0.55 : 1);
+        out.push({ id: 'sald' + a.id + i, demo: true, ckey: null, area: a.id, title: titles[i % Math.max(1, titles.length)] || a.label, level: lv, shift: sh, net: Math.round(v / 10000) * 10000, province: pv, at: new Date(Date.now() - rnd() * 60 * 864e5).toISOString() });
+      }
+    });
+    Store.seedSalaries(out);
+  }
+
+  // Admin → Salarios: rangos por área (y por puesto al abrir cada área)
+  function AdminSalaries() {
+    seedSalaryDemo();
+    const F = S.salF || (S.salF = { prov: 'Tucumán', lv: '', sh: 'full', open: '' });
+    const all = Store.salaries();
+    const provs = [...new Set(all.map(x => x.province).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
+    const pick = () => all.filter(x => (!F.prov || x.province === F.prov) && (!F.lv || x.level === F.lv) && (!F.sh || x.shift === F.sh));
+    const qt = (arr, p) => { const a = [...arr].sort((x, y) => x - y); if (!a.length) return 0; const i = (a.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i); return a[lo] + (a[hi] - a[lo]) * (i - lo); };
+    const chip = (attr, v, cur, l) => `<button type="button" ${attr}="${v}" aria-pressed="${cur === v}" class="chip h-9 px-3.5 text-[0.9rem] ${cur === v ? 'chip-on' : ''}">${l}</button>`;
+    const stat = (ic, n, l, tone) => `<div class="rounded-[20px] bg-white border border-line p-4 sm:p-5 flex items-center gap-3"><span class="w-11 h-11 rounded-xl ${tone} grid place-items-center shrink-0"><i class="ph-fill ${ic} text-xl"></i></span><div class="min-w-0"><p class="text-[1.45rem] font-extrabold leading-none">${n}</p><p class="text-ink-mute text-[0.92rem] mt-1 leading-tight">${l}</p></div></div>`;
+    return {
+      title: 'Admin',
+      html: `<div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8">
+        ${adminSwitch()}
+        <div class="flex flex-wrap items-end justify-between gap-3">
+          <div><h1 class="text-[1.75rem] md:text-[2rem] font-extrabold tracking-tight leading-tight">Pretensiones salariales</h1>
+            <p class="text-ink-soft mt-1 max-w-2xl">Lo que cargan los candidatos con cuenta desde <b>Pretensión salarial</b>. Montos netos por mes. Son anónimas: acá no hay nombres ni teléfonos.</p></div>
+          <button type="button" id="sal-csv" class="btn btn-outline btn-sm"><i class="ph-bold ph-download-simple"></i>Descargar CSV</button>
+        </div>
+        <div class="mt-5 flex flex-col gap-2.5 lg:flex-row lg:items-center lg:flex-wrap">
+          <select id="sal-fprov" data-dd class="input bg-white lg:w-60" aria-label="Provincia"><option value="">Todo el país</option>${provs.map(p => `<option ${p === F.prov ? 'selected' : ''}>${esc(p)}</option>`).join('')}</select>
+          <div class="flex flex-wrap gap-2" role="group" aria-label="Experiencia">${chip('data-flv', '', F.lv, 'Toda experiencia')}${SAL_LV.map(([k, l]) => chip('data-flv', k, F.lv, l)).join('')}</div>
+          <div class="flex flex-wrap gap-2" role="group" aria-label="Jornada">${chip('data-fsh', '', F.sh, 'Toda jornada')}${chip('data-fsh', 'full', F.sh, 'Completa')}${chip('data-fsh', 'part', F.sh, 'Part-time')}</div>
+        </div>
+        <div id="sal-body" class="mt-5"></div>
+        ${all.some(x => x.demo) ? '<p class="mt-4 text-[0.88rem] text-ink-mute"><i class="ph ph-info"></i> Incluye respuestas de ejemplo para la demo.</p>' : ''}
+      </div>`,
+      mount() {
+        bindAdminSwitch();
+        const draw = () => {
+          const L = pick(), el = $('#sal-body');
+          if (!L.length) { el.innerHTML = emptyState('ph-currency-circle-dollar', 'Todavía no hay respuestas con estos filtros', 'Probá con otra provincia, experiencia o jornada.'); return; }
+          const vals = L.map(x => x.net), med = qt(vals, 0.5), m30 = L.filter(x => daysSince(x.at) <= 30).length;
+          const groups = AREAS.map(a => ({ a, L: L.filter(x => x.area === a.id) })).filter(g => g.L.length).map(g => { const v = g.L.map(x => x.net); return { ...g, n: v.length, p25: qt(v, 0.25), med: qt(v, 0.5), p75: qt(v, 0.75) }; }).sort((x, y) => y.med - x.med);
+          const lo = Math.min(...groups.map(g => g.p25)), hi = Math.max(...groups.map(g => g.p75)), span = Math.max(1, hi - lo), pct = v => ((v - lo) / span * 92 + 4).toFixed(1);
+          const bar = g => `<div class="relative h-3 rounded-full bg-surface" aria-hidden="true"><span class="absolute top-0 h-3 rounded-full ${g.n < 5 ? 'bg-line' : 'bg-brand/25'}" style="left:${pct(g.p25)}%;width:${Math.max(1.5, pct(g.p75) - pct(g.p25))}%"></span><span class="absolute -top-1 w-1.5 h-5 rounded-full ${g.n < 5 ? 'bg-ink-mute' : 'bg-brand'}" style="left:calc(${pct(g.med)}% - 3px)"></span></div>`;
+          const row = (g, label, sub) => `<div class="grid grid-cols-[minmax(0,1fr)_auto] lg:grid-cols-[minmax(0,1.3fr)_4rem_minmax(0,1.6fr)_8rem_minmax(0,1.2fr)] gap-x-4 gap-y-2 items-center">
+              <div class="min-w-0">${label}</div>
+              <span class="text-ink-mute text-[0.9rem] lg:text-center">${g.n} resp.</span>
+              <div class="col-span-2 lg:col-span-1">${bar(g)}</div>
+              <span class="font-extrabold">${pesos(g.med)}</span>
+              <span class="text-ink-soft text-[0.92rem]">${g.n < 5 ? '<span class="text-ink-mute">Pocas respuestas</span>' : `${moneyK(g.p25)} a ${moneyK(g.p75)}`}${sub || ''}</span></div>`;
+          el.innerHTML = `<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              ${stat('ph-users', L.length, 'Respuestas', 'bg-brand-soft text-brand')}
+              ${stat('ph-chart-bar', pesos(med), 'Mediana neta', 'bg-mint text-ok')}
+              ${stat('ph-arrows-out-line-horizontal', `${moneyK(qt(vals, 0.25))} – ${moneyK(qt(vals, 0.75))}`, 'Rango medio (P25–P75)', 'bg-sun text-ink')}
+              ${stat('ph-calendar-blank', m30, 'Últimos 30 días', 'bg-surface text-ink')}
+            </div>
+            <div class="mt-5 rounded-[20px] bg-white border border-line p-4 sm:p-5">
+              <div class="hidden lg:grid grid-cols-[minmax(0,1.3fr)_4rem_minmax(0,1.6fr)_8rem_minmax(0,1.2fr)] gap-4 pb-3 text-[0.82rem] font-semibold text-ink-mute uppercase tracking-wide border-b border-line"><span>Área</span><span class="text-center">N</span><span>Rango (barra: P25 a P75, marca: mediana)</span><span>Mediana</span><span>Rango medio</span></div>
+              <ul class="divide-y divide-line">${groups.map(g => {
+                const open = F.open === g.a.id;
+                const titles = open ? Object.values(g.L.reduce((m, x) => { const k = norm(x.title); (m[k] = m[k] || { t: x.title, v: [] }).v.push(x.net); return m; }, {})).map(t => ({ t: t.t, n: t.v.length, p25: qt(t.v, 0.25), med: qt(t.v, 0.5), p75: qt(t.v, 0.75) })).sort((a, b) => b.n - a.n || b.med - a.med) : [];
+                return `<li class="py-3.5">${row(g, `<button type="button" data-sal-open="${g.a.id}" aria-expanded="${open}" class="flex items-center gap-2 font-bold text-left hover:text-brand"><i class="ph ${g.a.icon} text-lg text-ink-soft"></i><span class="truncate">${esc(g.a.label)}</span><i class="ph-bold ${open ? 'ph-caret-up' : 'ph-caret-down'} text-ink-mute"></i></button>`)}
+                  ${open ? `<ul class="mt-3 ml-2 pl-4 border-l-2 border-line space-y-3">${titles.map(t => `<li>${row(t, `<span class="text-ink-soft font-semibold truncate block">${esc(t.t)}</span>`)}</li>`).join('')}</ul>` : ''}</li>`;
+              }).join('')}</ul>
+            </div>`;
+        };
+        draw();
+        $('#sal-fprov').onchange = e => { F.prov = e.target.value; draw(); };
+        const seg = (attr, k) => $$(`[${attr}]`).forEach(b => b.onclick = () => { F[k] = b.getAttribute(attr); $$(`[${attr}]`).forEach(x => { const on = x === b; x.setAttribute('aria-pressed', on); x.classList.toggle('chip-on', on); }); draw(); });
+        seg('data-flv', 'lv'); seg('data-fsh', 'sh');
+        $('#sal-body').onclick = e => { const b = e.target.closest('[data-sal-open]'); if (!b) return; F.open = F.open === b.dataset.salOpen ? '' : b.dataset.salOpen; draw(); };
+        $('#sal-csv').onclick = () => {
+          const q = v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`;
+          const rows = [['Área', 'Puesto', 'Experiencia', 'Jornada', 'Provincia', 'Neto mensual', 'Fecha'], ...pick().map(x => [areaOf(x.area).label, x.title, salLv(x.level), salSh(x.shift), x.province, x.net, (x.at || '').slice(0, 10)])];
+          const blob = new Blob(['﻿' + rows.map(r => r.map(q).join(';')).join('\n')], { type: 'text/csv;charset=utf-8' });
+          const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `pretensiones-salariales${F.prov ? '-' + norm(F.prov).replace(/\s+/g, '-') : ''}.csv`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+          toast('Descargaste el CSV', 'ph-download-simple');
+        };
+      }
+    };
+  }
+
   /* ================= ADMIN: EMPRESAS Y CONSULTORAS ADHERIDAS =================
      Lista todo lo que aparece en "Empresas adheridas": cuentas registradas, perfiles cargados a mano por el admin
      y las cuentas de ejemplo. Desde acá se agrega una empresa a mano, se edita su perfil o se oculta de la página. */
@@ -7682,7 +7846,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const adminSwitch = () => {
     const pend = Store.delReqs().filter(r => r.status === 'pendiente').length;
     return `<div class="-mx-4 px-4 overflow-x-auto mb-6"><div class="inline-flex rounded-full bg-white border border-line p-1 whitespace-nowrap" role="tablist" aria-label="Secciones del panel">
-      ${[['cvs', 'ph-tray', 'CVs recibidos', 0], ['datos', 'ph-shield-check', 'Pedidos de datos', pend], ['notas', 'ph-coffee', 'Charla de café', 0], ['emp', 'ph-buildings', 'Empresas', 0]].map(([v, ic, l, n]) => `<button type="button" role="tab" data-adm-view="${v}" aria-selected="${(S.admView || 'cvs') === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${(S.admView || 'cvs') === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}${n ? `<span class="rounded-full bg-bad text-white px-1.5 text-[0.75rem] leading-5">${n}</span>` : ''}</button>`).join('')}
+      ${[['cvs', 'ph-tray', 'CVs recibidos', 0], ['datos', 'ph-shield-check', 'Pedidos de datos', pend], ['notas', 'ph-coffee', 'Charla de café', 0], ['emp', 'ph-buildings', 'Empresas', 0], ['sal', 'ph-currency-circle-dollar', 'Salarios', 0]].map(([v, ic, l, n]) => `<button type="button" role="tab" data-adm-view="${v}" aria-selected="${(S.admView || 'cvs') === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${(S.admView || 'cvs') === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}${n ? `<span class="rounded-full bg-bad text-white px-1.5 text-[0.75rem] leading-5">${n}</span>` : ''}</button>`).join('')}
     </div></div>`;
   };
   const bindAdminSwitch = () => $$('[data-adm-view]').forEach(b => b.onclick = () => { S.admView = b.dataset.admView; render(); });
@@ -7742,6 +7906,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     if (S.admView === 'datos') return AdminRequests();
     if (S.admView === 'notas') return AdminPosts();
     if (S.admView === 'emp') return AdminCompanies();
+    if (S.admView === 'sal') return AdminSalaries();
     seedAdminCvs();
     const F = S.adm || (S.adm = { st: 'nuevo', q: '', prov: '', area: '' });
     const all = Store.spontCvs();

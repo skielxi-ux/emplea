@@ -347,3 +347,9 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Al tocar un edificio:** la cámara se acerca, el edificio rebota con un anillo coral y se abre una ficha con el logo, el rubro, las búsquedas abiertas (enlazadas a cada aviso), "Ver su página" y "Seguir".
 - **Desde otras páginas:** `#/mapa?e=Nombre` abre el mapa con esa empresa elegida. Se usa en "Ver en el mapa" de la página de la empresa y de "Empresas adheridas".
 - **Carga y respaldo:** Three.js (r128), OrbitControls y GLTFLoader se cargan recién al entrar al mapa. Sin WebGL o sin conexión, se muestra la misma ciudad como lista.
+
+## Pretensión salarial
+- **Candidato con cuenta:** botón **Pretensión salarial** en su menú (con la etiqueta "Nuevo" hasta que la carga) y una tarjeta en Mis postulaciones. Carga área (lista de áreas de las vacantes), puesto o profesión (con sugerencias de esa área), experiencia (sin experiencia, junior, semi senior, senior), jornada (completa o part-time), pretensión neta mensual y provincia. Puede actualizarla cuando quiera; se guarda una por persona.
+- **Anónima:** no la ven las empresas ni las consultoras y no va en las postulaciones. Si la persona borra sus datos, la respuesta queda solo como dato anónimo, sin vínculo con ella.
+- **Admin → Salarios:** filtro por provincia (Tucumán por defecto o todo el país), experiencia y jornada. Muestra respuestas, mediana, rango medio (P25–P75) y últimos 30 días. Abajo, una fila por área con la cantidad de respuestas, una barra con el rango y la mediana, y al abrirla, el detalle por puesto. Con menos de 5 respuestas se marca "Pocas respuestas". Botón para descargar CSV anónimo.
+- **Demo:** trae respuestas de ejemplo (`demo: true`) con montos ficticios para que el tablero no arranque vacío.
