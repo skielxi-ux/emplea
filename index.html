@@ -6,6 +6,9 @@
   <title>+Humanos · Hub de RRHH de Tucumán</title>
   <meta name="description" content="Contanos qué buscás y en qué provincia: te mostramos las vacantes de consultoras y empresas y te postulás con tu CV en segundos.">
   <meta name="theme-color" content="#ffffff">
+  <!-- Seguridad: solo se ejecuta código de este sitio y de jsDelivr (con huella SRI). Ver SEGURIDAD.md -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://cdn.jsdelivr.net; worker-src 'self' blob:; frame-src 'self' blob:; media-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M6 20h28' stroke='%231B2550' stroke-width='5.5' stroke-linecap='round'/%3E%3Cpath d='M20 6v28' stroke='%23F2715A' stroke-width='5.5' stroke-linecap='round'/%3E%3C/svg%3E">
 
   <!-- Tipografía (estilo Meta: sans geométrica-humanista, pesos fuertes en títulos) -->
@@ -14,59 +17,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Swiper (carruseles) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css" integrity="sha384-gAPqlBuTCdtVcYt9ocMOYWrnBZ4XSL6q+4eXqwNycOr4iFczhNKtnYhF3NEXJM51" crossorigin="anonymous">
 
   <!-- Phosphor Icons (librería de íconos profesional) -->
-  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" integrity="sha384-6p9AefaqUhEVheRlj1mpAkbngHXy9mbYMrIdcIt4Jlc9lOLIablJq3bBsLOjGwZ7" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" integrity="sha384-nblAP2mo2pVPyMQZDw9Xy9Cwgs9lowushAYep4w5+Q9kF4Ibf3n0B/gCMVdR+Vqy" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" integrity="sha384-pPVoXE8ft+zxKtxIDDI7SfTK6y95NHm4qa+hKEg/hs8VkjW5IP+9/dGOPCbDpUPl" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css" integrity="sha384-GzhNOdwUkh38xzoNEY1vRdLr+w8q+bXEJsd/km6Ef61w1Kfk+lself6cn14ilrpO" crossorigin="anonymous">
 
-  <!-- Tailwind CSS (Play CDN para el prototipo; ver README para build de producción) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: { DEFAULT: '#3B5BFD', dark: '#2A44D6', soft: '#ECEEFF' },
-            ink: { DEFAULT: '#14123A', soft: '#4A4868', mute: '#64627C' },
-            surface: '#F6F5FB',
-            line: '#E3E1EF',
-            lilac: '#E7E3FF',
-            peach: { DEFAULT: '#FFE9DB', line: '#FFD3B8' },
-            sun: { DEFAULT: '#FFC93C', soft: '#FFF3CF' },
-            mint: '#D8F3E6',
-            ok: '#11946A',
-            warn: '#8F5B0F',
-            bad: '#D9415E'
-          },
-          fontFamily: {
-            sans: ['Figtree', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
-            display: ['"Bricolage Grotesque"', 'Figtree', 'system-ui', 'sans-serif']
-          },
-          boxShadow: {
-            card: '0 1px 0 rgba(20,18,58,.04), 0 10px 28px -18px rgba(20,18,58,.28)',
-            lift: '0 22px 44px -20px rgba(59,91,253,.45)'
-          }
-        }
-      }
-    }
-  </script>
-  <style type="text/tailwindcss">
-    @layer components {
-      .btn { @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold h-12 px-6 text-base transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none select-none whitespace-nowrap; }
-      .btn-primary { @apply bg-brand text-white hover:bg-brand-dark; }
-      .btn-outline { @apply bg-white text-ink border border-line hover:bg-surface; }
-      .btn-soft { @apply bg-brand-soft text-brand hover:bg-[#d8e7ff]; }
-      .btn-sm { @apply h-10 px-4 text-[0.95rem]; }
-      .chip { @apply inline-flex items-center gap-1.5 h-10 px-4 rounded-full border border-line bg-white text-ink font-semibold text-[0.95rem] whitespace-nowrap transition hover:border-brand hover:text-brand; }
-      .chip-on { @apply bg-ink text-white border-ink hover:text-white; }
-      .card { @apply bg-white rounded-[22px] border border-line shadow-card; }
-      .input { @apply w-full h-12 rounded-2xl border border-line bg-white px-4 text-base text-ink placeholder:text-ink-mute/80 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/15; }
-      .label { @apply block font-semibold mb-2; }
-      .icon-btn { @apply w-11 h-11 shrink-0 grid place-items-center rounded-full hover:bg-surface transition text-ink-soft; }
-      .err { @apply text-bad text-[0.95rem] mt-2 font-medium; }
-    }
-  </style>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261029i">
+  <!-- Tailwind CSS compilado (npm run build:css → assets/css/tailwind.css) -->
+  <link rel="stylesheet" href="assets/css/tailwind.css?v=20261029j">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261029j">
 </head>
 <body class="bg-surface text-ink font-sans antialiased">
   <div id="app" class="min-h-[100dvh] flex flex-col">
@@ -78,15 +39,15 @@
   <div id="toast-root" aria-live="polite"></div>
 
   <!-- Librerías -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js" integrity="sha384-2UI1PfnXFjVMQ7/ZDEF70CR943oH3v6uZrFQGGqJYlvhh4g6z6uVktxYbOlAczav" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js" integrity="sha384-MTDrIlFOzEqpmOxY6UIA/1Zkh0a64UlmJ6R0UrZXqXCPx99siPGi8EmtQjIeCcTH" crossorigin="anonymous"></script>
   <!-- SortableJS (arrastrar y soltar en el tablero) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js" integrity="sha384-BSxuMLxX+FCbTdYec3TbXlnMGEEM2QXTFdtDaveen71o+jswm2J36+xFqp8k4VHM" crossorigin="anonymous"></script>
 
   <!-- App -->
-  <script src="assets/js/data.js?v=20261029i"></script>
-  <script src="assets/js/store.js?v=20261029i"></script>
-  <script src="assets/js/app.js?v=20261029i"></script>
+  <script src="assets/js/data.js?v=20261029j"></script>
+  <script src="assets/js/store.js?v=20261029j"></script>
+  <script src="assets/js/app.js?v=20261029j"></script>
 </body>
 </html>

@@ -102,14 +102,13 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 
 ## Para producción
 
-1. **Tailwind compilado** (el Play CDN es solo para prototipos):
+Ver también **SEGURIDAD.md**: qué está protegido hoy y qué falta antes de lanzar con datos reales.
+
+
+1. **Tailwind compilado**: `index.html` ya carga `assets/css/tailwind.css`. Cada vez que se cambian clases, se regenera con:
    ```bash
    npm install
    npm run build:css
-   ```
-   En `index.html` reemplazá el `<script src="https://cdn.tailwindcss.com">`, el bloque `tailwind.config` y el `<style type="text/tailwindcss">` por:
-   ```html
-   <link rel="stylesheet" href="assets/css/tailwind.css">
    ```
 2. **Backend**: todas las lecturas y escrituras pasan por `assets/js/store.js`. Reemplazando esas funciones por llamadas a una API (por ejemplo Supabase: tablas `jobs`, `applications`, `companies` y un bucket para los PDFs) el resto del sitio no cambia.
 3. **Cuentas**: empresas y consultoras ingresan con email y contraseña (o crean su cuenta); candidatos, con su celular y un código por WhatsApp. En el prototipo las cuentas se guardan en el navegador y el código se muestra en pantalla: en producción van al servidor (Supabase Auth) y el código se envía por la API de WhatsApp. Cuenta demo de empresa: talento@demo.com.ar · demo1234.
@@ -188,7 +187,7 @@ src/input.css           Componentes (.btn, .chip, .card, .input…)
 - Del lado del candidato tampoco hay coincidencia: el aviso y las cards de vacantes no muestran porcentaje. "Para vos" filtra por rubro y provincia, y las vacantes se ordenan por fecha.
 
 ## Panel de administración (#/admin)
-- Acceso con un link chico "Admin" en el pie. La clave no figura en el código: solo su huella (SHA-256). En producción va con usuario y contraseña validados en el servidor.
+- Acceso con un link chico "Admin" en el pie. La clave no figura en el código: solo su huella (PBKDF2 con sal), y se bloquea 5 minutos después de 5 intentos fallidos. En producción va con usuario y contraseña validados en el servidor.
 - Recibe los CVs que llegan por "Enviar CV": estados Por revisar / Aprobados / Descartados, buscador, filtros por provincia y área, Ver CV, WhatsApp y Eliminar.
 - Solo los CVs aprobados pasan a la Base de datos (pestaña de la plataforma) de empresas y consultoras.
 - Trae 6 CVs de ejemplo la primera vez (se borran con "Restablecer demo").

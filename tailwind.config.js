@@ -1,5 +1,5 @@
 /** Configuración para el build de producción (npm run build:css).
- *  Es la misma que usa index.html con el Play CDN. */
+    index.html carga el resultado: assets/css/tailwind.css */
 module.exports = {
   content: ['./index.html', './assets/js/**/*.js'],
   theme: {

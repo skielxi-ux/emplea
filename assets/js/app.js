@@ -13,6 +13,8 @@
   'use strict';
 
   const $ = (s, el = document) => el.querySelector(s);
+  // Imágenes que no cargan se quitan (reemplaza onerror en línea, que la política de seguridad bloquea)
+  document.addEventListener('error', e => { const t = e.target; if (t && t.tagName === 'IMG' && t.hasAttribute('data-rm')) t.remove(); }, true);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const view = $('#view'), topbar = $('#topbar'), bottombar = $('#bottombar'), sheetRoot = $('#sheet-root'), toastRoot = $('#toast-root');
   const S = { talentTab: 'bank', bank: { q: '', job: '', tags: [], fav: false }, chatPreset: null, filter: null, q: '', swipers: [], appJob: 'all', appView: 'list', appSort: 'match', appClient: 'all', dashClient: 'all', appStatus: 'all', cand: { q: '', area: '', province: '' }, dirty: false };
@@ -667,7 +669,7 @@
           <div class="swiper-wrapper">
             ${SLIDES.map((sl, i) => `
             <div class="swiper-slide relative overflow-hidden" style="background:${sl.tint}" aria-label="${i + 1} de ${SLIDES.length}">
-              <img src="${IMG(sl.img)}" alt="" class="hero-img absolute inset-0 w-full h-full object-cover" style="object-position:${sl.pos}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} onerror="this.remove()">
+              <img src="${IMG(sl.img)}" alt="" class="hero-img absolute inset-0 w-full h-full object-cover" style="object-position:${sl.pos}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} data-rm>
               <div class="absolute inset-0 hero-shade" aria-hidden="true"></div>
               <div class="relative h-full max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-32 sm:pb-36 lg:pb-44 flex items-end">
                 <div class="max-w-[40rem] lg:max-w-[48rem] text-white">
@@ -784,9 +786,9 @@
         <div class="grid gap-12 lg:gap-16 lg:grid-cols-2 items-center">
           <div class="relative h-[340px] sm:h-[420px] lg:h-[460px]" aria-hidden="true">
             <div class="absolute right-0 top-0 w-[60%] h-full rounded-[22px] overflow-hidden bg-brand-soft">
-              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=70" alt="" class="w-full h-full object-cover" loading="lazy" onerror="this.remove()"></div>
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=70" alt="" class="w-full h-full object-cover" loading="lazy" data-rm></div>
             <div class="absolute left-0 bottom-0 w-[46%] h-[62%] rounded-[22px] overflow-hidden bg-lilac ring-8 ring-surface">
-              <img src="https://images.unsplash.com/photo-1698047682091-782b1e5c6536?auto=format&fit=crop&w=700&q=70" alt="" class="w-full h-full object-cover" loading="lazy" onerror="this.remove()"></div>
+              <img src="https://images.unsplash.com/photo-1698047682091-782b1e5c6536?auto=format&fit=crop&w=700&q=70" alt="" class="w-full h-full object-cover" loading="lazy" data-rm></div>
             <div class="absolute left-[18%] top-[22%] bg-white rounded-2xl shadow-[0_24px_48px_-20px_rgba(20,18,58,.35)] border border-line px-4 py-3.5 flex items-center gap-3.5 max-w-[17rem]">
               <span class="w-12 h-12 rounded-xl bg-sun-soft text-warn grid place-items-center shrink-0"><i class="ph-fill ph-tray text-2xl"></i></span>
               <span class="leading-tight"><span class="block font-display font-bold text-[1.05rem]">12 CVs nuevos</span><span class="block text-ink-soft text-[0.92rem] mt-0.5">Listos para revisar</span></span>
@@ -829,7 +831,7 @@
             <div class="swiper js-pain h-[520px] sm:h-[540px] lg:h-[600px] !pb-0">
               <div class="swiper-wrapper">
                 ${P.map((sl, i) => `<div class="swiper-slide relative overflow-hidden" style="background:${sl.tint}" aria-label="${i + 1} de ${P.length}">
-                  <img src="${IMG(sl.img)}" alt="" class="hero-img absolute inset-0 w-full h-full object-cover" style="object-position:${sl.pos}" loading="lazy" onerror="this.remove()">
+                  <img src="${IMG(sl.img)}" alt="" class="hero-img absolute inset-0 w-full h-full object-cover" style="object-position:${sl.pos}" loading="lazy" data-rm>
                   <div class="absolute inset-0 hero-shade" aria-hidden="true"></div>
                   ${sl.dim ? '<div class="absolute inset-0 bg-ink/55" aria-hidden="true"></div>' : ''}
                   <div class="relative h-full max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-28 sm:pb-32 flex items-end">
@@ -1031,7 +1033,7 @@
     const jobs = Store.jobs().filter(j => j.status === 'activa');
     const nProv = new Set(jobs.map(j => j.province)).size;
     const nCos = new Set(jobs.map(j => j.client || j.company)).size;
-    const ph = (i, cls) => { const [id, alt] = ABOUT_PHOTOS[i]; return `<div class="about-ph rounded-[18px] overflow-hidden bg-brand-soft ${cls}"><img src="https://images.unsplash.com/${id}?auto=format&fit=crop&w=700&q=70" alt="${alt}" loading="lazy" class="w-full h-full object-cover" onerror="this.remove()"></div>`; };
+    const ph = (i, cls) => { const [id, alt] = ABOUT_PHOTOS[i]; return `<div class="about-ph rounded-[18px] overflow-hidden bg-brand-soft ${cls}"><img src="https://images.unsplash.com/${id}?auto=format&fit=crop&w=700&q=70" alt="${alt}" loading="lazy" class="w-full h-full object-cover" data-rm></div>`; };
     // Contadores: arrancan en 0 y suben hasta el valor cuando el bloque entra en pantalla
     const stat = (n, l) => `<div class="text-center"><p class="font-display text-[3rem] sm:text-[3.6rem] leading-none font-extrabold text-brand tabular-nums"><span data-count="${n}" aria-hidden="true">0</span><span class="sr-only">${n}</span></p><p class="mt-2 text-ink-soft text-[1.05rem]">${l}</p></div>`;
     return {
@@ -1641,12 +1643,25 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   }
 
   /* ----- Postulación rápida con CV en PDF ----- */
+  // El worker de pdf.js se baja verificando su huella (SRI) y se usa desde un blob. Además, isEvalSupported: false
+  // evita la ejecución de código desde fuentes de un PDF malicioso (CVE-2024-4367).
+  const PDF_WORKER = ['https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js', 'sha384-SnzOobpRMLXZ52iJvZm/C0fYw0OQemTXzTjIsdsfMcrCtCEe9qgzxTd3RSklO5x2'];
+  let pdfWorkerP = null;
+  const pdfReady = () => pdfWorkerP || (pdfWorkerP = fetch(PDF_WORKER[0], { integrity: PDF_WORKER[1], mode: 'cors', credentials: 'omit' })
+    .then(r => { if (!r.ok) throw new Error('worker'); return r.blob(); })
+    .then(b => { pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([b], { type: 'text/javascript' })); })
+    .catch(e => { pdfWorkerP = null; throw e; }));
+  const pdfOpen = data => pdfReady().then(() => pdfjsLib.getDocument({ data, isEvalSupported: false, enableXfa: false }).promise);
+  // Revisa los primeros bytes: que un .pdf sea de verdad un PDF y un .docx/.doc, un Word (no un HTML o un ejecutable renombrado)
+  const MAGIC = { pdf: [[0x25, 0x50, 0x44, 0x46]], docx: [[0x50, 0x4B, 0x03, 0x04]], doc: [[0xD0, 0xCF, 0x11, 0xE0], [0x50, 0x4B, 0x03, 0x04]] };
+  const magicOk = async (f, ext) => { try { const b = new Uint8Array(await f.slice(0, 8).arrayBuffer()); return (MAGIC[ext] || []).some(m => m.every((x, i) => b[i] === x)); } catch (e) { return false; } };
+  // Al abrir un CV guardado, el tipo se fuerza: PDF se muestra como PDF; cualquier otra cosa solo se descarga
+  const safeCvBlob = b => new Blob([b], { type: !b.type || /pdf/.test(b.type) ? 'application/pdf' : 'application/octet-stream' });
   async function extractFromPdf(file) {
     const out = { pages: null };
     if (!window.pdfjsLib) return out;
     try {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+      const pdf = await pdfOpen(await file.arrayBuffer());
       out.pages = pdf.numPages;
       const lines = [];
       for (let i = 1; i <= Math.min(pdf.numPages, 3); i++) {
@@ -1721,6 +1736,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         if (!CV_TYPES[ext] || !okType) { inp.value = ''; return show(err, 'Solo se aceptan archivos PDF o Word (.doc, .docx).'); }
         if (f.size > 5 * 1048576) { inp.value = ''; return show(err, 'El archivo pesa más de 5 MB. Probá guardarlo de nuevo en menor calidad.'); }
         if (!f.size) { inp.value = ''; return show(err, 'El archivo está vacío. Elegí otro.'); }
+        if (!(await magicOk(f, ext))) { inp.value = ''; return show(err, 'El archivo no es un PDF o Word válido. Exportalo de nuevo y volvé a subirlo.'); }
         A.file = f; A.text = '';
         if (ext !== 'pdf') { zone.innerHTML = fileCard(f, `${fmtSize(f.size)} · Word`); return; }
         zone.innerHTML = fileCard(f, '<i class="ph ph-circle-notch spin"></i> Leyendo tu CV…');
@@ -1836,6 +1852,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         if (!f) return;
         if (!(f.type === 'application/pdf' || /\.pdf$/i.test(f.name))) return showErr(errEl, 'El CV tiene que ser un archivo PDF.');
         if (f.size > 5 * 1048576) return showErr(errEl, 'El archivo pesa más de 5 MB. Probá exportarlo de nuevo en menor calidad.');
+        if (!(await magicOk(f, 'pdf'))) return showErr(errEl, 'El archivo no es un PDF válido. Exportalo de nuevo y volvé a subirlo.');
         A.file = f; A.useSaved = false; A.text = '';
         zone.innerHTML = fileCard(f.name, f.size, '<i class="ph ph-circle-notch spin"></i> Leyendo tu CV…');
         const info = await extractFromPdf(f);
@@ -2331,6 +2348,20 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
 
   /* ================= VISTAS: EMPRESA ================= */
 
+  /* Contraseñas: PBKDF2-SHA256 con sal aleatoria y 600.000 vueltas (recomendación OWASP). Nunca se guarda la contraseña.
+     Las cuentas viejas (hash simple) se pasan a PBKDF2 la primera vez que ingresan. En producción esto va en el servidor. */
+  const PB_IT = 600000, hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+  const pbkdf2 = async (pass, saltHex, it = PB_IT) => { const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveBits']); return hex(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new Uint8Array(saltHex.match(/../g).map(h => parseInt(h, 16))), iterations: it }, k, 256)); };
+  const hashPass = async pass => { const salt = hex(crypto.getRandomValues(new Uint8Array(16))); return `pb$${PB_IT}$${salt}$${await pbkdf2(pass, salt)}`; };
+  const sameStr = (a, b) => { if (a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; };
+  const checkPass = async (pass, stored) => { if (!stored) return false; if (stored.startsWith('pb$')) { const [, it, salt, h] = stored.split('$'); return sameStr(await pbkdf2(pass, salt, +it), h); } return stored === Store.passHash(pass); };
+  // Freno a la fuerza bruta: 5 intentos fallidos bloquean 5 minutos (por formulario, en este navegador)
+  const lockKey = k => 'emplea.lock.' + k;
+  const lockLeft = k => { try { const o = JSON.parse(localStorage.getItem(lockKey(k)) || '{}'); return o.until && o.until > Date.now() ? Math.ceil((o.until - Date.now()) / 60000) : 0; } catch (e) { return 0; } };
+  const lockFail = k => { try { const o = JSON.parse(localStorage.getItem(lockKey(k)) || '{}'); const n = (o.until && o.until < Date.now() ? 0 : o.n || 0) + 1; localStorage.setItem(lockKey(k), JSON.stringify(n >= 5 ? { n: 0, until: Date.now() + 5 * 60000 } : { n })); } catch (e) { /* sin storage */ } };
+  const lockClear = k => { try { localStorage.removeItem(lockKey(k)); } catch (e) { /* sin storage */ } };
+  const lockMsg = m => `Demasiados intentos. Probá de nuevo en ${m} minuto${m === 1 ? '' : 's'}.`;
+
   function CoLogin(params) {
     if (params && params.get('crear')) S.coAuth = 'signup';
     const tab = S.coAuth === 'signup' ? 'signup' : 'login';
@@ -2395,18 +2426,23 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         const fl = $('#co-login');
         if (fl) {
           $('#co-forgot').onclick = () => { const em = $('#co-email').value.trim(); toast(em ? `Te mandamos un link a ${em} para crear una contraseña nueva` : 'Escribí tu email y te mandamos un link', 'ph-envelope-simple'); };
-          fl.onsubmit = e => {
+          fl.onsubmit = async e => {
             e.preventDefault();
             const em = $('#co-email').value.trim().toLowerCase(), pass = $('#co-pass').value;
             if (!/^\S+@\S+\.\S+$/.test(em)) { err('#co-err', 'Escribí un email válido.'); return; }
+            if (lockLeft('co')) { err('#co-err', lockMsg(lockLeft('co'))); return; }
             const acc = Store.coAccount(em);
             if (!acc) { err('#co-err', 'No encontramos una cuenta con ese email.'); $('#co-err').insertAdjacentHTML('beforeend', ' <button type="button" class="font-semibold text-brand underline" data-auth-go>Crear una cuenta</button>'); $('[data-auth-go]').onclick = () => { S.coAuth = 'signup'; render({ keep: true }); }; return; }
-            if (acc.pass !== Store.passHash(pass)) { err('#co-err', 'La contraseña no es correcta.'); return; }
+            const btn = fl.querySelector('button.btn-primary'); btn.disabled = true;
+            const ok = await checkPass(pass, acc.pass); btn.disabled = false;
+            if (!ok) { lockFail('co'); err('#co-err', lockLeft('co') ? lockMsg(lockLeft('co')) : 'La contraseña no es correcta.'); return; }
+            lockClear('co');
+            if (!String(acc.pass).startsWith('pb$')) Store.addCoAccount(em, { ...acc, pass: await hashPass(pass) });
             enter({ ...acc, email: em });
           };
         }
         const fs = $('#co-signup');
-        if (fs) fs.onsubmit = e => {
+        if (fs) fs.onsubmit = async e => {
           e.preventDefault();
           const name = $('#cs-name').value.trim(), em = $('#cs-email').value.trim().toLowerCase(), pass = $('#cs-pass').value, type = $('input[name="cs-type"]:checked').value;
           if (name.length < 2) { err('#cs-err', 'Escribí el nombre de tu empresa o consultora.'); return; }
@@ -2414,7 +2450,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           if (Store.coAccount(em)) { err('#cs-err', 'Ya hay una cuenta con ese email. Ingresá desde "Ingresar".'); return; }
           if (pass.length < 8) { err('#cs-err', 'La contraseña tiene que tener al menos 8 caracteres.'); return; }
           if (!$('#cs-terms').checked) { err('#cs-err', 'Para crear la cuenta tenés que aceptar los términos.'); return; }
-          Store.addCoAccount(em, { name, type, pass: Store.passHash(pass), createdAt: new Date().toISOString() });
+          Store.addCoAccount(em, { name, type, pass: await hashPass(pass), createdAt: new Date().toISOString() });
           if (!Store.coProfile(name).contactEmail) Store.saveCoProfile(name, { contactEmail: em });
           enter({ name, type, email: em });
         };
@@ -3885,7 +3921,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   async function viewCv(app, cand) {
     if (cand && cand.sp) {
       const blob = (await Store.getCv('sp-' + cand.sp.id)) || (cand.sp.demo ? demoPdf(cand.sp) : null); if (!blob) { toast('No encontramos el archivo del CV', 'ph-warning'); return; }
-      const url = URL.createObjectURL(blob);
+      const url = URL.createObjectURL(cand.sp.cvType === 'pdf' ? safeCvBlob(blob) : new Blob([blob], { type: 'application/octet-stream' }));
       if (cand.sp.cvType === 'pdf') window.open(url, '_blank');
       else { const a = document.createElement('a'); a.href = url; a.download = cand.sp.cvName || 'CV.docx'; a.click(); toast('Descargando el CV en Word', 'ph-download-simple'); }
       setTimeout(() => URL.revokeObjectURL(url), 60000); return;
@@ -3893,8 +3929,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const w = window.open('', '_blank');
     let blob = app ? await Store.getCv(app.id) : null;
     if (!blob) blob = demoPdf(cand || app);
-    const url = URL.createObjectURL(blob);
-    if (w) w.location.href = url;
+    const url = URL.createObjectURL(safeCvBlob(blob));
+    if (w) { w.opener = null; w.location.href = url; }
     else { const a = document.createElement('a'); a.href = url; a.download = (app && app.cvName) || 'CV.pdf'; a.click(); }
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
@@ -4719,7 +4755,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       let blob = await Store.getCv(a.id);
       if (!blob) blob = demoPdf(SEED_CANDIDATES.find(c => c.id === a.cand) || a);
       if (!document.getElementById('cvv-root')) return;
-      const url = URL.createObjectURL(blob); root._url = url;
+      const url = URL.createObjectURL(safeCvBlob(blob)); root._url = url;
       $('#cvv-open').href = url; $('#cvv-dl').href = url; $('#cvv-dl').download = a.cvName || `CV ${a.name}.pdf`;
       const doc = $('#cvv-doc');
       if (!/pdf/.test(blob.type || 'application/pdf')) {
@@ -4732,8 +4768,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       // Se dibuja con pdf.js (funciona igual en compu y celular); si falla, el visor del navegador
       if (window.pdfjsLib) {
         try {
-          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-          const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
+          const pdf = await pdfOpen(new Uint8Array(await blob.arrayBuffer()));
           if (!document.getElementById('cvv-root')) return;
           doc.className = 'flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 sm:p-6 space-y-4';
           doc.innerHTML = '';
@@ -6322,7 +6357,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const fmtLong = iso => new Date(iso).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
   const readMins = p => Math.max(2, Math.round(([p.intro, ...(p.qa || []).flat()].join(' ').split(/\s+/).length) / 180));
   const livePosts = () => Store.posts().filter(p => p.published).sort((a, b) => new Date(b.date) - new Date(a.date));
-  const postImg = (p, cls) => `<div class="${cls} overflow-hidden bg-brand-soft">${p.img ? `<img src="${esc(imgSrc(p.img, 1200))}" alt="" class="w-full h-full object-cover transition duration-500 group-hover:scale-[1.03]" loading="lazy" onerror="this.remove()">` : `<div class="w-full h-full grid place-items-center text-brand/40"><i class="ph-fill ph-coffee text-6xl"></i></div>`}</div>`;
+  const postImg = (p, cls) => `<div class="${cls} overflow-hidden bg-brand-soft">${p.img ? `<img src="${esc(imgSrc(p.img, 1200))}" alt="" class="w-full h-full object-cover transition duration-500 group-hover:scale-[1.03]" loading="lazy" data-rm>` : `<div class="w-full h-full grid place-items-center text-brand/40"><i class="ph-fill ph-coffee text-6xl"></i></div>`}</div>`;
   const catPill = (id, light) => { const c = catOf(id); return `<span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[0.82rem] font-bold ${light ? 'bg-white/90 text-ink' : 'bg-brand-soft text-brand'}"><i class="ph-fill ${c[2]}"></i>${esc(c[1])}</span>`; };
   const byline = p => `<span class="flex items-center gap-2.5 min-w-0">${p.consultora ? logo(p.consultora, 'w-9 h-9 text-[0.7rem]') : `<span class="w-9 h-9 rounded-xl bg-white border border-line grid place-items-center shrink-0">${MARK('w-6 h-6')}</span>`}<span class="min-w-0 leading-tight"><span class="block font-semibold text-ink truncate">${esc(p.consultora || '')}</span><span class="block text-[0.85rem] text-ink-mute truncate">${fmtDate(p.date)} · ${readMins(p)} min de lectura</span></span></span>`;
   const postCard = p => `<li><a href="#/cafe/nota?id=${encodeURIComponent(p.id)}" class="group h-full flex flex-col rounded-[22px] bg-white border border-line overflow-hidden hover:shadow-lift hover:border-brand/30 transition">
@@ -6965,11 +7000,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   /* ================= MAPA: CIUDAD DE EMPRESAS EN 3D =================
      Cada edificio es una empresa o consultora; cada calle, un rubro (número fijo según la lista INDUSTRIES).
      Three.js se carga recién al entrar a esta página. Tocar un edificio acerca la cámara y abre su ficha. */
-  const THREE_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-  const ORBIT_SRC = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js';
-  const loadScript = src => new Promise((res, rej) => { if ([...document.scripts].some(s => s.src === src)) return res(); const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  // Cada librería se verifica con su huella (SRI): si el CDN la cambiara, el navegador no la ejecuta
+  const THREE_SRC = ['https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js', 'sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu'];
+  const ORBIT_SRC = ['https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js', 'sha384-wagZhIFgY4hD+7awjQjR4e2E294y6J2HSnd8eTNc15ZubTeQeVRZwhQJ+W6hnBsf'];
+  const loadScript = ([src, sri]) => new Promise((res, rej) => { if ([...document.scripts].some(s => s.src === src)) return res(); const s = document.createElement('script'); s.src = src; if (sri) { s.integrity = sri; s.crossOrigin = 'anonymous'; } s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   let threeReady = null;
-  const GLTF_SRC = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+  const GLTF_SRC = ['https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js', 'sha384-fljlqkjWlmSFjkESkQvm77heIZpoWmXEOzlCA7kOpGUH+95Zk0yGfQieWM2q136E'];
   const loadThree = () => threeReady || (threeReady = loadScript(THREE_SRC).then(() => Promise.all([loadScript(ORBIT_SRC), loadScript(GLTF_SRC)])).catch(e => { threeReady = null; throw e; }));
   // Modelos low-poly de Kenney (City Builder Kit, licencia CC0) con una paleta cálida propia
   const KIT_FILES = {
@@ -7789,8 +7825,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   }
 
   // Solo se guarda la huella (SHA-256) de la clave, no la clave. En producción el acceso se valida en el servidor.
-  const ADMIN_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
-  const sha256 = async t => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, '0')).join('');
+  const ADMIN_HASH = 'pb$600000$c3b0a0250fb0d228fbfca8d78f4951c2$eecf648bb43dbc3af21c197407f7626b28a96efbacad07be97d3cb65617999d0';
   const adminOn = () => { try { return sessionStorage.getItem('emplea.admin') === '1'; } catch (e) { return !!S.admin; } };
   const adminSet = on => { S.admin = on; try { on ? sessionStorage.setItem('emplea.admin', '1') : sessionStorage.removeItem('emplea.admin'); } catch (e) { /* sin storage */ } };
   const SP_ST = {
@@ -7835,9 +7870,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         $('#adm-pass').focus();
         $('#adm-login').onsubmit = async e => {
           e.preventDefault();
-          let ok = false; try { ok = (await sha256($('#adm-pass').value.trim())) === ADMIN_HASH; } catch (er) { ok = false; }
-          if (!ok) { const er = $('#adm-err'); er.textContent = 'La clave no es correcta.'; er.classList.remove('hidden'); return; }
-          adminSet(true); render();
+          const er = $('#adm-err'), say = m => { er.textContent = m; er.classList.remove('hidden'); };
+          if (lockLeft('adm')) return say(lockMsg(lockLeft('adm')));
+          let ok = false; try { ok = await checkPass($('#adm-pass').value.trim(), ADMIN_HASH); } catch (x) { ok = false; }
+          if (!ok) { lockFail('adm'); return say(lockLeft('adm') ? lockMsg(lockLeft('adm')) : 'La clave no es correcta.'); }
+          lockClear('adm'); adminSet(true); render();
         };
       }
     };
