@@ -326,9 +326,11 @@ Nueva pestaña **Admin → Empresas**:
 ## Mapa (ciudad en 3D)
 Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **La ciudad:** cada empresa o consultora es un edificio y cada calle es un rubro. El número de calle es fijo según `INDUSTRIES` (Calle 1 Agro y alimentos, Calle 2 Comercio y retail…). Solo aparecen las calles que tienen empresas.
-- **Estilo:** maqueta isométrica con edificios blancos, la fachada con el color y la inicial de la empresa, cartel con el nombre (y el tilde si está verificada), y cartel con el número y el rubro de cada calle.
+- **Estilo:** maqueta isométrica sobre fondo blanco, con base gruesa de pasto y tierra, cuadras, avenidas, sendas peatonales, faroles, árboles, una fuente y autitos que circulan. Paleta cálida: techos terracota y fachadas crema o durazno.
+- **Edificios según el rubro:** Salud y Educación usan el edificio alto; Comercio, Gastronomía y Turismo, el local con toldo; Industria, Logística y Agro, el galpón; Tecnología, Telecom y Construcción, el edificio de oficinas; RRHH, estudios y servicios, el edificio de dos pisos. Los colores de cada empresa salen de su nombre. Los lotes libres se llenan con casas del barrio en tonos apagados (no se pueden tocar) y plazas, para que las empresas resalten. Cada empresa tiene su cartel con el nombre (y el tilde si está verificada), y cada calle, un cartel con número y rubro en el borde de la maqueta.
+- **Modelos:** [City Builder Kit de Kenney](https://kenney.nl) (licencia CC0), en `assets/models/`. La paleta cálida está en `colormap.png` y se recolorea en el navegador por bloques para cada fachada.
 - **Navegación:** se arrastra para moverse, se pellizca o se usa la rueda para acercar, y con dos dedos o el botón derecho se gira. Tiene botones de acercar, alejar y ver toda la ciudad.
 - **Panel de calles:** cada calle es un botón que lleva hasta ella, y hay un buscador de empresas.
-- **Al tocar un edificio:** la cámara se acerca, el techo se pone coral y se abre una ficha con el logo, el rubro, las búsquedas abiertas (enlazadas a cada aviso), "Ver su página" y "Seguir".
+- **Al tocar un edificio:** la cámara se acerca, el edificio rebota con un anillo coral y se abre una ficha con el logo, el rubro, las búsquedas abiertas (enlazadas a cada aviso), "Ver su página" y "Seguir".
 - **Desde otras páginas:** `#/mapa?e=Nombre` abre el mapa con esa empresa elegida. Se usa en "Ver en el mapa" de la página de la empresa y de "Empresas adheridas".
-- **Carga y respaldo:** Three.js (r128) se carga desde cdnjs recién al entrar al mapa. Sin WebGL o sin conexión, se muestra la misma ciudad como lista.
+- **Carga y respaldo:** Three.js (r128), OrbitControls y GLTFLoader se cargan recién al entrar al mapa. Sin WebGL o sin conexión, se muestra la misma ciudad como lista.

@@ -6958,7 +6958,55 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const ORBIT_SRC = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js';
   const loadScript = src => new Promise((res, rej) => { if ([...document.scripts].some(s => s.src === src)) return res(); const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   let threeReady = null;
-  const loadThree = () => threeReady || (threeReady = loadScript(THREE_SRC).then(() => loadScript(ORBIT_SRC)).catch(e => { threeReady = null; throw e; }));
+  const GLTF_SRC = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+  const loadThree = () => threeReady || (threeReady = loadScript(THREE_SRC).then(() => Promise.all([loadScript(ORBIT_SRC), loadScript(GLTF_SRC)])).catch(e => { threeReady = null; throw e; }));
+  // Modelos low-poly de Kenney (City Builder Kit, licencia CC0) con una paleta cálida propia
+  const KIT_FILES = {
+    'building-garage': 'assets/models/building-garage.glb', 'building-small-a': 'assets/models/building-small-a.glb', 'building-small-b': 'assets/models/building-small-b.glb',
+    'building-small-c': 'assets/models/building-small-c.glb', 'building-small-d': 'assets/models/building-small-d.glb', 'grass': 'assets/models/grass.glb',
+    'grass-trees': 'assets/models/grass-trees.glb', 'grass-trees-tall': 'assets/models/grass-trees-tall.glb', 'pavement': 'assets/models/pavement.glb',
+    'pavement-fountain': 'assets/models/pavement-fountain.glb', 'road-straight': 'assets/models/road-straight.glb', 'road-straight-lightposts': 'assets/models/road-straight-lightposts.glb',
+    'road-intersection': 'assets/models/road-intersection.glb'
+  };
+  const KIT_COLORMAP = 'assets/models/colormap.png';
+  let kitReady = null;
+  const loadCityKit = () => kitReady || (kitReady = new Promise((res, rej) => {
+    const T = window.THREE, img = new Image();
+    img.onload = () => {
+      // Paleta: cada bloque de 32×128 px del colormap es un degradé de un color. Se cambia el tono y se respeta el degradé.
+      const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height; const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0);
+      const src = cx.getImageData(0, 0, cv.width, cv.height);
+      const rgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+      const lum = (d, i) => 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2] || 1;
+      const tex = map => {
+        const out = new ImageData(new Uint8ClampedArray(src.data), src.width, src.height), d = out.data;
+        Object.entries(map).forEach(([b, hex]) => {
+          const [br, bc] = b.split(',').map(Number), col = rgb(hex), x0 = bc * 32, y0 = br * 128, top = lum(src.data, (y0 * src.width + x0 + 16) * 4);
+          for (let y = y0; y < y0 + 128; y++) for (let x = x0; x < x0 + 32; x++) { const i = (y * src.width + x) * 4, f = Math.min(1.08, lum(src.data, i) / top); d[i] = col[0] * f; d[i + 1] = col[1] * f; d[i + 2] = col[2] * f; }
+        });
+        const c2 = document.createElement('canvas'); c2.width = src.width; c2.height = src.height; c2.getContext('2d').putImageData(out, 0, 0);
+        const t = new T.CanvasTexture(c2); t.flipY = false; if (T.sRGBEncoding) t.encoding = T.sRGBEncoding; t.magFilter = T.NearestFilter; t.minFilter = T.NearestFilter; t.generateMipmaps = false;
+        return t;
+      };
+      const own = new Set(), keep = x => (own.add(x), x);
+      const baseMat = keep(new T.MeshLambertMaterial({ map: tex({ '3,7': '#E4DCCF' }) }));
+      const WALLS = ['#F4E6CC', '#F7D3B1', '#EEDDC0', '#F3C7A2', '#EDE4D6', '#F6DCBE'], ROOFS = ['#CF6A43', '#BF5B3B', '#D97B4C', '#C4664A'], ACC = ['#86B26B', '#E2A33B', '#5E9FAE', '#D9785A'];
+      const variants = {};
+      // Las casas del barrio (sin ficha) van en tonos apagados para que las empresas resalten
+      const WALLS_M = ['#EEE8DE', '#E8DFD0', '#F1EBE2'], ROOFS_M = ['#DDB6A0', '#D3AE97', '#E2C3B0'];
+      const variant = (h, muted) => { const k = (muted ? 'm' : '') + h % (WALLS.length * ROOFS.length); if (!variants[k]) { const w = muted ? WALLS_M[h % 3] : WALLS[h % WALLS.length], r = muted ? ROOFS_M[Math.floor(h / 3) % 3] : ROOFS[Math.floor((h % (WALLS.length * ROOFS.length)) / WALLS.length) % ROOFS.length]; variants[k] = keep(new T.MeshLambertMaterial({ map: tex({ '3,7': r, '2,9': w, '2,15': w, '3,11': w, '2,3': muted ? '#BFD2A8' : ACC[h % ACC.length] }) })); } return variants[k]; };
+      const loader = new T.GLTFLoader(), models = {}, height = {};
+      Promise.all(Object.entries(KIT_FILES).map(([n, u]) => new Promise((ok, ko) => loader.load(u, g => {
+        g.scene.traverse(o => { if (o.isMesh) { keep(o.geometry); o.material = baseMat; o.castShadow = n.startsWith('building') || n.includes('trees') || n.includes('fountain') || n.includes('lightposts'); o.receiveShadow = true; } });
+        models[n] = g.scene; height[n] = new T.Box3().setFromObject(g.scene).max.y; ok();
+      }, undefined, ko)))).then(() => res({
+        height, cube: keep(new T.BoxGeometry(1, 1, 1)), owns: x => own.has(x),
+        clone(n, h, muted) { const o = models[n].clone(true); if (h !== undefined) { const m = variant(h, muted); o.traverse(x => { if (x.isMesh) x.material = m; }); } return o; }
+      }), rej);
+    };
+    img.onerror = rej; img.src = KIT_COLORMAP;
+  }).catch(e => { kitReady = null; throw e; }));
+
   const streetNo = ind => INDUSTRIES.indexOf(ind) + 1;
   function cityData() {
     const by = {};
@@ -6968,7 +7016,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
 
   function MapPage(params) {
     const streets = cityData(), total = streets.reduce((a, s) => a + s.cos.length, 0);
-    const html = `<div class="relative bg-[#E4E8F6] overflow-hidden" style="height:calc(100dvh - 4rem)">
+    const html = `<div class="relative bg-white overflow-hidden" style="height:calc(100dvh - 4rem)">
       <div id="city" class="absolute inset-0 touch-none" aria-label="Mapa 3D de empresas. Cada edificio es una empresa."></div>
       <div id="city-load" class="absolute inset-0 grid place-items-center text-ink-soft font-semibold"><span><i class="ph ph-spinner animate-spin text-xl align-middle"></i> Armando la ciudad…</span></div>
       <section class="absolute left-3 top-3 sm:left-5 sm:top-5 w-[calc(100%-1.5rem)] sm:w-[21rem] rounded-[20px] bg-white/95 backdrop-blur border border-line shadow-lift" aria-label="Calles">
@@ -7022,7 +7070,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           card.classList.remove('hidden');
           $('#cc-x', card).onclick = () => { if (S.map3d) S.map3d.select(null); };
         };
-        loadThree().then(() => {
+        loadThree().then(loadCityKit).then(kit => {
           if (!$('#city')) return;
           const insets = () => {
             const r = box.getBoundingClientRect(), pan = document.querySelector('[aria-label="Calles"]'), cd = $('#city-card');
@@ -7031,7 +7079,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             else { ins.t = p.bottom - r.top; if (cd && !cd.classList.contains('hidden')) ins.b = r.bottom - cd.getBoundingClientRect().top; }
             return ins;
           };
-          try { S.map3d = buildCity(box, streets, { onSelect: showCard, insets }); } catch (er) { cityFallback(box, streets); }
+          try { S.map3d = buildCity(box, streets, { onSelect: showCard, insets, kit }); } catch (er) { console.error(er); cityFallback(box, streets); }
           $('#city-load').remove();
           const want = params && params.get('e'); if (want && S.map3d) S.map3d.selectByName(want);
         }).catch(() => { $('#city-load').remove(); cityFallback(box, streets); });
@@ -7055,22 +7103,24 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   }
 
   function buildCity(box, streets, opts) {
-    const T = window.THREE;
+    const T = window.THREE, kit = opts.kit;
     const W = () => box.clientWidth, H = () => box.clientHeight;
     const renderer = new T.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setSize(W() || 300, H() || 300);
     renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
-    renderer.setClearColor(new T.Color(0xE4E8F6)); if (T.sRGBEncoding) renderer.outputEncoding = T.sRGBEncoding;
+    renderer.setClearColor(new T.Color(0xFFFFFF)); if (T.sRGBEncoding) renderer.outputEncoding = T.sRGBEncoding;
     box.appendChild(renderer.domElement);
     const scene = new T.Scene();
-    // Medidas de la ciudad
-    const GAP = 30, LOT = 13, BW = 9, BH = 10, ROAD = 8, START = 14;
+    // Grilla: cada calle ocupa 3 filas (edificios al norte, calle, edificios al sur). Cada 4 lotes cruza una avenida.
+    const S = 10, BLK = 4;
     const maxN = Math.max(1, ...streets.map(s => Math.ceil(s.cos.length / 2)));
-    const len = START + maxN * LOT + 10, depth = Math.max(1, streets.length) * GAP;
-    const cx = len / 2 - 4, cz = (streets.length - 1) * GAP / 2;
+    const nBlocks = Math.max(2, Math.ceil((maxN + 1) / BLK)), cols = nBlocks * (BLK + 1) + 1, rows = Math.max(1, streets.length) * 3;
+    const isAve = c => c % (BLK + 1) === 0, lotCols = [...Array(cols).keys()].filter(c => !isAve(c));
+    const X = c => c * S, Z = r => r * S;
+    const len = (cols - 1) * S, depth = (rows - 1) * S, cx = len / 2, cz = depth / 2;
     // Cámara isométrica
     const cam = new T.OrthographicCamera(-1, 1, 1, -1, -1000, 2000);
-    const fitSize = () => Math.max(len * 0.9, depth * 0.75 + 30) * (W() < 640 ? 0.85 : 0.8);
+    const fitSize = () => Math.max(len * 0.78, depth * 0.72 + 40) * (W() < 640 ? 0.95 : 0.82);
     // El centro de la vista se corre para que los paneles (calles y ficha) no tapen la ciudad
     const setFrustum = () => {
       const a = (W() || 1) / (H() || 1), s = fitSize(), ins = opts.insets ? opts.insets() : { l: 0, r: 0, t: 0, b: 0 };
@@ -7078,111 +7128,135 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       cam.left = -s * a / 2 - ox; cam.right = s * a / 2 - ox; cam.top = s / 2 + oy; cam.bottom = -s / 2 + oy; cam.updateProjectionMatrix();
     };
     setFrustum();
-    cam.position.set(cx + 120, 120, cz + 120); cam.lookAt(cx, 0, cz);
+    cam.position.set(cx + 150, 160, cz + 150); cam.lookAt(cx, 0, cz);
     const ctl = new T.OrbitControls(cam, renderer.domElement);
     ctl.target.set(cx, 0, cz); ctl.enableDamping = true; ctl.dampingFactor = 0.12; ctl.screenSpacePanning = false;
-    ctl.minZoom = 0.6; ctl.maxZoom = 4.5; ctl.minPolarAngle = 0.55; ctl.maxPolarAngle = 1.05;
+    ctl.minZoom = 0.6; ctl.maxZoom = 5; ctl.minPolarAngle = 0.5; ctl.maxPolarAngle = 1.05;
     ctl.touches = { ONE: T.TOUCH.PAN, TWO: T.TOUCH.DOLLY_ROTATE }; ctl.mouseButtons = { LEFT: T.MOUSE.PAN, MIDDLE: T.MOUSE.DOLLY, RIGHT: T.MOUSE.ROTATE };
     ctl.update();
-    // Luces
-    scene.add(new T.HemisphereLight(0xffffff, 0xC9D2EE, 0.95));
-    const sun = new T.DirectionalLight(0xffffff, 0.55); sun.position.set(cx - 60, 120, cz + 80); sun.target.position.set(cx, 0, cz);
-    sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
-    const sc = sun.shadow.camera; sc.left = -len; sc.right = len; sc.top = depth + 40; sc.bottom = -depth - 40; sc.far = 400;
+    // Luces cálidas
+    scene.add(new T.HemisphereLight(0xFFFBF2, 0xD9CBB8, 0.82));
+    const sun = new T.DirectionalLight(0xFFF1DE, 0.62); sun.position.set(cx - 90, 170, cz + 120); sun.target.position.set(cx, 0, cz);
+    sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0008;
+    const sc = sun.shadow.camera, half = Math.max(len, depth) * 0.85 + 30; sc.left = -half; sc.right = half; sc.top = half; sc.bottom = -half; sc.near = 1; sc.far = 600;
     scene.add(sun, sun.target);
-    // Suelo
     const mat = c => new T.MeshLambertMaterial({ color: new T.Color(c).convertSRGBToLinear() });
-    const ground = new T.Mesh(new T.PlaneGeometry(len + 600, depth + 600), mat(0xE4E8F6)); ground.rotation.x = -Math.PI / 2; ground.position.set(cx, -0.05, cz); ground.receiveShadow = true; scene.add(ground);
-    const blockGeo = new T.BoxGeometry(1, 1, 1);
-    const add = (g, m, x, y, z, sx, sy, sz, shadow) => { const o = new T.Mesh(g, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); if (shadow) { o.castShadow = true; o.receiveShadow = true; } scene.add(o); return o; };
+    const box3 = (m, x, y, z, sx, sy, sz, shadow) => { const o = new T.Mesh(kit.cube, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); if (shadow) { o.castShadow = true; o.receiveShadow = true; } scene.add(o); return o; };
+    // Maqueta: base gruesa con pasto arriba, tierra a los costados y sombra suave sobre blanco
+    const M = 7, TH = 7, bw = len + S + M * 2, bd = depth + S + M * 2;
+    const base = new T.Mesh(kit.cube, [mat(0xDCC3A0), mat(0xDCC3A0), mat(0xB9D68F), mat(0xC9AE88), mat(0xE5CFAE), mat(0xE5CFAE)]);
+    base.position.set(cx, -TH / 2 - 0.02, cz); base.scale.set(bw, TH, bd); base.receiveShadow = true; scene.add(base);
+    const ground = new T.Mesh(new T.PlaneGeometry(bw * 6, bd * 6), new T.ShadowMaterial({ opacity: 0.13 }));
+    ground.rotation.x = -Math.PI / 2; ground.position.set(cx, -TH, cz); ground.receiveShadow = true; scene.add(ground);
+    const ao = box3(new T.MeshBasicMaterial({ color: 0xE9E4DC }), cx + 2, -TH - 0.01, cz + 2, bw + 3, 0.01, bd + 3); ao.material.transparent = true; ao.material.opacity = 0.55;
+    const put = (name, c, r, rot = 0, sc2 = 1) => { const o = kit.clone(name); o.position.set(X(c), 0, Z(r)); o.rotation.y = rot; o.scale.setScalar(S * sc2); scene.add(o); return o; };
     // Carteles con texto (canvas → textura)
     const label = (lines, o = {}) => {
-      const cv = document.createElement('canvas'), k = 2, padX = 22, lh = o.big ? 46 : 34;
-      const ctx = cv.getContext('2d'); const fonts = lines.map((l, i) => `${i === 0 ? 700 : 500} ${(i === 0 ? (o.big ? 38 : 26) : 22)}px Figtree, Poppins, sans-serif`);
+      const cv = document.createElement('canvas'), k = 2, padX = 20, lh = o.big ? 46 : 34;
+      const ctx = cv.getContext('2d'); const fonts = lines.map((l, i) => `${i === 0 ? 700 : 500} ${(i === 0 ? (o.big ? 38 : 26) : 22)}px Poppins, Figtree, sans-serif`);
       let w = 0; lines.forEach((l, i) => { ctx.font = fonts[i]; w = Math.max(w, ctx.measureText(l).width + (i === 0 && o.check ? 34 : 0)); });
-      cv.width = (w + padX * 2) * k; cv.height = (lh * lines.length + 22) * k; ctx.scale(k, k);
+      cv.width = (w + padX * 2) * k; cv.height = (lh * lines.length + 20) * k; ctx.scale(k, k);
       const cw = cv.width / k, ch = cv.height / k, r = 14;
       ctx.fillStyle = o.bg || '#ffffff'; ctx.beginPath(); ctx.moveTo(r, 0); ctx.arcTo(cw, 0, cw, ch, r); ctx.arcTo(cw, ch, 0, ch, r); ctx.arcTo(0, ch, 0, 0, r); ctx.arcTo(0, 0, cw, 0, r); ctx.fill();
-      if (!o.bg) { ctx.strokeStyle = '#E3E6EF'; ctx.lineWidth = 2; ctx.stroke(); }
-      lines.forEach((l, i) => { ctx.font = fonts[i]; ctx.fillStyle = o.fg ? o.fg[i] || o.fg[0] : (i === 0 ? '#1B2550' : '#6B7090'); ctx.textBaseline = 'middle'; ctx.fillText(l, padX, 11 + lh * i + lh / 2);
-        if (i === 0 && o.check) { const x = padX + ctx.measureText(l).width + 16, y = 11 + lh / 2; ctx.fillStyle = '#1D9BF0'; ctx.beginPath(); ctx.arc(x, y, 12, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x - 1.5, y + 5); ctx.lineTo(x + 6.5, y - 5); ctx.stroke(); } });
+      if (!o.bg) { ctx.strokeStyle = '#E8E1D6'; ctx.lineWidth = 2; ctx.stroke(); }
+      lines.forEach((l, i) => { ctx.font = fonts[i]; ctx.fillStyle = o.fg ? o.fg[i] || o.fg[0] : (i === 0 ? '#1B2550' : '#6B7090'); ctx.textBaseline = 'middle'; ctx.fillText(l, padX, 10 + lh * i + lh / 2);
+        if (i === 0 && o.check) { const x = padX + ctx.measureText(l).width + 16, y = 10 + lh / 2; ctx.fillStyle = '#1D9BF0'; ctx.beginPath(); ctx.arc(x, y, 12, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x - 1.5, y + 5); ctx.lineTo(x + 6.5, y - 5); ctx.stroke(); } });
       const tex = new T.CanvasTexture(cv); tex.anisotropy = 4; if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
       const sp = new T.Sprite(new T.SpriteMaterial({ map: tex, depthTest: false, transparent: true })); sp.renderOrder = 10;
-      const s = (o.scale || 0.06); sp.scale.set(cw * s, ch * s, 1); sp.center.set(0.5, 0); return sp;
+      const s = (o.scale || 0.05); sp.scale.set(cw * s, ch * s, 1); sp.center.set(0.5, 0); return sp;
     };
-    // Fachada con ventanas e inicial de la empresa
-    const facade = (name, color) => {
-      const cv = document.createElement('canvas'); cv.width = 256; cv.height = 288; const x = cv.getContext('2d');
-      x.fillStyle = '#F7F8FC'; x.fillRect(0, 0, 256, 288);
-      x.fillStyle = '#C9D6F2'; for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) x.fillRect(22 + c * 56, 120 + r * 50, 38, 32);
-      x.fillStyle = color; x.beginPath(); x.roundRect ? x.roundRect(78, 22, 100, 80, 16) : x.rect(78, 22, 100, 80); x.fill();
-      x.fillStyle = '#fff'; x.font = '700 40px Figtree, Poppins, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-      x.fillText(name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase(), 128, 64);
-      const t = new T.CanvasTexture(cv); if (T.sRGBEncoding) t.encoding = T.sRGBEncoding; return t;
-    };
-    const roadMat = mat(0xB9C2DC), walkMat = mat(0xFAFBFE), lineMat = mat(0xFFFFFF), roofMat = mat(0xD5DDF2), sideMat = mat(0xF4F6FC), selRoof = mat(0xF2715A), lotMat = mat(0xF0F2FA);
-    const treeTop = mat(0x9FD3B8), trunk = mat(0xC8B8A6), coneGeo = new T.ConeGeometry(1, 1, 7), cylGeo = new T.CylinderGeometry(1, 1, 1, 6);
-    const tree = (x, z, s = 1) => { add(cylGeo, trunk, x, 0.6 * s, z, 0.25 * s, 1.2 * s, 0.25 * s, true); add(coneGeo, treeTop, x, 2.4 * s, z, 1.3 * s, 2.8 * s, 1.3 * s, true); };
-    const buildings = [];
+    // Calles, avenidas y esquinas
+    const used = new Set(), key = (c, r) => c + ',' + r, tags = [];
+    const roadY = 0.06 * S, white = mat(0xFFFFFF);
     streets.forEach((s, si) => {
-      const z = si * GAP;
-      add(blockGeo, roadMat, cx, 0.1, z, len + 14, 0.2, ROAD, false).receiveShadow = true;
-      add(blockGeo, walkMat, cx, 0.22, z - ROAD / 2 - 1, len + 14, 0.44, 2, false).receiveShadow = true;
-      add(blockGeo, walkMat, cx, 0.22, z + ROAD / 2 + 1, len + 14, 0.44, 2, false).receiveShadow = true;
-      for (let x = -2; x < len + 4; x += 6) add(blockGeo, lineMat, x, 0.22, z, 2.8, 0.02, 0.35, false);
-      // Número pintado en la calle y cartel
-      const plate = label([`${s.n}`], { bg: '#1B2550', fg: ['#ffffff'], scale: 0.09 }); plate.position.set(-3, 0.4, z); scene.add(plate);
-      add(cylGeo, mat(0x8F99B8), 6, 2.6, z - ROAD / 2 - 1.6, 0.14, 5.2, 0.14, true);
-      const sg = label([`Calle ${s.n}`, s.ind], { scale: 0.06 }); sg.position.set(6, 5.3, z - ROAD / 2 - 1.6); scene.add(sg);
-      s.cos.forEach((e, k) => {
-        const side = k % 2 ? 1 : -1, bx = START + Math.floor(k / 2) * LOT, bz = z + side * (ROAD / 2 + 2 + BW / 2 + 1.6);
-        const color = companyOf(e.name).color || '#3B5BFD';
-        const front = new T.MeshLambertMaterial({ map: facade(e.name, color) });
-        // Caras: +x, -x, +y, -y, +z, -z. La fachada mira a la calle.
-        const mats = [sideMat, sideMat, roofMat, sideMat, side < 0 ? front : sideMat, side > 0 ? front : sideMat];
-        add(blockGeo, lotMat, bx, 0.2, bz, BW + 2.6, 0.4, BW + 2.4, false).receiveShadow = true;
-        const b = new T.Mesh(new T.BoxGeometry(BW, BH, BW), mats); b.position.set(bx, BH / 2 + 0.4, bz); b.castShadow = true; b.receiveShadow = true; scene.add(b);
-        const cap = add(blockGeo, roofMat, bx, BH + 0.4 + 0.25, bz, BW + 0.6, 0.5, BW + 0.6, true);
-        const lb = label([e.name.length > 22 ? e.name.slice(0, 21) + '…' : e.name], { check: isVerified(e.name), scale: 0.06 }); lb.position.set(bx, BH + 1.9, bz); scene.add(lb);
-        b.userData = { e, cap, lb, baseY: b.position.y }; buildings.push(b);
-        if (k % 2 === 0) tree(bx + LOT / 2, bz + side * (BW / 2 - 1.5), 0.9);
-      });
-      tree(-6, z - ROAD / 2 - 4, 1.1); tree(-6, z + ROAD / 2 + 4, 1.1);
+      const r = si * 3 + 1;
+      for (let c = 0; c < cols; c++) {
+        used.add(key(c, r));
+        if (isAve(c)) { put('road-intersection', c, r); continue; }
+        put(c % (BLK + 1) === 2 ? 'road-straight-lightposts' : 'road-straight', c, r, Math.PI / 2);
+        // Senda peatonal junto a cada esquina
+        if (isAve(c - 1) || isAve(c + 1)) { const ex = X(c) + (isAve(c - 1) ? -0.36 : 0.36) * S; for (let j = -2; j <= 2; j++) box3(white, ex, roadY, Z(r) + j * 0.13 * S, 0.17 * S, 0.02, 0.065 * S); }
+      }
+      // Cartel de la calle en el borde de la maqueta
+      const sg = label([`Calle ${s.n}`, s.ind], { bg: '#1B2550', fg: ['#ffffff', '#C9D1F0'], scale: 0.05 }); sg.position.set(-S * 0.5 - M / 2, 6, Z(r)); scene.add(sg); tags.push(sg);
+      box3(mat(0x8F8780), -S * 0.5 - M / 2, 3, Z(r), 0.3, 6, 0.3, true);
     });
+    for (let c = 0; c < cols; c++) if (isAve(c)) for (let r = 0; r < rows; r++) if (!used.has(key(c, r))) { used.add(key(c, r)); put('road-straight', c, r); }
+    // Edificios: el modelo depende del rubro; los colores de fachada y techo, de la empresa
+    const MODEL = {
+      'Salud': ['building-small-c'], 'Agro y alimentos': ['building-garage', 'building-small-d'], 'Industria y manufactura': ['building-garage'], 'Logística y transporte': ['building-garage'],
+      'Energía y minería': ['building-garage', 'building-small-b'], 'Construcción e inmobiliaria': ['building-small-b', 'building-garage'],
+      'Comercio y retail': ['building-small-d'], 'Gastronomía y hotelería': ['building-small-d', 'building-small-c'], 'Turismo': ['building-small-d', 'building-small-a'],
+      'Tecnología y software': ['building-small-b', 'building-small-c'], 'Telecomunicaciones': ['building-small-b'], 'Finanzas y seguros': ['building-small-c', 'building-small-b'],
+      'Consultoría de RRHH': ['building-small-a', 'building-small-c'], 'Estudios contables y jurídicos': ['building-small-a'], 'Servicios profesionales': ['building-small-a', 'building-small-b'],
+      'Marketing y comunicación': ['building-small-a', 'building-small-d'], 'Educación': ['building-small-c', 'building-small-a'], 'Gobierno y ONG': ['building-small-c']
+    };
+    const ALL = ['building-small-a', 'building-small-b', 'building-small-c', 'building-small-d', 'building-garage'];
+    const hash = t => { let h = 7; for (const ch of t) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
+    const ring = new T.Mesh(new T.RingGeometry(0.56 * S, 0.68 * S, 40), new T.MeshBasicMaterial({ color: new T.Color(0xF2715A).convertSRGBToLinear(), transparent: true, opacity: 0.95, depthWrite: false }));
+    ring.rotation.x = -Math.PI / 2; ring.visible = false; ring.renderOrder = 2; scene.add(ring);
+    const buildings = [];
+    streets.forEach((s, si) => s.cos.forEach((e, k) => {
+      const north = k % 2 === 0, r = si * 3 + (north ? 0 : 2), c = lotCols[Math.floor(k / 2)], h = hash(e.name);
+      const list = MODEL[s.ind] || ALL, name = list[(Math.floor(k / 2) + (north ? 0 : 1)) % list.length];
+      const g = kit.clone(name, h); g.position.set(X(c), 0, Z(r)); g.rotation.y = north ? 0 : Math.PI; g.scale.setScalar(S); scene.add(g); used.add(key(c, r));
+      const top = kit.height[name] * S;
+      const lb = label([e.name.length > 20 ? e.name.slice(0, 19) + '…' : e.name], { check: isVerified(e.name), scale: 0.045 }); lb.position.set(X(c), top + 2.2, Z(r)); scene.add(lb);
+      g.userData = { e, lb, baseY: 0, top }; buildings.push(g); tags.push(lb);
+    }));
+    // Lotes libres: casas del barrio (sin ficha), plazas, árboles y una fuente en el centro
+    const fill = ['grass-trees', 'grass-trees-tall', 'grass', 'pavement', 'grass-trees'], homes = ['building-small-a', 'building-small-b', 'building-small-d', 'building-small-c', 'building-small-a', 'building-garage'];
+    let fountain = false;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      if (used.has(key(c, r))) continue;
+      const centre = !fountain && c >= cols / 2 - 1 && r >= (rows - 1) / 2 - 1, h = hash(c * 7 + ':' + r * 13);
+      if (centre) { fountain = true; put('pavement-fountain', c, r); continue; }
+      if (h % 100 < 52) { const g = kit.clone(homes[(h >>> 3) % homes.length], h >>> 5, true); g.position.set(X(c), 0, Z(r)); g.rotation.y = r % 3 === 0 ? 0 : Math.PI; g.scale.setScalar(S); scene.add(g); continue; }
+      put(fill[(h >>> 4) % fill.length], c, r, (h % 4) * Math.PI / 2);
+    }
+    // Autitos que recorren las calles
+    const CAR = [0xE4572E, 0x3B7DD8, 0xF2C14E, 0xFFFFFF, 0x6BAA75, 0x2E3A59].map(mat), glass = mat(0xCFE3F1), tire = mat(0x3A3533), cars = [];
+    streets.forEach((s, si) => [0, 1].forEach(j => {
+      const g = new T.Group(), m = CAR[(si * 2 + j) % CAR.length];
+      const b = new T.Mesh(kit.cube, m); b.scale.set(3.4, 1.1, 1.7); b.position.y = 0.95; const t = new T.Mesh(kit.cube, glass); t.scale.set(1.8, 0.9, 1.5); t.position.set(-0.2, 1.9, 0);
+      const t2 = new T.Mesh(kit.cube, m); t2.scale.set(1.9, 0.18, 1.6); t2.position.set(-0.2, 2.4, 0);
+      [-1.1, 1.1].forEach(x => [-0.8, 0.8].forEach(z => { const w = new T.Mesh(kit.cube, tire); w.scale.set(0.8, 0.8, 0.3); w.position.set(x, 0.45, z); g.add(w); }));
+      g.add(b, t, t2); g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+      const dir = j ? -1 : 1; g.rotation.y = dir > 0 ? 0 : Math.PI; g.position.set(0, roadY, Z(si * 3 + 1) + dir * 0.13 * S); scene.add(g);
+      cars.push({ g, dir, speed: 7 + (si * 3 + j * 5) % 5, x: (hash(s.ind + j) % (len + 1)) });
+    }));
     // Animación de la cámara
-    let anim = null, sel = null, raf = 0, alive = true;
+    let anim = null, sel = null, raf = 0, alive = true, last = performance.now();
     const flyTo = (target, zoom, ms = 650) => { anim = { t0: performance.now(), ms, from: ctl.target.clone(), to: target.clone(), z0: cam.zoom, z1: zoom, off: cam.position.clone().sub(ctl.target) }; };
     const select = b => {
-      if (sel) { sel.userData.cap.material = roofMat; sel.position.y = sel.userData.baseY; }
-      sel = b || null;
-      if (sel) { sel.userData.cap.material = selRoof; flyTo(new T.Vector3(sel.position.x, 0, sel.position.z), Math.max(cam.zoom, W() < 640 ? 2 : 1.9)); }
+      if (sel) sel.position.y = 0;
+      sel = b || null; ring.visible = !!sel;
+      if (sel) { ring.position.set(sel.position.x, 0.35, sel.position.z); flyTo(new T.Vector3(sel.position.x, 0, sel.position.z), Math.max(cam.zoom, W() < 640 ? 2.2 : 2)); }
       opts.onSelect(sel ? sel.userData.e : null);
     };
+    const owner = o => { while (o && !(o.userData && o.userData.e)) o = o.parent; return o; };
     // Tocar un edificio (sin arrastrar)
     const ray = new T.Raycaster(), ptr = new T.Vector2(); let down = null;
     const el = renderer.domElement;
+    const pick = e => { const r = el.getBoundingClientRect(); ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ptr, cam); const hit = ray.intersectObjects([...buildings, ...buildings.map(b => b.userData.lb)], true)[0]; return hit ? (owner(hit.object) || buildings.find(b => b.userData.lb === hit.object)) : null; };
     const onDown = e => { down = { x: e.clientX, y: e.clientY }; };
-    const onUp = e => {
-      if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down = null; return; } down = null;
-      const r = el.getBoundingClientRect(); ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-      ray.setFromCamera(ptr, cam);
-      const hit = ray.intersectObjects([...buildings, ...buildings.map(b => b.userData.cap), ...buildings.map(b => b.userData.lb)])[0];
-      const b = hit && (buildings.find(x => x === hit.object || x.userData.cap === hit.object || x.userData.lb === hit.object));
-      select(b || null);
-    };
-    const onMove = e => { if (e.pointerType !== 'mouse') return; const r = el.getBoundingClientRect(); ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ptr, cam); el.style.cursor = ray.intersectObjects(buildings).length ? 'pointer' : 'grab'; };
+    const onUp = e => { if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down = null; return; } down = null; select(pick(e)); };
+    const onMove = e => { if (e.pointerType !== 'mouse') return; el.style.cursor = pick(e) ? 'pointer' : 'grab'; };
     el.addEventListener('pointerdown', onDown); el.addEventListener('pointerup', onUp); el.addEventListener('pointermove', onMove);
     const onResize = () => { if (!W() || !H()) return; renderer.setSize(W(), H()); setFrustum(); };
     addEventListener('resize', onResize);
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(onResize) : null; if (ro) ro.observe(box);
     const loop = now => {
       if (!alive) return;
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
       if (anim) {
         const k = Math.min(1, (now - anim.t0) / anim.ms), ease = 1 - Math.pow(1 - k, 3);
         ctl.target.lerpVectors(anim.from, anim.to, ease); cam.position.copy(ctl.target).add(anim.off);
         cam.zoom = anim.z0 + (anim.z1 - anim.z0) * ease; cam.updateProjectionMatrix(); if (k >= 1) anim = null;
       }
-      if (sel) sel.position.y = sel.userData.baseY + Math.abs(Math.sin(now / 260)) * 0.5;
+      cars.forEach(c => { c.x = (c.x + c.dir * c.speed * dt + len + S) % (len + S); c.g.position.x = c.x - S / 2; });
+      if (sel) sel.position.y = Math.abs(Math.sin(now / 260)) * 1.2;
+      const f = Math.max(1, 1.6 / cam.zoom); tags.forEach(t => { if (!t.userData.s) t.userData.s = t.scale.clone(); t.scale.set(t.userData.s.x * f, t.userData.s.y * f, 1); });
       setFrustum(); ctl.update(); renderer.render(scene, cam); raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
@@ -7190,11 +7264,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     return {
       select, zoom: f => flyTo(ctl.target, Math.min(ctl.maxZoom, Math.max(ctl.minZoom, cam.zoom * f)), 300),
       home: () => { select(null); flyTo(home, 1); },
-      street: n => { const i = streets.findIndex(s => s.n === n); if (i >= 0) { select(null); flyTo(new T.Vector3(START + LOT, 0, i * GAP), W() < 640 ? 1.8 : 1.5); } },
+      street: n => { const i = streets.findIndex(s => s.n === n); if (i >= 0) { select(null); flyTo(new T.Vector3(X(lotCols[1]), 0, Z(i * 3 + 1)), W() < 640 ? 1.9 : 1.6); } },
       selectByName: name => { const b = buildings.find(x => x.userData.e.name === name); if (b) select(b); },
       destroy() {
         alive = false; cancelAnimationFrame(raf); removeEventListener('resize', onResize); if (ro) ro.disconnect(); ctl.dispose();
-        scene.traverse(o => { if (o.geometry) o.geometry.dispose(); const m = o.material; (Array.isArray(m) ? m : m ? [m] : []).forEach(x => { if (x.map) x.map.dispose(); x.dispose(); }); });
+        // Las geometrías y texturas del kit se reusan entre visitas: solo se libera lo propio de esta ciudad
+        scene.traverse(o => { if (o.geometry && !kit.owns(o.geometry)) o.geometry.dispose(); const m = o.material; (Array.isArray(m) ? m : m ? [m] : []).forEach(x => { if (kit.owns(x)) return; if (x.map) x.map.dispose(); x.dispose(); }); });
         renderer.dispose(); el.remove();
       }
     };
