@@ -7248,19 +7248,15 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const ao = box3(new T.MeshBasicMaterial({ color: 0xE9E4DC }), bx + 2, -TH - 0.01, cz + 2, bw + 3, 0.01, bd + 3); ao.material.transparent = true; ao.material.opacity = 0.55;
     const put = (name, c, r, rot = 0, sc2 = 1) => { const o = kit.clone(name); o.position.set(X(c), 0, Z(r)); o.rotation.y = rot; o.scale.setScalar(S * sc2); scene.add(o); return o; };
     // Carteles con texto (canvas → textura)
+    // Carteles con texto: van en HTML encima del 3D (texto nítido en cualquier zoom y pantalla).
+    // Cada uno es un Object3D vacío que marca el punto; en cada cuadro se proyecta a la pantalla.
+    const tagLayer = document.createElement('div'); tagLayer.className = 'city-tags absolute inset-0 pointer-events-none overflow-hidden'; box.appendChild(tagLayer);
     const label = (lines, o = {}) => {
-      const cv = document.createElement('canvas'), k = 2, padX = 20, lh = o.big ? 46 : 34;
-      const ctx = cv.getContext('2d'); const fonts = lines.map((l, i) => `${i === 0 ? 700 : 500} ${(i === 0 ? (o.big ? 38 : 26) : 22)}px Poppins, Figtree, sans-serif`);
-      let w = 0; lines.forEach((l, i) => { ctx.font = fonts[i]; w = Math.max(w, ctx.measureText(l).width + (i === 0 && o.check ? 34 : 0)); });
-      cv.width = (w + padX * 2) * k; cv.height = (lh * lines.length + 20) * k; ctx.scale(k, k);
-      const cw = cv.width / k, ch = cv.height / k, r = 14;
-      ctx.fillStyle = o.bg || '#ffffff'; ctx.beginPath(); ctx.moveTo(r, 0); ctx.arcTo(cw, 0, cw, ch, r); ctx.arcTo(cw, ch, 0, ch, r); ctx.arcTo(0, ch, 0, 0, r); ctx.arcTo(0, 0, cw, 0, r); ctx.fill();
-      if (!o.bg) { ctx.strokeStyle = '#E8E1D6'; ctx.lineWidth = 2; ctx.stroke(); }
-      lines.forEach((l, i) => { ctx.font = fonts[i]; ctx.fillStyle = o.fg ? o.fg[i] || o.fg[0] : (i === 0 ? '#1B2550' : '#6B7090'); ctx.textBaseline = 'middle'; ctx.fillText(l, padX, 10 + lh * i + lh / 2);
-        if (i === 0 && o.check) { const x = padX + ctx.measureText(l).width + 16, y = 10 + lh / 2; ctx.fillStyle = '#1D9BF0'; ctx.beginPath(); ctx.arc(x, y, 12, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x - 1.5, y + 5); ctx.lineTo(x + 6.5, y - 5); ctx.stroke(); } });
-      const tex = new T.CanvasTexture(cv); tex.anisotropy = 4; if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
-      const sp = new T.Sprite(new T.SpriteMaterial({ map: tex, depthTest: false, transparent: true })); sp.renderOrder = 10;
-      const s = (o.scale || 0.05); sp.scale.set(cw * s, ch * s, 1); sp.center.set(0.5, 0); return sp;
+      const obj = new T.Object3D(), el = document.createElement('div');
+      el.className = `city-tag ${o.cls || ''}`;
+      if (o.bg) el.style.background = o.bg;
+      el.innerHTML = `<span class="city-tag-t">${esc(lines[0])}${o.check ? '<i class="ph-fill ph-seal-check text-[#1D9BF0]" aria-label="Verificada"></i>' : ''}</span>${lines[1] ? `<span class="city-tag-s">${esc(lines[1])}</span>` : ''}`;
+      tagLayer.appendChild(el); obj.userData.el = el; return obj;
     };
     // Logo de cada empresa: el que subió en su perfil o, si no tiene, sus iniciales sobre su color
     const logoMats = {};
@@ -7320,7 +7316,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       // Cartel de la calle en el borde de la maqueta
       const col = indColor(s.ind), curb = mat(col);
       [-S * 0.5 - M / 2, len + S * 0.5 + M / 2].forEach(x => {
-        const sg = label([s.name, s.sub], { bg: col, fg: ['#ffffff', 'rgba(255,255,255,.85)'], scale: 0.05 }); sg.position.set(x, 6, Z(r)); scene.add(sg); tags.push(sg);
+        const sg = label([s.name, s.sub], { bg: col, cls: 'city-tag-street' }); sg.position.set(x, 6, Z(r)); scene.add(sg); tags.push(sg);
         box3(mat(0x8F8780), x, 3, Z(r), 0.3, 6, 0.3, true);
       });
       for (let c = 0; c < cols; c++) if (!isAve(c)) [-1, 1].forEach(d => box3(curb, X(c), 0.55, Z(r) + d * 0.455 * S, S, 0.9, 0.5, false));
@@ -7351,8 +7347,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const top = kit.height[name] * S;
       if (isVerified(e.name)) { const pole = logoPole(e, kit.height[name]); pole.position.set(0.44, 0, 0.46); g.add(pole); }
       else [1, -1].forEach(d => { const f = new T.Mesh(kit.plane, logoMat(e.name)); f.scale.setScalar(0.34); f.position.set(0, kit.height[name] * 0.68, d * (kit.front[name] + 0.012)); f.rotation.y = d > 0 ? 0 : Math.PI; g.add(f); });
-      const lb = label([e.name.length > 20 ? e.name.slice(0, 19) + '…' : e.name], { check: isVerified(e.name), scale: 0.045 }); if (isVerified(e.name)) { const d = north ? 1 : -1; lb.position.set(X(c) + d * 0.44 * S, Math.max(1.3, top / S + 0.55) * S + 5.2, Z(r) + d * 0.46 * S); } else lb.position.set(X(c), top + 2.2, Z(r)); scene.add(lb);
+      const lb = label([e.name.length > 24 ? e.name.slice(0, 23) + '…' : e.name], { check: isVerified(e.name), cls: 'city-tag-co' }); if (isVerified(e.name)) { const d = north ? 1 : -1; lb.position.set(X(c) + d * 0.44 * S, Math.max(1.3, top / S + 0.55) * S + 5.2, Z(r) + d * 0.46 * S); } else lb.position.set(X(c), top + 1.5, Z(r)); scene.add(lb);
       g.userData = { e, lb, baseY: 0, top }; buildings.push(g); tags.push(lb);
+      lb.userData.el.style.pointerEvents = 'auto'; lb.userData.el.onclick = () => select(g); lb.userData.el.title = `Ver ${e.name}`;
       // Antena con luz roja que titila: la empresa tiene búsquedas abiertas
       if (openBy[e.name]) {
         const a = new T.Group(), hgt = 0.42;
@@ -7361,12 +7358,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         const halo = new T.Sprite(haloMat); halo.position.y = hgt + 0.03; halo.scale.set(0.3, 0.3, 1); halo.userData.halo = true;
         a.add(mast, bulb, halo); a.position.set(-0.22, kit.height[name] - 0.02, -0.18); g.add(a); halos.push(halo); halo.userData.b = g;
         // Globito con la cantidad de búsquedas, arriba de la antena
-        const d = north ? 1 : -1, bc = document.createElement('canvas'), bx2 = bc.getContext('2d'), txt = String(openBy[e.name]);
-        bc.width = 128; bc.height = 128; bx2.fillStyle = '#FF2D2D'; bx2.beginPath(); bx2.arc(64, 60, 50, 0, Math.PI * 2); bx2.fill(); bx2.lineWidth = 8; bx2.strokeStyle = '#fff'; bx2.stroke();
-        bx2.fillStyle = '#fff'; bx2.font = `800 ${txt.length > 1 ? 52 : 62}px Poppins, Figtree, sans-serif`; bx2.textAlign = 'center'; bx2.textBaseline = 'middle'; bx2.fillText(txt, 64, 64);
-        const bt2 = new T.CanvasTexture(bc); if (T.sRGBEncoding) bt2.encoding = T.sRGBEncoding;
-        const badge = new T.Sprite(new T.SpriteMaterial({ map: bt2, depthTest: false, transparent: true })); badge.renderOrder = 11; badge.center.set(0.5, 0); badge.scale.set(3.4, 3.4, 1);
-        badge.position.set(X(c) - d * 0.22 * S, (kit.height[name] + 0.52) * S, Z(r) - d * 0.18 * S); scene.add(badge); tags.push(badge); g.userData.badge = badge;
+        const d = north ? 1 : -1, badge = label([String(openBy[e.name])], { cls: 'city-tag-badge' });
+        badge.position.set(X(c) - d * 0.22 * S, (kit.height[name] + 0.5) * S, Z(r) - d * 0.18 * S); scene.add(badge); tags.push(badge); g.userData.badge = badge;
+        badge.userData.el.setAttribute('aria-label', `${openBy[e.name]} búsquedas abiertas`);
         // Fuegos artificiales si publicó una búsqueda en las últimas 48 h
         const newest = Store.activeJobs().filter(j => j.company === e.name).reduce((m, j) => Math.max(m, new Date(j.postedAt).getTime() || 0), 0);
         if (Date.now() - newest < 48 * 3600e3) {
@@ -7469,7 +7463,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     zep.scale.setScalar(1.3); scene.add(zep);
     const zr = { x: len * 0.55 + 20, z: depth * 0.5 + 20 }, zy = 62;
     // Animación de la cámara
-    let anim = null, sel = null, raf = 0, alive = true, last = performance.now(), hlOn = false;
+    let anim = null, sel = null, raf = 0, alive = true, last = performance.now(), hlOn = false; const tv = new T.Vector3();
     // Filtro: apaga en gris los edificios que no cumplen y prende un anillo en los que buscan el puesto
     const grayMat = mat(0xDCD8D1);
     const filter = (set, highlight) => {
@@ -7477,7 +7471,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       buildings.forEach(b => {
         const on = !set || set.has(b.userData.e.name);
         b.traverse(o => { if (!o.isMesh) return; if (!('m0' in o.userData)) o.userData.m0 = o.material; o.material = on ? o.userData.m0 : grayMat; });
-        b.userData.lb.material.opacity = on ? 1 : 0.35; if (b.userData.badge) b.userData.badge.visible = on;
+        b.userData.lb.userData.el.classList.toggle('is-off', !on); if (b.userData.badge) b.userData.badge.visible = on;
         b.userData.hl.visible = hlOn && on; b.userData.off = !on;
       });
     };
@@ -7492,7 +7486,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     // Tocar un edificio (sin arrastrar)
     const ray = new T.Raycaster(), ptr = new T.Vector2(); let down = null;
     const el = renderer.domElement;
-    const pick = e => { const r = el.getBoundingClientRect(); ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ptr, cam); const hit = ray.intersectObjects([...buildings, ...buildings.map(b => b.userData.lb)], true)[0]; return hit ? (owner(hit.object) || buildings.find(b => b.userData.lb === hit.object)) : null; };
+    const pick = e => { const r = el.getBoundingClientRect(); ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ptr, cam); const hit = ray.intersectObjects(buildings, true)[0]; return hit ? owner(hit.object) : null; };
     const onDown = e => { down = { x: e.clientX, y: e.clientY }; };
     const onUp = e => { if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down = null; return; } down = null; select(pick(e)); };
     const onMove = e => { if (e.pointerType !== 'mouse') return; el.style.cursor = pick(e) ? 'pointer' : 'grab'; };
@@ -7529,8 +7523,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const ang = now / 26000, px = cx + Math.cos(ang) * zr.x, pz = cz + Math.sin(ang) * zr.z;
       zep.position.set(px, zy + Math.sin(now / 1500) * 1.5, pz); zep.rotation.y = Math.atan2(-Math.cos(ang) * zr.z, -Math.sin(ang) * zr.x);
       if (sel) sel.position.y = Math.abs(Math.sin(now / 260)) * 1.2;
-      const f = cam.zoom < 1.6 ? 1.6 / cam.zoom : cam.zoom > 2.6 ? 2.6 / cam.zoom : 1; tags.forEach(t => { if (!t.userData.s) t.userData.s = t.scale.clone(); t.scale.set(t.userData.s.x * f, t.userData.s.y * f, 1); });
-      setFrustum(); ctl.update(); renderer.render(scene, cam); raf = requestAnimationFrame(loop);
+      setFrustum(); ctl.update(); renderer.render(scene, cam);
+      // Carteles HTML: se proyectan al lugar del punto 3D
+      const Wd = W(), Hd = H(); tagLayer.classList.toggle('is-far', cam.zoom < 1.15);
+      tags.forEach(t => { const el = t.userData.el; if (!t.visible) { el.style.display = 'none'; return; } tv.setFromMatrixPosition(t.matrixWorld).project(cam); const x = (tv.x + 1) / 2 * Wd, y = (1 - tv.y) / 2 * Hd; const out = x < -150 || x > Wd + 150 || y < -60 || y > Hd + 60; el.style.display = out ? 'none' : ''; if (!out) { el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -100%)`; el.style.zIndex = String(Math.round(y) + 1000); } });
+      raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
     const home = new T.Vector3(cx, 0, cz);
@@ -7545,7 +7542,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         alive = false; cancelAnimationFrame(raf); removeEventListener('resize', onResize); if (ro) ro.disconnect(); ctl.dispose();
         // Las geometrías y texturas del kit se reusan entre visitas: solo se libera lo propio de esta ciudad
         scene.traverse(o => { if (o.geometry && !kit.owns(o.geometry)) o.geometry.dispose(); const m = o.material; (Array.isArray(m) ? m : m ? [m] : []).forEach(x => { if (kit.owns(x)) return; if (x.map) x.map.dispose(); x.dispose(); }); });
-        renderer.dispose(); el.remove();
+        renderer.dispose(); el.remove(); tagLayer.remove();
       }
     };
   }
