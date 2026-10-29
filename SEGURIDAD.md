@@ -31,6 +31,7 @@ Para guardar CVs y datos de personas de verdad hace falta un servidor. Sin servi
 1. **Base de datos y servidor** (por ejemplo Supabase o un backend propio) con **permisos por fila**: cada empresa ve solo sus búsquedas y postulantes, y cada candidato solo lo suyo.
 2. **Ingreso real**: las contraseñas se validan en el servidor (Argon2 o bcrypt) y la sesión va en una cookie `HttpOnly` y `Secure`. El código por WhatsApp tiene que vencer y tener límite de intentos.
 3. **Admin con cuentas personales y verificación en dos pasos**, no una clave compartida.
+3b. **Invitaciones de acceso validadas en el servidor**: hoy el link de invitación lleva los datos adentro y, sin servidor, alguien con conocimientos técnicos podría armar uno falso. En producción, el link lleva solo un código al azar de un solo uso, que el servidor busca, verifica que no esté vencido ni usado, y recién ahí crea el usuario de esa empresa.
 4. **CVs en almacenamiento privado**, con links firmados que vencen. Nunca links públicos.
 5. **Anti-spam y anti-bots** en formularios (por ejemplo Cloudflare Turnstile) y límite de pedidos por IP.
 6. **Ley 25.326**: inscribir la base en la Agencia de Acceso a la Información Pública, definir cuánto tiempo se guardan los CVs, y llevar registro de accesos y copias de respaldo.

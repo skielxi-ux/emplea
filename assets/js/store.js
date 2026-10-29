@@ -107,6 +107,7 @@ const Store = (() => {
   const KCAND = 'emplea.cand', KSEEN = 'emplea.candseen', KACC = 'emplea.coaccounts';
   const KSP = 'emplea.spontcvs';
   const KSAL = 'emplea.salaries';
+  const KINV = 'emplea.invites', KAR = 'emplea.accessreqs';
   const KUL = 'emplea.unlocks';
   const KDR = 'emplea.delreqs';
   const KER = 'emplea.erased';
@@ -333,6 +334,15 @@ const Store = (() => {
     markCandSeen(ids) { const m = read(KSEEN, {}), now = new Date().toISOString(); ids.forEach(id => { m[id] = now; }); write(KSEEN, m); },
 
     // Cuentas de empresa (prototipo: se guardan en este navegador; en producción, en el servidor)
+    // Acceso de empresas cargadas por el admin: invitaciones (una por empresa) y pedidos de acceso desde su página
+    invites: () => read(KINV, {}),
+    invite: name => read(KINV, {})[name] || null,
+    saveInvite(name, x) { const m = read(KINV, {}); if (x) m[name] = x; else delete m[name]; write(KINV, m); },
+    accessReqs: () => read(KAR, []),
+    addAccessReq(x) { const l = read(KAR, []); l.unshift(x); write(KAR, l); },
+    updateAccessReq(id, patch) { write(KAR, read(KAR, []).map(r => r.id === id ? { ...r, ...patch } : r)); },
+    coAccountsOf: name => Object.entries(read(KACC, DEMO_ACC)).filter(([, a]) => a.name === name).map(([email, a]) => ({ email, ...a })),
+    removeCoAccount(email) { const m = read(KACC, DEMO_ACC); delete m[String(email).trim().toLowerCase()]; write(KACC, m); },
     coAccount: email => (read(KACC, DEMO_ACC)[String(email || '').trim().toLowerCase()] || null),
     addCoAccount(email, data) { const m = read(KACC, DEMO_ACC); m[String(email).trim().toLowerCase()] = data; write(KACC, m); },
     passHash: p => { let h = 5381; for (const ch of String(p)) h = ((h << 5) + h + ch.charCodeAt(0)) | 0; return 'h' + (h >>> 0).toString(36); },

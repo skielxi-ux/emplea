@@ -5921,6 +5921,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             ${(p.provinces || []).length ? `<p class="mt-4 font-semibold">Operan en</p><div class="mt-2 flex flex-wrap gap-1.5">
               ${(p.provinces.length === PROVINCES.length ? ['Todo el país'] : p.provinces).map(x => `<span class="bg-surface rounded-full px-3 py-1 text-[0.92rem] font-medium">${esc(x)}</span>`).join('')}</div>` : ''}
           </section>` : ''}
+          ${!own && accessState(name).k !== 'activa' ? `<section class="card p-5">
+            <h2 class="text-lg font-bold">¿Es tu empresa?</h2>
+            <p class="mt-1 text-ink-soft text-[0.95rem]">Pedí acceso para editar esta página, publicar búsquedas y recibir CVs.</p>
+            <button type="button" id="co-claim" class="mt-3 btn btn-outline w-full"><i class="ph ph-key text-lg"></i>Pedir acceso</button>
+          </section>` : ''}
           ${pubClients.length ? `<section class="card p-5">
             <h2 class="text-lg font-bold">Buscando para</h2>
             <div class="mt-3 space-y-2">${pubClients.map(cn => `<div class="flex items-center gap-3">${logo(cn, 'w-10 h-10 text-sm')}<span class="font-semibold truncate">${esc(cn)}</span></div>`).join('')}</div>
@@ -5928,7 +5933,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           </section>` : ''}
         </aside>
       </div>`;
-    return { html };
+    return { html, mount() { const b = $('#co-claim'); if (b) b.onclick = () => openClaim(name); } };
   }
 
   /* ---------------- PDF de demostración (para CVs de ejemplo) ---------------- */
@@ -7699,6 +7704,156 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     };
   }
 
+  /* ================= ACCESO DE EMPRESAS (invitaciones y pedidos) =================
+     El admin le da acceso a una empresa que cargó: genera un link personal que vence en 7 días y lo manda por WhatsApp o email.
+     La persona entra por el link, crea su contraseña y queda dentro de la cuenta de esa empresa, con el perfil ya cargado.
+     Prototipo: el link lleva adentro los datos del perfil (para que funcione en otro dispositivo). En producción el link lleva
+     solo un código al azar, y el servidor valida que exista, no esté usado ni vencido, y le asigna la empresa. */
+  const INV_DAYS = 7;
+  const ACC_ST = { sin: ['Sin acceso', 'bg-surface text-ink-soft border border-line', 'ph-lock-simple'], invitada: ['Invitada', 'bg-sun text-ink', 'ph-paper-plane-tilt'], vencida: ['Invitación vencida', 'bg-bad/10 text-bad', 'ph-clock-countdown'], activa: ['Activa', 'bg-ok/10 text-ok', 'ph-check-circle'] };
+  const accessState = name => {
+    const acc = Store.coAccountsOf(name); if (acc.length) return { k: 'activa', email: acc[0].email, n: acc.length };
+    const inv = Store.invite(name);
+    if (inv && inv.status === 'invitada') return { k: new Date(inv.exp) < new Date() ? 'vencida' : 'invitada', email: inv.email, inv };
+    return { k: 'sin' };
+  };
+  const accPill = st => { const [l, c, ic] = ACC_ST[st.k]; return `<span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.8rem] font-bold ${c}"><i class="ph-bold ${ic}"></i>${l}</span>`; };
+  const smallLogo = src => new Promise(res => { if (!src) return res(''); const im = new Image(); im.onload = () => { const k = Math.min(96 / im.width, 96 / im.height, 1) || 1, cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(im.width * k)); cv.height = Math.max(1, Math.round(im.height * k)); const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height); x.drawImage(im, 0, 0, cv.width, cv.height); try { const d = cv.toDataURL('image/jpeg', 0.75); res(d.length < 9000 ? d : ''); } catch (e) { res(''); } }; im.onerror = () => res(''); im.src = src; });
+  async function inviteLink(name, inv) {
+    const p = Store.coProfile(name), cmp = companyOf(name);
+    const keep = ['industry', 'size', 'province', 'city', 'address', 'description', 'website', 'linkedin', 'instagram', 'contactName', 'contactEmail', 'contactPhone', 'provinces'];
+    const prof = {}; keep.forEach(k => { const v = p[k]; if (v && (!Array.isArray(v) || v.length)) prof[k] = v; });
+    if (!prof.industry && cmp.industry) prof.industry = cmp.industry;
+    const lg = await smallLogo(p.logo || Store.logoOf(name)); if (lg) prof.logo = lg;
+    const pay = { v: 1, t: inv.token, n: name, ty: p.type || cmp.type || 'Empresa', e: inv.email, x: inv.exp, p: prof };
+    return `${baseUrl()}#/acceso?i=${await packData(pay)}`;
+  }
+  const inviteMsg = (name, inv, link) => `Hola${inv.contact ? ' ' + inv.contact.split(' ')[0] : ''}, te damos acceso a la cuenta de ${name} en +Humanos, el hub de RRHH de Tucumán. Ya cargamos el perfil de la empresa: solo tenés que crear tu contraseña desde este link personal (vence el ${new Date(inv.exp).toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}):\n\n${link}\n\nDesde tu cuenta vas a poder publicar búsquedas, recibir CVs y editar la página de la empresa. Cualquier duda, respondé este mensaje.`;
+
+  // Admin: dar acceso (o reenviar) a una empresa
+  function openGrantAccess(name, pre = {}, onDone) {
+    const p = Store.coProfile(name), st = accessState(name), inv0 = st.inv || {};
+    const body = `<h2 class="text-[1.6rem] font-extrabold pr-10 leading-tight">${st.k === 'invitada' || st.k === 'vencida' ? 'Reenviar invitación' : 'Dar acceso'}</h2>
+      <div class="mt-3 flex items-center gap-3 rounded-2xl bg-surface p-3">${logo(name, 'w-12 h-12 text-sm')}<div class="min-w-0"><p class="font-bold truncate">${esc(name)}</p><p class="text-ink-mute text-[0.9rem]">El link vence en ${INV_DAYS} días y sirve una sola vez.</p></div></div>
+      <div class="mt-4 space-y-3">
+        <div><label class="label" for="ga-email">Email de la persona</label><input id="ga-email" type="email" inputmode="email" class="input" placeholder="rrhh@empresa.com" value="${esc(pre.email || inv0.email || p.contactEmail || '')}"></div>
+        <div><label class="label" for="ga-name">Nombre <span class="font-normal text-ink-mute">(opcional)</span></label><input id="ga-name" class="input" placeholder="Para saludarla en el mensaje" value="${esc(pre.name || inv0.contact || p.contactName || '')}"></div>
+        <div><label class="label" for="ga-phone">Celular para WhatsApp <span class="font-normal text-ink-mute">(opcional)</span></label><input id="ga-phone" type="tel" inputmode="tel" class="input" placeholder="381 555-1234" value="${esc(pre.phone || inv0.phone || p.contactPhone || '')}"></div>
+      </div>
+      <p id="ga-err" class="err hidden"></p>`;
+    openSheet(sheetScroll(body) + sheetFoot('<button id="ga-go" class="btn btn-primary w-full h-14"><i class="ph-bold ph-link"></i>Generar link de acceso</button>'), c => {
+      $('#ga-go', c).onclick = async () => {
+        const email = $('#ga-email', c).value.trim().toLowerCase(), contact = $('#ga-name', c).value.trim(), phone = $('#ga-phone', c).value.trim();
+        const er = $('#ga-err', c), err = m => { er.textContent = m; er.classList.remove('hidden'); };
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err('Escribí un email válido.');
+        const other = Store.coAccount(email); if (other && other.name !== name) return err(`Ese email ya tiene acceso a otra cuenta (${other.name}).`);
+        const token = hex(crypto.getRandomValues(new Uint8Array(16))), at = new Date().toISOString(), exp = new Date(Date.now() + INV_DAYS * 864e5).toISOString();
+        const inv = { token, email, contact, phone, at, exp, status: 'invitada', sent: (inv0.sent || 0) + 1 };
+        Store.saveInvite(name, inv); if (pre.req) Store.updateAccessReq(pre.req, { status: 'aprobado', doneAt: at });
+        const link = await inviteLink(name, inv), msg = inviteMsg(name, inv, link);
+        const wa = phone && digits(phone).length >= 8 ? waLink(phone, msg) : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        const mail = `mailto:${email}?subject=${encodeURIComponent(`Tu acceso a ${name} en +Humanos`)}&body=${encodeURIComponent(msg)}`;
+        setSheet(sheetScroll(`<div class="text-center pt-4"><div class="success-pop w-16 h-16 mx-auto rounded-full bg-ok text-white grid place-items-center"><i class="ph-bold ph-link text-3xl"></i></div>
+            <h2 class="mt-4 text-[1.5rem] font-extrabold">Link listo para ${esc(name)}</h2><p class="mt-1 text-ink-soft">Mandáselo a ${esc(email)}. Vence el ${fmtDate(exp)}.</p></div>
+          <div class="mt-5 grid gap-2.5">
+            <a href="${esc(wa)}" target="_blank" rel="noopener" class="btn btn-primary h-14 bg-[#25D366] hover:bg-[#1ebe5b]"><i class="ph-fill ph-whatsapp-logo text-xl"></i>Enviar por WhatsApp</a>
+            <a href="${esc(mail)}" class="btn btn-outline h-14"><i class="ph ph-envelope-simple text-xl"></i>Enviar por email</a>
+            <button type="button" id="ga-copy" class="btn btn-outline h-14"><i class="ph ph-copy text-xl"></i>Copiar link</button>
+          </div>
+          <details class="mt-4"><summary class="cursor-pointer font-semibold text-ink-soft">Ver el mensaje</summary><p class="mt-2 rounded-xl bg-surface p-3 text-[0.92rem] whitespace-pre-line break-all">${esc(msg)}</p></details>`)
+          + sheetFoot('<button data-close-sheet class="btn btn-outline w-full h-12">Listo</button>'), c2 => {
+          $('#ga-copy', c2).onclick = async () => { try { await navigator.clipboard.writeText(link); toast('Link copiado', 'ph-copy'); } catch (e) { toast('No se pudo copiar', 'ph-warning'); } };
+        });
+        S.dirty = true; if (onDone) onDone();
+      };
+    });
+  }
+
+  // Página pública /acceso: la persona invitada crea su contraseña
+  function AccessPage(params) {
+    const wrap = inner => `<div class="max-w-md mx-auto px-4 sm:px-6 py-8 md:py-14">${inner}</div>`;
+    return {
+      title: 'Acceso',
+      html: `<div id="ac-root">${wrap('<p class="text-center text-ink-soft py-10"><i class="ph ph-circle-notch spin text-xl align-middle"></i> Abriendo tu invitación…</p>')}</div>`,
+      async mount() {
+        const root = $('#ac-root'); let pay = null;
+        try { pay = await unpackData(params.get('i') || ''); } catch (e) { pay = null; }
+        if (!$('#ac-root')) return;
+        const bad = (ic, t, x, cta = '') => { root.innerHTML = wrap(emptyState(ic, t, x, cta)); };
+        if (!pay || !pay.t || !pay.n || !pay.e) return bad('ph-link-break', 'Este link no es válido', 'Revisá que lo hayas copiado completo o pedile uno nuevo al equipo de +Humanos.');
+        if (new Date(pay.x) < new Date()) return bad('ph-clock-countdown', 'Este link venció', 'Los links de acceso duran 7 días. Pedile uno nuevo al equipo de +Humanos.');
+        const local = Store.invite(pay.n);
+        if (local && local.token === pay.t && local.status === 'revocada') return bad('ph-prohibit', 'Esta invitación se canceló', 'Pedile un link nuevo al equipo de +Humanos.');
+        if ((local && local.token === pay.t && local.status === 'usada') || Store.coAccount(pay.e)) return bad('ph-check-circle', 'Ya tenés acceso', `Ingresá con ${esc(pay.e)} y tu contraseña.`, '<a href="#/empresa" class="btn btn-primary">Ingresar</a>');
+        const pw = (id, ph, ac) => `<div class="relative"><input id="${id}" type="password" class="input pr-14" placeholder="${ph}" autocomplete="${ac}"><button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 icon-btn w-10 h-10 text-ink-mute" data-pw="${id}" aria-label="Mostrar contraseña"><i class="ph ph-eye text-xl"></i></button></div>`;
+        const lgSrc = pay.p && typeof pay.p.logo === 'string' && pay.p.logo.startsWith('data:image/') ? pay.p.logo : '';
+        const lg = lgSrc ? `<div class="w-16 h-16 rounded-2xl bg-white border border-line overflow-hidden grid place-items-center p-1 shrink-0"><img src="${esc(lgSrc)}" alt="" class="w-full h-full object-contain"></div>` : logo(pay.n, 'w-16 h-16 text-lg');
+        root.innerHTML = wrap(`<div class="card p-6 sm:p-7">
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-soft text-brand px-3 py-1 text-[0.9rem] font-semibold"><i class="ph-fill ph-key"></i>Invitación de +Humanos</span>
+          <div class="mt-4 flex items-center gap-3">${lg}<div class="min-w-0"><h1 class="text-[1.5rem] font-extrabold leading-tight">${esc(pay.n)}</h1><p class="text-ink-soft">${esc(pay.ty || 'Empresa')}</p></div></div>
+          <p class="mt-4 text-ink-soft">Te damos acceso a la cuenta de ${esc(pay.n)}. El perfil ya está cargado: creá tu contraseña y entrás.</p>
+          <form id="ac-form" class="mt-5" novalidate>
+            <label class="label" for="ac-email">Email</label><input id="ac-email" class="input bg-surface" value="${esc(pay.e)}" readonly autocomplete="username">
+            <label class="label mt-4" for="ac-pass">Creá tu contraseña</label>${pw('ac-pass', 'Mínimo 8, con letras y números', 'new-password')}
+            <label class="label mt-4" for="ac-pass2">Repetila</label>${pw('ac-pass2', 'La misma contraseña', 'new-password')}
+            <label class="mt-4 flex gap-3 items-start cursor-pointer"><input type="checkbox" id="ac-terms" class="w-5 h-5 mt-0.5 accent-[#3B5BFD] shrink-0"><span class="text-ink-soft text-[0.95rem]">Trabajo en ${esc(pay.n)} y acepto los términos y la política de datos personales (Ley 25.326).</span></label>
+            <p id="ac-err" class="err hidden"></p>
+            <button class="btn btn-primary w-full h-14 text-lg mt-5">Crear contraseña y entrar</button>
+          </form></div>`);
+        $$('[data-pw]', root).forEach(b => b.onclick = () => { const i = $('#' + b.dataset.pw), show = i.type === 'password'; i.type = show ? 'text' : 'password'; b.innerHTML = `<i class="ph ${show ? 'ph-eye-slash' : 'ph-eye'} text-xl"></i>`; });
+        $('#ac-form').onsubmit = async e => {
+          e.preventDefault();
+          const p1 = $('#ac-pass').value, p2 = $('#ac-pass2').value, er = $('#ac-err'), err = m => { er.textContent = m; er.classList.remove('hidden'); };
+          if (p1.length < 8 || !/[a-z]/i.test(p1) || !/\d/.test(p1)) return err('La contraseña tiene que tener al menos 8 caracteres, con letras y números.');
+          if (p1 !== p2) return err('Las dos contraseñas no coinciden.');
+          if (!$('#ac-terms').checked) return err('Para entrar, confirmá que trabajás en la empresa y aceptá los términos.');
+          const btn = $('#ac-form .btn-primary'); btn.disabled = true;
+          const at = new Date().toISOString();
+          Store.addCoAccount(pay.e, { name: pay.n, type: pay.ty === 'Consultora' ? 'Consultora' : 'Empresa', pass: await hashPass(p1), createdAt: at, via: 'invitacion' });
+          // Solo campos de texto conocidos (y el logo como imagen): el resto del link se ignora
+          const KEYS = ['industry', 'size', 'province', 'city', 'address', 'description', 'website', 'linkedin', 'instagram', 'contactName', 'contactEmail', 'contactPhone'];
+          const cur = Store.coProfile(pay.n), src = pay.p || {}, prof = {};
+          KEYS.forEach(k => { if (typeof src[k] === 'string' && src[k] && !cur[k]) prof[k] = src[k].slice(0, 1200); });
+          if (Array.isArray(src.provinces) && !(cur.provinces || []).length) prof.provinces = src.provinces.filter(x => PROVINCES.includes(x));
+          if (lgSrc && !cur.logo) prof.logo = lgSrc;
+          if (!Store.companyExists(pay.n)) { prof.manual = true; prof.addedAt = at; }
+          Store.saveCoProfile(pay.n, { ...prof, type: cur.type || (pay.ty === 'Consultora' ? 'Consultora' : 'Empresa') });
+          const loc = Store.invite(pay.n); if (loc && loc.token === pay.t) Store.saveInvite(pay.n, { ...loc, status: 'usada', usedAt: at });
+          Store.setCompany({ name: pay.n, type: pay.ty === 'Consultora' ? 'Consultora' : 'Empresa', email: pay.e });
+          toast(`Bienvenido a ${pay.n}`, 'ph-hand-waving'); location.hash = '#/empresa/perfil';
+        };
+      }
+    };
+  }
+
+  // Página pública de la empresa: "¿Es tu empresa? Pedí acceso"
+  function openClaim(name) {
+    const body = `<h2 class="text-[1.6rem] font-extrabold pr-10 leading-tight">Pedir acceso a ${esc(name)}</h2>
+      <p class="mt-2 text-ink-soft">Con la cuenta podés editar esta página, publicar búsquedas y recibir CVs. Revisamos que trabajes ahí y te mandamos un link para entrar.</p>
+      <div class="mt-5 space-y-3">
+        <input id="cl-n" class="input" placeholder="Nombre y apellido" autocomplete="name" aria-label="Nombre y apellido">
+        <input id="cl-r" class="input" placeholder="Cargo (ej.: Responsable de RRHH)" aria-label="Cargo">
+        <input id="cl-e" type="email" inputmode="email" class="input" placeholder="Email de la empresa" autocomplete="email" aria-label="Email de la empresa">
+        <input id="cl-p" type="tel" inputmode="tel" class="input" placeholder="Celular / WhatsApp" autocomplete="tel" aria-label="Celular">
+        <textarea id="cl-m" rows="2" class="input h-auto py-3" placeholder="Algo más que quieras contarnos (opcional)" aria-label="Mensaje"></textarea>
+        <label class="flex gap-3 items-start cursor-pointer"><input type="checkbox" id="cl-ok" class="w-5 h-5 mt-0.5 accent-[#3B5BFD] shrink-0"><span class="text-ink-soft text-[0.95rem]">Trabajo en ${esc(name)} y estoy autorizado/a a administrar su cuenta.</span></label>
+      </div><p id="cl-err" class="err hidden"></p>`;
+    openSheet(sheetScroll(body) + sheetFoot('<button id="cl-send" class="btn btn-primary w-full h-14"><i class="ph-bold ph-paper-plane-tilt"></i>Enviar pedido</button>'), c => {
+      $('#cl-send', c).onclick = () => {
+        const v = id => $('#' + id, c).value.trim(), er = $('#cl-err', c), err = m => { er.textContent = m; er.classList.remove('hidden'); };
+        if (v('cl-n').length < 3) return err('Escribí tu nombre y apellido.');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('cl-e'))) return err('Escribí un email válido.');
+        if (digits(v('cl-p')).length < 8) return err('Dejanos un celular para confirmar que sos vos.');
+        if (!$('#cl-ok', c).checked) return err('Confirmá que trabajás en la empresa.');
+        if (Store.accessReqs().some(r => r.company === name && r.status === 'pendiente' && r.email === v('cl-e').toLowerCase())) return err('Ya recibimos tu pedido. Te escribimos pronto.');
+        Store.addAccessReq({ id: 'ar' + Date.now().toString(36), company: name, name: v('cl-n'), role: v('cl-r'), email: v('cl-e').toLowerCase(), phone: v('cl-p'), msg: v('cl-m'), at: new Date().toISOString(), status: 'pendiente' });
+        setSheet(sheetScroll(`<div class="text-center py-8"><div class="success-pop w-16 h-16 mx-auto rounded-full bg-ok text-white grid place-items-center"><i class="ph-bold ph-check text-3xl"></i></div>
+          <h2 class="mt-4 text-[1.5rem] font-extrabold">Recibimos tu pedido</h2><p class="mt-2 text-ink-soft max-w-sm mx-auto">Lo revisamos en un día hábil. Si está todo bien, te mandamos a ${esc(v('cl-e'))} el link para entrar a la cuenta de ${esc(name)}.</p></div>`)
+          + sheetFoot('<button data-close-sheet class="btn btn-primary w-full h-14">Listo</button>'));
+      };
+    });
+  }
+
   /* ================= ADMIN: EMPRESAS Y CONSULTORAS ADHERIDAS =================
      Lista todo lo que aparece en "Empresas adheridas": cuentas registradas, perfiles cargados a mano por el admin
      y las cuentas de ejemplo. Desde acá se agrega una empresa a mano, se edita su perfil o se oculta de la página. */
@@ -7761,7 +7916,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const F = S.admEmp || (S.admEmp = { q: '', type: '' });
     const all = adminCompanies();
     const ORIG = { registro: ['ph-user-circle-check', 'Se registró'], manual: ['ph-hand-pointing', 'Cargada por el admin'], ejemplo: ['ph-flask', 'De ejemplo'] };
-    const nC = all.filter(e => e.type === 'Consultora').length;
+    const nC = all.filter(e => e.type === 'Consultora').length, reqs = Store.accessReqs().filter(r => r.status === 'pendiente');
     const stat = (n, l) => `<div class="rounded-[20px] bg-white border border-line p-4"><p class="font-display text-[2rem] font-extrabold leading-none text-brand">${n}</p><p class="mt-1 text-ink-soft leading-tight">${l}</p></div>`;
     const html = `<div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-12">
       ${adminSwitch()}
@@ -7777,6 +7932,14 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <div class="relative flex-1"><i class="ph ph-magnifying-glass text-xl text-ink-mute absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i><input id="ae-q" type="search" class="input pl-12 bg-white" placeholder="Buscar por nombre, rubro o email" value="${esc(F.q)}" aria-label="Buscar empresas"></div>
         <div class="max-w-full overflow-x-auto self-start"><div class="inline-flex rounded-full bg-white border border-line p-1 whitespace-nowrap" role="tablist" aria-label="Tipo">${[['', 'Todas'], ['Consultora', 'Consultoras'], ['Empresa', 'Empresas']].map(([v, l]) => `<button type="button" role="tab" data-ae-type="${v}" aria-selected="${F.type === v}" class="h-10 px-4 rounded-full font-semibold ${F.type === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}">${l}</button>`).join('')}</div></div>
       </div>
+      ${reqs.length ? `<section class="mt-6 rounded-[22px] border-2 border-sun bg-white p-4 sm:p-5" aria-label="Pedidos de acceso">
+        <h2 class="font-extrabold text-[1.2rem] flex items-center gap-2"><i class="ph-fill ph-hand-waving text-[#E2A33B]"></i>Pedidos de acceso <span class="rounded-full bg-bad text-white px-2 text-[0.8rem] leading-6">${reqs.length}</span></h2>
+        <p class="text-ink-soft text-[0.95rem]">Personas que dicen trabajar en una empresa y piden administrar su cuenta. Antes de aprobar, confirmá con la empresa (por ejemplo, que el email sea del dominio de la empresa).</p>
+        <ul class="mt-3 divide-y divide-line">${reqs.map(r => `<li class="py-3 flex flex-col sm:flex-row sm:items-center gap-3">
+          <div class="flex items-center gap-3 min-w-0 flex-1">${logo(r.company, 'w-11 h-11 text-sm')}<div class="min-w-0"><p class="font-bold leading-tight">${esc(r.name)}${r.role ? ` <span class="font-normal text-ink-soft">· ${esc(r.role)}</span>` : ''}</p>
+            <p class="text-[0.9rem] text-ink-soft truncate">Pide acceso a <b class="text-ink">${esc(r.company)}</b> · ${esc(r.email)} · ${esc(r.phone)} · ${ago(r.at).toLowerCase()}</p>${r.msg ? `<p class="text-[0.9rem] text-ink-mute mt-0.5">“${esc(r.msg)}”</p>` : ''}</div></div>
+          <div class="flex gap-2 shrink-0"><button type="button" data-ar-ok="${r.id}" class="btn btn-primary btn-sm"><i class="ph-bold ph-key"></i>Dar acceso</button><button type="button" data-ar-no="${r.id}" class="btn btn-outline btn-sm">Rechazar</button></div></li>`).join('')}</ul>
+      </section>` : ''}
       <ul id="ae-list" class="mt-5 space-y-3"></ul>
     </div>`;
     const draw = () => {
@@ -7784,21 +7947,23 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const list = all.filter(e => (!F.type || e.type === F.type) && (!q || norm(`${e.name} ${e.industry} ${e.email}`).includes(q)))
         .sort((a, b) => (b.since || b.last || '').localeCompare(a.since || a.last || '') || a.name.localeCompare(b.name, 'es'));
       $('#ae-list').innerHTML = list.length ? list.map(e => {
-        const o = ORIG[e.origin], loc = [e.city, e.province].filter(Boolean).join(', ');
+        const o = ORIG[e.origin], loc = [e.city, e.province].filter(Boolean).join(', '), ac = accessState(e.name);
         return `<li class="rounded-[20px] bg-white border border-line p-4 sm:p-5 ${e.hidden ? 'opacity-70' : ''}">
           <div class="flex items-start gap-3.5">
             ${logo(e.name, 'w-14 h-14 text-base')}
             <div class="min-w-0 flex-1">
-              <p class="flex flex-wrap items-center gap-x-2 gap-y-1"><span class="font-display font-bold text-[1.15rem] leading-tight">${esc(e.name)}</span>${vBadge(e.name, 'text-[1.2rem]')}<span class="rounded-full ${e.type === 'Consultora' ? 'bg-lilac text-brand' : 'bg-surface text-ink-soft'} px-2.5 py-0.5 text-[0.8rem] font-bold">${esc(e.type)}</span>${e.hidden ? '<span class="rounded-full bg-sun-soft text-warn px-2.5 py-0.5 text-[0.8rem] font-bold"><i class="ph-bold ph-eye-slash"></i> Oculta</span>' : ''}</p>
+              <p class="flex flex-wrap items-center gap-x-2 gap-y-1"><span class="font-display font-bold text-[1.15rem] leading-tight">${esc(e.name)}</span>${vBadge(e.name, 'text-[1.2rem]')}${accPill(ac)}<span class="rounded-full ${e.type === 'Consultora' ? 'bg-lilac text-brand' : 'bg-surface text-ink-soft'} px-2.5 py-0.5 text-[0.8rem] font-bold">${esc(e.type)}</span>${e.hidden ? '<span class="rounded-full bg-sun-soft text-warn px-2.5 py-0.5 text-[0.8rem] font-bold"><i class="ph-bold ph-eye-slash"></i> Oculta</span>' : ''}</p>
               <p class="text-ink-soft text-[0.95rem] mt-0.5">${[e.industry, loc].filter(Boolean).map(esc).join(' · ') || '<span class="text-ink-mute">Sin rubro ni ubicación</span>'}</p>
               <p class="mt-1.5 text-[0.9rem] text-ink-mute flex flex-wrap gap-x-3 gap-y-1">
                 <span><i class="ph ${o[0]}"></i> ${o[1]}${e.since ? ` ${ago(e.since).toLowerCase()}` : ''}</span>
-                ${e.email ? `<span><i class="ph ph-envelope-simple"></i> ${esc(e.email)}</span>` : ''}
+                ${e.email ? `<span><i class="ph ph-envelope-simple"></i> ${esc(e.email)}</span>` : ac.email ? `<span><i class="ph ph-envelope-simple"></i> ${esc(ac.email)}${ac.k === 'invitada' ? ` · vence ${fmtDate(ac.inv.exp)}` : ''}</span>` : ''}
                 <span><i class="ph ph-briefcase"></i> ${e.active} abierta${e.active === 1 ? '' : 's'} de ${e.total}</span>
                 ${e.last ? `<span><i class="ph ph-clock"></i> Última publicación ${ago(e.last).toLowerCase()}</span>` : ''}</p>
             </div>
           </div>
           <div class="mt-3 flex flex-wrap gap-2">
+            ${ac.k === 'activa' ? `<button type="button" data-ae-revoke="${esc(e.name)}" class="btn btn-outline btn-sm text-bad"><i class="ph ph-lock-simple"></i>Quitar acceso</button>`
+              : `<button type="button" data-ae-acc="${esc(e.name)}" class="btn ${ac.k === 'sin' ? 'btn-primary' : 'btn-outline'} btn-sm"><i class="ph-bold ${ac.k === 'sin' ? 'ph-key' : 'ph-paper-plane-tilt'}"></i>${ac.k === 'sin' ? 'Dar acceso' : 'Reenviar invitación'}</button>${ac.k !== 'sin' ? `<button type="button" data-ae-revoke="${esc(e.name)}" class="btn btn-outline btn-sm"><i class="ph ph-x"></i>Cancelar invitación</button>` : ''}`}
             <a href="#/e?n=${encodeURIComponent(e.name)}" class="btn btn-outline btn-sm"><i class="ph ph-eye"></i>Ver página</a>
             <button type="button" data-ae-edit="${esc(e.name)}" class="btn btn-outline btn-sm"><i class="ph ph-pencil-simple"></i>Editar perfil</button>
             <button type="button" data-ae-ver="${esc(e.name)}" class="btn btn-outline btn-sm">${isVerified(e.name) ? '<i class="ph ph-seal-check"></i>Quitar verificación' : '<i class="ph-fill ph-seal-check text-[#1D9BF0]"></i>Verificar'}</button>
@@ -7816,6 +7981,16 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         $('#view').onclick = (async e => {
           const t = e.target.closest('[data-ae-type]'); if (t) { F.type = t.dataset.aeType; again(); return; }
           const ed = e.target.closest('[data-ae-edit]'); if (ed) { openCompanyEditor(ed.dataset.aeEdit, again); return; }
+          const ga = e.target.closest('[data-ae-acc]'); if (ga) { openGrantAccess(ga.dataset.aeAcc); return; }
+          const rv = e.target.closest('[data-ae-revoke]'); if (rv) {
+            const n = rv.dataset.aeRevoke, st = accessState(n), act = st.k === 'activa';
+            if (!(await askConfirm({ title: act ? `¿Quitarle el acceso a ${esc(n)}?` : `¿Cancelar la invitación de ${esc(n)}?`, text: act ? `${st.email}${st.n > 1 ? ` y ${st.n - 1} más` : ''} ya no ${st.n > 1 ? 'van' : 'va'} a poder ingresar. El perfil y las búsquedas quedan como están.` : 'El link deja de servir.', ok: act ? 'Quitar acceso' : 'Cancelar invitación', danger: true, icon: 'ph-lock-simple' }))) return;
+            Store.coAccountsOf(n).forEach(a => Store.removeCoAccount(a.email));
+            const inv = Store.invite(n); if (inv) Store.saveInvite(n, { ...inv, status: 'revocada', revokedAt: new Date().toISOString() });
+            toast(act ? `${n} ya no tiene acceso` : 'Cancelaste la invitación', 'ph-lock-simple'); again(); return;
+          }
+          const ao = e.target.closest('[data-ar-ok]'); if (ao) { const r = Store.accessReqs().find(x => x.id === ao.dataset.arOk); if (r) openGrantAccess(r.company, { email: r.email, name: r.name, phone: r.phone, req: r.id }); return; }
+          const an = e.target.closest('[data-ar-no]'); if (an) { if (await askConfirm({ title: '¿Rechazar el pedido?', text: 'No se le da acceso. Si hace falta, avisale por email.', ok: 'Rechazar', icon: 'ph-x' })) { Store.updateAccessReq(an.dataset.arNo, { status: 'rechazado', doneAt: new Date().toISOString() }); toast('Pedido rechazado', 'ph-x'); again(); } return; }
           const vb = e.target.closest('[data-ae-ver]'); if (vb) { const n = vb.dataset.aeVer, on = !isVerified(n); Store.saveCoProfile(n, { verified: on }); toast(on ? `${n} ya tiene el tilde de verificada` : `Le quitaste la verificación a ${n}`, 'ph-seal-check'); again(); return; }
           const h = e.target.closest('[data-ae-hide]'); if (h) { const n = h.dataset.aeHide, on = !Store.coProfile(n).hidden; Store.saveCoProfile(n, { hidden: on }); toast(on ? `${n} ya no aparece en Empresas adheridas` : `${n} vuelve a aparecer en Empresas adheridas`, on ? 'ph-eye-slash' : 'ph-eye'); again(); return; }
           const d = e.target.closest('[data-ae-del]'); if (d) { if (await askConfirm({ title: `¿Borrar ${esc(d.dataset.aeDel)}?`, text: 'Se borra su perfil y deja de aparecer en Empresas adheridas.', ok: 'Borrar', danger: true })) { Store.removeCoProfile(d.dataset.aeDel); toast('Empresa borrada', 'ph-trash'); again(); } }
@@ -7824,7 +7999,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     };
   }
 
-  // Solo se guarda la huella (SHA-256) de la clave, no la clave. En producción el acceso se valida en el servidor.
+  // Solo se guarda la huella (PBKDF2 con sal) de la clave, no la clave. En producción el acceso se valida en el servidor.
   const ADMIN_HASH = 'pb$600000$c3b0a0250fb0d228fbfca8d78f4951c2$eecf648bb43dbc3af21c197407f7626b28a96efbacad07be97d3cb65617999d0';
   const adminOn = () => { try { return sessionStorage.getItem('emplea.admin') === '1'; } catch (e) { return !!S.admin; } };
   const adminSet = on => { S.admin = on; try { on ? sessionStorage.setItem('emplea.admin', '1') : sessionStorage.removeItem('emplea.admin'); } catch (e) { /* sin storage */ } };
@@ -7883,7 +8058,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const adminSwitch = () => {
     const pend = Store.delReqs().filter(r => r.status === 'pendiente').length;
     return `<div class="-mx-4 px-4 overflow-x-auto mb-6"><div class="inline-flex rounded-full bg-white border border-line p-1 whitespace-nowrap" role="tablist" aria-label="Secciones del panel">
-      ${[['cvs', 'ph-tray', 'CVs recibidos', 0], ['datos', 'ph-shield-check', 'Pedidos de datos', pend], ['notas', 'ph-coffee', 'Charla de café', 0], ['emp', 'ph-buildings', 'Empresas', 0], ['sal', 'ph-currency-circle-dollar', 'Salarios', 0]].map(([v, ic, l, n]) => `<button type="button" role="tab" data-adm-view="${v}" aria-selected="${(S.admView || 'cvs') === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${(S.admView || 'cvs') === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}${n ? `<span class="rounded-full bg-bad text-white px-1.5 text-[0.75rem] leading-5">${n}</span>` : ''}</button>`).join('')}
+      ${[['cvs', 'ph-tray', 'CVs recibidos', 0], ['datos', 'ph-shield-check', 'Pedidos de datos', pend], ['notas', 'ph-coffee', 'Charla de café', 0], ['emp', 'ph-buildings', 'Empresas', Store.accessReqs().filter(r => r.status === 'pendiente').length], ['sal', 'ph-currency-circle-dollar', 'Salarios', 0]].map(([v, ic, l, n]) => `<button type="button" role="tab" data-adm-view="${v}" aria-selected="${(S.admView || 'cvs') === v}" class="h-10 px-4 rounded-full font-semibold inline-flex items-center gap-1.5 ${(S.admView || 'cvs') === v ? 'bg-ink text-white' : 'text-ink-soft hover:text-ink'}"><i class="ph ${ic} text-lg"></i>${l}${n ? `<span class="rounded-full bg-bad text-white px-1.5 text-[0.75rem] leading-5">${n}</span>` : ''}</button>`).join('')}
     </div></div>`;
   };
   const bindAdminSwitch = () => $$('[data-adm-view]').forEach(b => b.onclick = () => { S.admView = b.dataset.admView; render(); });
@@ -8031,10 +8206,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const ROUTES = {
     '/': Welcome, '/chat': Chat, '/vacantes': Jobs, '/guardadas': Saved, '/postulaciones': MyApps, '/notificaciones': Notifs,
     '/empresa': CoHome, '/empresa/busquedas': CoDash, '/empresa/b': JobSpace, '/empresa/candidatos': CoCands,
-    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
+    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/acceso': AccessPage, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
     '/nosotros': AboutPage, '/vacante': JobPage, '/empresas': Employers, '/faqs': () => InfoPage('faqs'), '/terminos': () => InfoPage('terminos'), '/privacidad': () => InfoPage('privacidad'), '/admin': AdminPage, '/cafe': CafePage, '/cafe/nota': CafePost
   };
-  const TITLES = { '/admin': 'Admin', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
+  const TITLES = { '/admin': 'Admin', '/acceso': 'Acceso', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
 
   function render(opts = {}) {
     const { path, params } = parseHash();
@@ -8054,7 +8229,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     document.body.classList.remove('has-tbar');
     if (path !== '/chat') chatToken++;
     // Pantalla de ingreso del candidato: sin el menú de candidato hasta que ingrese
-    const mode = path === '/admin' ? 'admin' : path.startsWith('/terna') ? 'terna' : (path === '/empresa' || path.startsWith('/empresa/')) ? 'company' : path === '/' || path === '/empresas' || path === '/mapa' || path === '/recomendacion' || INFO_PATHS.includes(path) ? 'home' : path === '/chat' ? 'chat'
+    const mode = path === '/admin' ? 'admin' : path.startsWith('/terna') ? 'terna' : (path === '/empresa' || path.startsWith('/empresa/')) ? 'company' : path === '/' || path === '/empresas' || path === '/mapa' || path === '/acceso' || path === '/recomendacion' || INFO_PATHS.includes(path) ? 'home' : path === '/chat' ? 'chat'
       : (path === '/postulaciones' || path === '/notificaciones') && !Store.candidate() ? 'login' : 'candidate';
     { const src = params.get('src'), jid = params.get('id') || params.get('job'); if (src && jid && CHANNELS.some(c => c[0] === src)) { try { sessionStorage.setItem('emplea.src.' + jid, src); } catch (e) { /* sin storage */ } } }
     checkAlerts(); // Fedfu revisa si hay vacantes nuevas para las alertas del candidato

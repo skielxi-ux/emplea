@@ -352,3 +352,11 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Anónima:** no la ven las empresas ni las consultoras y no va en las postulaciones. Si la persona borra sus datos, la respuesta queda solo como dato anónimo, sin vínculo con ella.
 - **Admin → Salarios:** filtro por provincia (Tucumán por defecto o todo el país), experiencia y jornada. Muestra respuestas, mediana, rango medio (P25–P75) y últimos 30 días. Abajo, una fila por área con la cantidad de respuestas, una barra con el rango y la mediana, y al abrirla, el detalle por puesto. Con menos de 5 respuestas se marca "Pocas respuestas". Botón para descargar CSV anónimo.
 - **Demo:** trae respuestas de ejemplo (`demo: true`) con montos ficticios para que el tablero no arranque vacío.
+
+## Acceso de empresas cargadas por el admin
+- **Dar acceso:** en Admin → Empresas, cada empresa muestra su estado: "Sin acceso", "Invitada", "Invitación vencida" o "Activa". Con "Dar acceso" se pone el email de la persona (y, si se quiere, nombre y celular) y se genera un link personal que vence en 7 días y sirve una sola vez.
+- **Envío:** botones para mandarlo por WhatsApp o por email con el mensaje listo ("Te damos acceso a la cuenta de… en +Humanos"), o para copiar el link.
+- **Entrada:** la persona abre el link (`#/acceso?i=…`), ve el logo y el nombre de la empresa, crea su contraseña (mínimo 8 caracteres, con letras y números) y entra directo a Mi perfil, con los datos que había cargado el admin.
+- **Reenviar, cancelar o quitar:** si está invitada, se puede reenviar (genera un link nuevo) o cancelar la invitación. Si está activa, "Quitar acceso" borra sus usuarios: no pueden ingresar más, pero el perfil y las búsquedas quedan como están.
+- **"¿Es tu empresa? Pedí acceso":** en la página pública de cada empresa sin cuenta. La persona deja nombre, cargo, email, celular y confirma que trabaja ahí. El pedido aparece arriba en Admin → Empresas (con un número en la pestaña). "Dar acceso" abre la invitación con sus datos ya cargados, y "Rechazar" lo cierra.
+- **Prototipo:** el link lleva adentro los datos del perfil para funcionar en otro dispositivo, y los pedidos de acceso se ven solo en el navegador donde se hicieron. En producción, el link lleva solo un código al azar que valida el servidor (ver SEGURIDAD.md).
