@@ -328,7 +328,6 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Estilo:** maqueta isométrica sobre fondo blanco, con base gruesa de pasto y tierra, cuadras, avenidas, sendas peatonales, faroles, árboles, una fuente y autitos que circulan. Paleta cálida: techos terracota y fachadas crema o durazno.
 - **Edificios según el rubro:** Salud, Educación, Finanzas y Hotelería usan el edificio alto; Retail, Gastronomía y Automotriz, el local con toldo; Industria, Logística, Agroindustria, Alimenticia y Energía, el galpón; Tech, Telefonía, Call center y Construcción, el edificio de oficinas; Consultoras e Inmobiliarias, el edificio de dos pisos. Los colores de cada empresa salen de su nombre. Los lotes libres se llenan con casas del barrio en tonos apagados (no se pueden tocar) y plazas, para que las empresas resalten. Cada empresa tiene su cartel con el nombre (y el tilde si está verificada), y cada calle, un cartel con número y rubro en el borde de la maqueta.
 - **Color por rubro:** cada rubro tiene su color (`IND_COLOR`). Lo usan el número de la calle en el panel, los carteles de las dos puntas de la calle, el cordón de las veredas y los techos de sus empresas. Las casas del barrio solo aparecen en cuadras donde no hay empresas, para que no se mezclen.
-- **Logos:** las empresas verificadas tienen un poste alto con su logo y un cartel con su nombre. Las demás llevan el logo en la fachada. Se usa el logo que la empresa sube en su perfil; si no tiene, van sus iniciales sobre su color. No se dibujan logos de marcas que no los hayan subido.
 - **Montañas:** un cordón de cerros low-poly al oeste, sobre la misma base, con picos de roca nevados atrás.
 - **Ir a una calle:** el botón de cada calle acerca la cámara a sus empresas.
 - **Búsquedas abiertas:** las empresas con búsquedas activas tienen una antena en el techo con una luz roja que titila.
@@ -388,6 +387,6 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 
 ## Logos y portada de las empresas
 - **Logos prolijos:** al subirlos se recortan los márgenes vacíos (transparentes o blancos). Si el logo es claro sobre fondo transparente (por ejemplo, blanco), se muestra sobre fondo oscuro. Los logos cargados antes se corrigen solos la primera vez que se abre el sitio.
-- **En el mapa 3D:** cada empresa con logo tiene un cartel sobre el techo, mirando a la cámara. Las verificadas tienen además el poste alto.
+- **En el mapa 3D:** sobre el techo de cada edificio va solo la pill con el nombre (con el tilde si está verificada). No hay carteles ni postes con logo.
 - **Logos cuadrados** con bordes suaves en todo el sitio: listado de empresas, página de cada empresa, avisos, panel y mapa. El logo va sobre fondo blanco, con un margen interno, para que entre completo aunque sea apaisado.
 - **Portada (banner) opcional** en Mi perfil → Identidad, y también desde el editor de empresas del Admin. Se recorta a 4:1 (1584 × 396, como LinkedIn) y se muestra arriba de la página pública de la empresa, con el logo encima. Sin portada, se usa un degradé con el color de la empresa.

@@ -7434,15 +7434,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const list = MODEL[s.ind] || ALL, name = list[(Math.floor(k / 2) + (north ? 0 : 1)) % list.length];
       const g = kit.clone(name, h, false, indColor(s.ind)); g.position.set(X(c), 0, Z(r)); g.rotation.y = north ? 0 : Math.PI; g.scale.setScalar(S); scene.add(g); used.add(key(c, r));
       const top = kit.height[name] * S;
-      if (isVerified(e.name)) { const pole = logoPole(e, kit.height[name]); pole.position.set(0.44, 0, 0.46); g.add(pole); }
-      else {
-        // Cartel con el logo sobre el techo, mirando a la cámara (de los dos lados)
-        const sg = new T.Group(), side = mat(companyOf(e.name).color || '#3B5BFD'), lm = logoMat(e.name), hgt = kit.height[name];
-        const panel = new T.Mesh(kit.cube, [side, side, side, side, lm, lm]); panel.scale.set(0.46, 0.46, 0.04); panel.position.y = 0.36; panel.castShadow = true;
-        [-0.15, 0.15].forEach(x => { const leg = new T.Mesh(kit.cube, mat(0x6E6A66)); leg.scale.set(0.03, 0.14, 0.03); leg.position.set(x, 0.07, 0); sg.add(leg); });
-        sg.add(panel); sg.position.set(0.1, hgt - 0.01, 0.08); sg.rotation.y = (north ? 1 : -1) * Math.PI / 4 + (north ? 0 : Math.PI); g.add(sg);
-      }
-      const lb = label([e.name.length > 24 ? e.name.slice(0, 23) + '…' : e.name], { check: isVerified(e.name), cls: 'city-tag-co' }); if (isVerified(e.name)) { const d = north ? 1 : -1; lb.position.set(X(c) + d * 0.44 * S, Math.max(1.3, top / S + 0.55) * S + 5.2, Z(r) + d * 0.46 * S); } else lb.position.set(X(c), top + 9.5, Z(r)); scene.add(lb);
+      const lb = label([e.name.length > 24 ? e.name.slice(0, 23) + '…' : e.name], { check: isVerified(e.name), cls: 'city-tag-co' }); lb.position.set(X(c), top + 1.6, Z(r)); scene.add(lb);
       g.userData = { e, lb, baseY: 0, top }; buildings.push(g); tags.push(lb);
       lb.userData.el.style.pointerEvents = 'auto'; lb.userData.el.onclick = () => select(g); lb.userData.el.title = `Ver ${e.name}`;
       // Antena con luz roja que titila: la empresa tiene búsquedas abiertas
