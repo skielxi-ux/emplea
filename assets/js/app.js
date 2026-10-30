@@ -8358,11 +8358,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       return { id: 'ugd' + i, demo: true, name, city, province: city === 'Salta' ? 'Salta' : 'Tucumán', photo: UGC_PHOTOS[ph], tags, followers: fol, bio, instagram: '@' + u, tiktok: i % 2 ? '@' + u : '', youtube: '', phone: '381 555-' + (4100 + i * 37), email: `${u}@mail.com`, pieces: [], at: new Date(Date.now() - (i + 1) * 3 * 864e5).toISOString() };
     }));
   }
-  const ugcCard = (c, big) => `<article class="ugc-card relative overflow-hidden rounded-[22px] bg-ink ${big ? 'aspect-[9/14]' : 'aspect-[9/14]'}">
+  const ugcCard = c => `<article class="ugc-card relative overflow-hidden rounded-[22px] bg-[#23205A] aspect-[9/14]">
       <img src="${esc(ugcImg(c.photo || UGC_PHOTOS[0]))}" alt="" class="absolute inset-0 w-full h-full object-cover" loading="lazy" data-rm>
-      <div class="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/10 to-transparent"></div>
-      <div class="absolute inset-x-0 bottom-0 p-4 text-white"><p class="font-extrabold text-[1.1rem] leading-tight">${esc(c.name)}</p><p class="text-white/75 text-[0.88rem]"><i class="ph ph-map-pin"></i> ${esc(c.city || c.province || '')}</p>
-        <div class="mt-2 flex flex-wrap gap-1.5">${(c.tags || []).slice(0, 3).map(t => `<span class="rounded-full bg-white/20 backdrop-blur px-2.5 py-0.5 text-[0.8rem] font-semibold">${esc(t)}</span>`).join('')}</div></div>
     </article>`;
 
   function CreatorsPage() {

@@ -392,7 +392,7 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Portada (banner) opcional** en Mi perfil → Identidad, y también desde el editor de empresas del Admin. Se recorta a 4:1 (1584 × 396, como LinkedIn) y se muestra arriba de la página pública de la empresa, con el logo encima. Sin portada, se usa un degradé con el color de la empresa.
 
 ## Creadores UGC
-- **Página pública** `#/creadores` (botón "Creadores UGC" en el pie): "¿Sos creador de contenido o te gustaría serlo?", tira de creadores con Swiper que avanza sola en loop continuo (se pausa al pasar el mouse y se puede arrastrar), "Oportunidades" y "Visibilidad", y el recorrido del creador: Perfil, Portfolio y Match.
+- **Página pública** `#/creadores` (botón "Creadores UGC" en el pie): "¿Sos creador de contenido o te gustaría serlo?", tira de fotos de creadores (solo fotos, sin texto) con Swiper que avanza sola en loop continuo (se pausa al pasar el mouse y se puede arrastrar), "Oportunidades" y "Visibilidad", y el recorrido del creador: Perfil, Portfolio y Match.
 - **Perfil de creador en 2 pasos:**
   1. Perfil: foto opcional, nombre, ciudad, provincia, seguidores, celular, email y redes (al menos una).
   2. Portfolio: hasta 5 tags, intereses, bio y hasta 3 links a sus mejores piezas, con consentimiento para que lo contacten.
