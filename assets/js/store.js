@@ -107,6 +107,7 @@ const Store = (() => {
   const KCAND = 'emplea.cand', KSEEN = 'emplea.candseen', KACC = 'emplea.coaccounts';
   const KSP = 'emplea.spontcvs';
   const KSAL = 'emplea.salaries';
+  const KUG = 'emplea.creators', KUGME = 'emplea.creator.me';
   const KSV = 'emplea.surveys';
   const KINV = 'emplea.invites', KAR = 'emplea.accessreqs';
   const KUL = 'emplea.unlocks';
@@ -358,6 +359,11 @@ const Store = (() => {
     // Alertas de vacantes del candidato y avisos de Fedfu
     // CVs enviados desde "Enviar CV" (sin postularse a una vacante): van a "Toda la plataforma"
     spontCvs: () => read(KSP, []),
+    // Creadores UGC
+    creators: () => read(KUG, []),
+    myCreator() { const id = read(KUGME, null); return id ? read(KUG, []).find(c => c.id === id) || null : null; },
+    saveCreator(x) { const l = read(KUG, []).filter(c => c.id !== x.id); l.unshift(x); write(KUG, l); write(KUGME, x.id); },
+    seedCreators(list) { const l = read(KUG, []); if (l.some(x => x.demo)) return; write(KUG, [...l, ...list]); },
     // Encuesta Laboral (anónima)
     surveys: () => read(KSV, []),
     addSurvey(x) { const l = read(KSV, []); l.unshift(x); write(KSV, l); },

@@ -495,7 +495,7 @@
 
   function navItems(mode) {
     if (mode === 'candidate') return [['/vacantes', 'ph-magnifying-glass', 'Vacantes'], ['/guardadas', 'ph-bookmark-simple', 'Guardadas'], ['/postulaciones', 'ph-paper-plane-tilt', 'Postulaciones'], ['/notificaciones', 'ph-bell', 'Notificaciones']];
-    if (mode === 'company' && Store.company()) return [['/empresa', 'ph-house', 'Inicio'], ['/empresa/busquedas', 'ph-briefcase', 'Búsquedas'], ['/empresa/entrevistas', 'ph-calendar-blank', 'Entrevistas'], ['/empresa/candidatos', 'ph-database', 'Base de datos', 'Base'], ['/empresa/hub', 'ph-users-three', 'Hub'], ['/empresa/reportes', 'ph-chart-bar', 'Reportes'], ['/empresa/perfil', 'ph-identification-card', 'Perfil']];
+    if (mode === 'company' && Store.company()) return [['/empresa', 'ph-house', 'Inicio'], ['/empresa/busquedas', 'ph-briefcase', 'Búsquedas'], ['/empresa/entrevistas', 'ph-calendar-blank', 'Entrevistas'], ['/empresa/candidatos', 'ph-database', 'Base de datos', 'Base'], ['/empresa/hub', 'ph-users-three', 'Hub'], ['/empresa/creadores', 'ph-video-camera', 'Creadores'], ['/empresa/reportes', 'ph-chart-bar', 'Reportes'], ['/empresa/perfil', 'ph-identification-card', 'Perfil']];
     return null;
   }
   function newAppsCount() {
@@ -526,7 +526,7 @@
     if (mode !== 'company') { renderPublicTop(path); return; }
     const items = navItems(mode) || [];
     const compact = items.length > 3;
-    const links = items.map(([h, ic, l, short]) => `<a href="#${h}" title="${l}" class="relative inline-flex items-center gap-2 h-10 whitespace-nowrap ${compact ? 'px-3' : 'px-4'} rounded-full font-semibold ${path === h ? 'bg-brand-soft text-brand' : 'text-ink-soft hover:bg-surface'}"><i class="${path === h ? 'ph-fill' : 'ph'} ${ic} text-xl"></i><span class="${compact ? (items.length > 6 ? 'hidden xl:inline' : 'hidden lg:inline') : ''}">${short && compact ? `<span class="2xl:hidden">${short}</span><span class="max-2xl:hidden">${l}</span>` : l}</span></a>`).join('');
+    const links = items.map(([h, ic, l, short]) => `<a href="#${h}" title="${l}" class="relative inline-flex items-center gap-2 h-10 whitespace-nowrap ${compact ? 'px-3' : 'px-4'} rounded-full font-semibold ${path === h ? 'bg-brand-soft text-brand' : 'text-ink-soft hover:bg-surface'}"><i class="${path === h ? 'ph-fill' : 'ph'} ${ic} text-xl"></i><span class="${compact ? (items.length > 7 ? (path === h ? 'hidden lg:inline' : 'hidden 2xl:inline') : items.length > 6 ? 'hidden xl:inline' : 'hidden lg:inline') : ''}">${short && compact ? `<span class="2xl:hidden">${short}</span><span class="max-2xl:hidden">${l}</span>` : l}</span></a>`).join('');
     const right = co ? `<a href="#/empresa/perfil" class="rounded-xl hover:opacity-90" title="Mi perfil" aria-label="Mi perfil de ${esc(co.name)}">${logo(co.name, 'w-10 h-10 text-sm')}</a>` : '';
     topbar.innerHTML = `
       <div class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-line">
@@ -914,7 +914,7 @@
     ['Facebook', 'ph-facebook-logo', 'https://www.facebook.com/emplea'],
     ['WhatsApp', 'ph-whatsapp-logo', 'https://wa.me/5493815550000']
   ];
-  const INFO_PATHS = ['/nosotros', '/faqs', '/terminos', '/privacidad', '/cafe', '/cafe/nota', '/encuesta', '/beneficios'];
+  const INFO_PATHS = ['/nosotros', '/faqs', '/terminos', '/privacidad', '/cafe', '/cafe/nota', '/encuesta', '/beneficios', '/creadores'];
   function siteFooter() {
     const col = (t, links) => `<div><p class="font-display font-bold text-ink">${t}</p><ul class="mt-3 space-y-1">${links.map(([h, l, ic]) => `<li><a href="#${h}" class="flex items-center gap-2 min-h-[44px] py-1 text-ink-soft font-semibold hover:text-brand"><i class="ph-fill ${ic} text-brand text-[1.15rem] shrink-0" aria-hidden="true"></i><span class="min-w-0">${l}</span></a></li>`).join('')}</ul></div>`;
     return `<footer class="border-t border-line bg-white">
@@ -925,7 +925,7 @@
               <p class="mt-3 text-ink-soft max-w-xs">El portal de gestión para consultoras: publicá, calificá y presentá candidatos en un solo lugar.</p>
               <ul class="mt-5 flex gap-2" aria-label="Redes sociales">${SOCIAL.map(([n, ic, u]) => `<li><a href="${u}" target="_blank" rel="noopener" aria-label="${n} de +Humanos" title="${n}" class="w-11 h-11 rounded-full bg-surface text-ink grid place-items-center hover:bg-brand hover:text-white transition"><i class="ph-fill ${ic} text-[1.35rem]"></i></a></li>`).join('')}</ul>
             </div>
-            ${col('+Humanos', [['/nosotros', 'Nosotros', 'ph-hand-heart'], ['/empresas', 'Empresas adheridas', 'ph-buildings'], ['/beneficios', 'Beneficios', 'ph-gift'], ['/cafe', 'Charla de café', 'ph-coffee'], ['/encuesta', 'Encuesta Laboral', 'ph-chart-bar'], ['/faqs', 'Preguntas frecuentes', 'ph-question']])}
+            ${col('+Humanos', [['/nosotros', 'Nosotros', 'ph-hand-heart'], ['/empresas', 'Empresas adheridas', 'ph-buildings'], ['/beneficios', 'Beneficios', 'ph-gift'], ['/creadores', 'Creadores UGC', 'ph-video-camera'], ['/cafe', 'Charla de café', 'ph-coffee'], ['/encuesta', 'Encuesta Laboral', 'ph-chart-bar'], ['/faqs', 'Preguntas frecuentes', 'ph-question']])}
             ${col('Legal', [['/terminos', 'Términos y condiciones', 'ph-scroll'], ['/privacidad', 'Política de privacidad', 'ph-shield-check']])}
           </div>
           <div class="mt-10 pt-6 border-t border-line flex flex-col sm:flex-row gap-2 sm:items-center justify-between text-ink-mute text-[0.92rem]">
@@ -8333,6 +8333,217 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     };
   }
 
+  /* ================= CREADORES UGC =================
+     Página pública para creadores de contenido (perfil en 2 pasos: Perfil y Portfolio) y buscador para las empresas
+     en su panel (#/empresa/creadores). Las fotos de ejemplo son de Unsplash (libres) y los creadores de la demo son ficticios. */
+  const UGC_PHOTOS = ['photo-1758273239330-9f32922ead06', 'photo-1764162051296-63c5cddf6ba6', 'photo-1694813646506-135688fc24e4', 'photo-1764162051349-7cc989a1399d', 'photo-1764162051494-03e7cb534b3e', 'photo-1786372546514-1d524effae64', 'photo-1758273238952-9f9521504c7d', 'photo-1724754608741-aaa35ce43545', 'photo-1764162051343-73cff9ec72f7'];
+  const ugcImg = (id, w = 600) => /^data:/.test(id) ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
+  const UGC_TAGS = ['Gastronomía', 'Belleza', 'Moda', 'Tecnología', 'Fitness', 'Viajes', 'Mascotas', 'Hogar', 'Autos', 'Finanzas', 'Humor', 'Educación', 'Unboxing', 'Reseñas', 'Lifestyle', 'Gaming', 'Maternidad', 'Deportes'];
+  const UGC_FOL = ['Recién empiezo', 'Menos de 1.000', '1.000 a 10.000', '10.000 a 50.000', '50.000 a 100.000', 'Más de 100.000'];
+  const UGC_SEED = [
+    ['Mica Herrera', 'Yerba Buena', 0, ['Gastronomía', 'Reseñas', 'Lifestyle'], '10.000 a 50.000', 'Recetas rápidas y reseñas de cafés de Tucumán, con humor.'],
+    ['Nico Ledesma', 'San Miguel de Tucumán', 1, ['Tecnología', 'Unboxing', 'Reseñas'], '1.000 a 10.000', 'Pruebo celulares y gadgets y te cuento si valen la pena.'],
+    ['Sofi Paz', 'San Miguel de Tucumán', 2, ['Gastronomía', 'Viajes'], '10.000 a 50.000', 'Fotos y videos de comida que dan hambre.'],
+    ['Joaco Ruiz', 'Tafí Viejo', 3, ['Autos', 'Humor', 'Deportes'], '50.000 a 100.000', 'Autos, fútbol y algún sketch.'],
+    ['Cami Albornoz', 'Salta', 4, ['Belleza', 'Moda', 'Lifestyle'], '10.000 a 50.000', 'Rutinas de skincare reales, sin filtro.'],
+    ['Agus Medina', 'San Miguel de Tucumán', 5, ['Fitness', 'Lifestyle'], '1.000 a 10.000', 'Entrenamientos cortos para hacer en casa.'],
+    ['Lu Quiroga', 'Concepción', 6, ['Hogar', 'Maternidad', 'Unboxing'], 'Menos de 1.000', 'Ideas para la casa y la vida con chicos.'],
+    ['Vale Romero', 'Yerba Buena', 7, ['Viajes', 'Gastronomía', 'Lifestyle'], '10.000 a 50.000', 'Escapadas por el norte y dónde comer.'],
+    ['Flor Sosa', 'Tafí del Valle', 8, ['Moda', 'Viajes'], '1.000 a 10.000', 'Outfits para la montaña y la ciudad.']
+  ];
+  function ugcSeed() {
+    if (Store.creators().some(x => x.demo)) return;
+    Store.seedCreators(UGC_SEED.map(([name, city, ph, tags, fol, bio], i) => {
+      const u = norm(name).replace(/\s+/g, '');
+      return { id: 'ugd' + i, demo: true, name, city, province: city === 'Salta' ? 'Salta' : 'Tucumán', photo: UGC_PHOTOS[ph], tags, followers: fol, bio, instagram: '@' + u, tiktok: i % 2 ? '@' + u : '', youtube: '', phone: '381 555-' + (4100 + i * 37), email: `${u}@mail.com`, pieces: [], at: new Date(Date.now() - (i + 1) * 3 * 864e5).toISOString() };
+    }));
+  }
+  const ugcCard = (c, big) => `<article class="ugc-card relative overflow-hidden rounded-[22px] bg-ink ${big ? 'aspect-[9/14]' : 'aspect-[9/14]'}">
+      <img src="${esc(ugcImg(c.photo || UGC_PHOTOS[0]))}" alt="" class="absolute inset-0 w-full h-full object-cover" loading="lazy" data-rm>
+      <div class="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/10 to-transparent"></div>
+      <div class="absolute inset-x-0 bottom-0 p-4 text-white"><p class="font-extrabold text-[1.1rem] leading-tight">${esc(c.name)}</p><p class="text-white/75 text-[0.88rem]"><i class="ph ph-map-pin"></i> ${esc(c.city || c.province || '')}</p>
+        <div class="mt-2 flex flex-wrap gap-1.5">${(c.tags || []).slice(0, 3).map(t => `<span class="rounded-full bg-white/20 backdrop-blur px-2.5 py-0.5 text-[0.8rem] font-semibold">${esc(t)}</span>`).join('')}</div></div>
+    </article>`;
+
+  function CreatorsPage() {
+    ugcSeed();
+    const list = Store.creators(), mine = Store.myCreator();
+    const html = `
+      <section class="relative overflow-hidden bg-ink text-white">
+        <div class="ben-orb ben-orb-1" aria-hidden="true"></div>
+        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-10 md:pt-20 md:pb-12">
+          <span class="rv inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 font-semibold text-[0.95rem]"><i class="ph-fill ph-video-camera text-sun"></i>Creadores UGC</span>
+          <h1 class="rv mt-4 max-w-3xl text-[2.3rem] sm:text-[3.3rem] lg:text-[3.9rem] leading-[1.02] font-extrabold tracking-[-0.035em]">¿Sos creador de contenido o te gustaría serlo?</h1>
+          <p class="rv mt-4 text-[1.3rem] sm:text-[1.5rem] font-bold text-sun">Accedé a oportunidades que matchean con vos.</p>
+          <p class="rv mt-3 text-[1.08rem] text-white/80 max-w-2xl">Conectamos a través de nuestra plataforma a creadores de contenido con las marcas que lideran el mercado para crear campañas que generan resultados.</p>
+          <div class="rv mt-6 flex flex-wrap gap-3">
+            <button type="button" data-ugc-join class="btn h-14 px-7 text-[1.05rem] bg-white text-ink hover:bg-sun ben-cta"><i class="ph-bold ${mine ? 'ph-pencil-simple' : 'ph-user-plus'}"></i>${mine ? 'Editar mi perfil de creador' : 'Crear mi perfil de creador'}</button>
+            <a href="#/empresa/creadores" class="btn h-14 px-6 text-white border border-white/35 hover:bg-white/10"><i class="ph ph-buildings text-xl"></i>Soy una marca: buscar creadores</a>
+          </div>
+        </div>
+        <div class="relative pb-12 md:pb-16" aria-label="Creadores de la comunidad">
+          <div class="swiper js-ugc ugc-strip"><div class="swiper-wrapper !ease-linear">
+            ${[...list, ...list].slice(0, Math.max(10, list.length)).map(c => `<div class="swiper-slide !w-[11.5rem] sm:!w-[14rem] lg:!w-[15.5rem]">${ugcCard(c)}</div>`).join('')}
+          </div></div>
+        </div>
+      </section>
+
+      <section class="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16 grid gap-4 md:grid-cols-2" aria-label="Por qué sumarte">
+        ${[['ph-sparkle', 'Oportunidades', 'Las marcas ven tu perfil de creador de contenido y te contactan.', 'bg-sun text-ink'], ['ph-eye', 'Visibilidad', 'Tu perfil y tu portfolio quedan a la vista de todas las empresas. Cuando aparece un proyecto, la empresa avanza con vos.', 'bg-brand text-white']]
+          .map(([ic, t, d, tone], i) => `<article class="rv ben-card !p-6 sm:!p-7 !items-start" style="--d:${i * 100}ms"><span class="ben-ic w-14 h-14 rounded-2xl ${tone} grid place-items-center shrink-0"><i class="ph-fill ${ic} text-[1.7rem]"></i></span>
+            <span><h2 class="text-[1.6rem] font-extrabold leading-tight">${t}</h2><p class="mt-1.5 text-ink-soft text-[1.05rem]">${d}</p></span></article>`).join('')}
+      </section>
+
+      <section class="bg-white border-y border-line" aria-labelledby="ugc-j">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+          <p class="rv text-brand font-bold uppercase tracking-wide text-[0.85rem]">End-to-end creator journey</p>
+          <h2 id="ugc-j" class="rv mt-1 text-[1.9rem] sm:text-[2.3rem] font-extrabold tracking-tight leading-tight">De tu perfil a tu próxima campaña</h2>
+          <ol class="mt-8 grid gap-4 md:grid-cols-3">
+            ${[['ph-identification-card', 'Perfil', 'Cargás tus datos y tus redes. Te lleva menos de 2 minutos.'], ['ph-images', 'Portfolio', 'Agregás tags, intereses y tus mejores piezas para que conozcamos tu estilo.'], ['ph-handshake', 'Match', 'Las marcas que buscan tu estilo te encuentran y te contactan para su campaña.']]
+              .map(([ic, t, d], i) => `<li class="rv relative rounded-[24px] bg-surface p-6" style="--d:${i * 120}ms"><span class="absolute top-5 right-6 text-[3.2rem] font-extrabold text-ink/[.07] leading-none">${String(i + 1).padStart(2, '0')}</span>
+                <span class="w-12 h-12 rounded-2xl bg-white text-brand grid place-items-center shadow-card"><i class="ph-fill ${ic} text-2xl"></i></span><h3 class="mt-4 text-[1.35rem] font-extrabold">${t}</h3><p class="mt-1 text-ink-soft">${d}</p></li>`).join('')}
+          </ol>
+          <div class="rv mt-8 flex flex-wrap gap-3"><button type="button" data-ugc-join class="btn btn-primary h-14 px-7 ben-cta"><i class="ph-bold ph-user-plus"></i>${mine ? 'Editar mi perfil' : 'Empezar ahora'}</button></div>
+        </div>
+      </section>
+      ${siteFooter()}`;
+    return {
+      title: 'Creadores UGC', html,
+      mount() {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const el = $('.js-ugc', view);
+        if (el && window.Swiper) S.swipers.push(new Swiper(el, {
+          slidesPerView: 'auto', spaceBetween: 14, loop: true, grabCursor: true, freeMode: { enabled: true, momentum: true }, speed: reduce ? 300 : 5200,
+          autoplay: reduce ? false : { delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true }, a11y: { enabled: true }
+        }));
+        $$('[data-ugc-join]', view).forEach(b => b.onclick = () => openCreatorForm());
+        const rv = $$('.rv', view);
+        if (reduce || !('IntersectionObserver' in window)) rv.forEach(x => x.classList.add('in'));
+        else { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12 }); rv.forEach(x => io.observe(x)); }
+      }
+    };
+  }
+
+  // Formulario de creador: Perfil y Portfolio
+  function openCreatorForm() {
+    const prev = Store.myCreator() || {};
+    const A = { name: prev.name || '', city: prev.city || '', province: prev.province || 'Tucumán', phone: prev.phone || '', email: prev.email || '', instagram: prev.instagram || '', tiktok: prev.tiktok || '', youtube: prev.youtube || '', followers: prev.followers || '', photo: prev.photo && /^data:/.test(prev.photo) ? prev.photo : '', tags: [...(prev.tags || [])], interests: prev.interests || '', bio: prev.bio || '', pieces: [...(prev.pieces || []), '', '', ''].slice(0, 3) };
+    let step = 0;
+    const inp = (k, l, ph, t = 'text', extra = '') => `<div><label class="label" for="ug-${k}">${l}</label><input id="ug-${k}" type="${t}" class="input" placeholder="${esc(ph)}" value="${esc(A[k] || '')}" data-ug="${k}" ${extra}></div>`;
+    const draw = c => {
+      $('#ug-body', c).innerHTML = `<p class="text-[0.85rem] font-bold uppercase tracking-wide text-brand">Paso ${step + 1} de 2 · ${step ? 'Portfolio' : 'Perfil'}</p>
+        <div class="mt-2 h-1.5 rounded-full bg-surface overflow-hidden"><span class="block h-full rounded-full bg-brand transition-all" style="width:${(step + 1) * 50}%"></span></div>
+        ${step === 0 ? `<h2 class="mt-4 text-[1.5rem] font-extrabold leading-tight">Tus datos y tus redes</h2>
+          <div class="mt-4 flex items-center gap-4"><div id="ug-ph" class="w-20 h-20 rounded-2xl bg-surface overflow-hidden grid place-items-center shrink-0">${A.photo ? `<img src="${A.photo}" alt="" class="w-full h-full object-cover">` : '<i class="ph ph-user text-3xl text-ink-mute"></i>'}</div>
+            <div><label for="ug-file" class="btn btn-soft btn-sm cursor-pointer"><i class="ph-bold ph-camera"></i>${A.photo ? 'Cambiar foto' : 'Subir foto'}</label><p class="text-ink-mute text-[0.88rem] mt-1">Opcional. Una foto tuya, vertical o cuadrada.</p></div>
+            <input id="ug-file" type="file" accept="image/png,image/jpeg,image/webp" class="sr-only"></div>
+          <div class="mt-4 grid gap-3 sm:grid-cols-2">${inp('name', 'Nombre y apellido', 'Como te conocen')}${inp('city', 'Ciudad', 'Ej.: Yerba Buena')}
+            <div><label class="label" for="ug-province">Provincia</label><select id="ug-province" data-ug="province" class="input">${PROVINCES.map(p => `<option ${p === A.province ? 'selected' : ''}>${esc(p)}</option>`).join('')}</select></div>
+            <div><label class="label" for="ug-followers">Seguidores (tu red más grande)</label><select id="ug-followers" data-ug="followers" class="input"><option value="">Elegí</option>${UGC_FOL.map(f => `<option ${f === A.followers ? 'selected' : ''}>${f}</option>`).join('')}</select></div>
+            ${inp('phone', 'Celular / WhatsApp', '381 555-1234', 'tel', 'inputmode="tel"')}${inp('email', 'Email', 'tu@mail.com', 'email', 'inputmode="email"')}</div>
+          <p class="label mt-5">Tus redes <span class="font-normal text-ink-mute">(al menos una)</span></p>
+          <div class="grid gap-3 sm:grid-cols-3">${[['instagram', 'ph-instagram-logo', '@usuario'], ['tiktok', 'ph-tiktok-logo', '@usuario'], ['youtube', 'ph-youtube-logo', '@canal']].map(([k, ic, ph]) => `<div class="relative"><i class="ph ${ic} text-xl text-ink-mute absolute left-4 top-1/2 -translate-y-1/2"></i><input type="text" class="input pl-11" placeholder="${ph}" value="${esc(A[k])}" data-ug="${k}" aria-label="${k}"></div>`).join('')}</div>`
+        : `<h2 class="mt-4 text-[1.5rem] font-extrabold leading-tight">Tu estilo</h2>
+          <p class="label mt-4">Tags <span class="font-normal text-ink-mute">(hasta 5)</span></p>
+          <div class="flex flex-wrap gap-2">${UGC_TAGS.map(t => `<button type="button" data-ug-tag="${t}" aria-pressed="${A.tags.includes(t)}" class="chip ${A.tags.includes(t) ? 'chip-on' : ''}">${t}</button>`).join('')}</div>
+          <div class="mt-5"><label class="label" for="ug-interests">Intereses</label><input id="ug-interests" class="input" data-ug="interests" placeholder="Ej.: cafés de especialidad, running, decoración" value="${esc(A.interests)}"></div>
+          <div class="mt-4"><label class="label" for="ug-bio">Contanos de vos <span class="font-normal text-ink-mute">(opcional)</span></label><textarea id="ug-bio" rows="2" maxlength="240" class="input h-auto py-3" data-ug="bio" placeholder="Qué contenido hacés y para qué marcas te gustaría crear">${esc(A.bio)}</textarea></div>
+          <p class="label mt-4">Tus mejores piezas <span class="font-normal text-ink-mute">(links a Instagram, TikTok, YouTube o Drive)</span></p>
+          <div class="space-y-2">${A.pieces.map((u, i) => `<div class="relative"><i class="ph ph-link text-lg text-ink-mute absolute left-4 top-1/2 -translate-y-1/2"></i><input type="url" inputmode="url" class="input pl-11" placeholder="https://…" value="${esc(u)}" data-ug-piece="${i}" aria-label="Pieza ${i + 1}"></div>`).join('')}</div>
+          <label class="mt-5 flex gap-3 items-start cursor-pointer"><input type="checkbox" id="ug-ok" class="w-5 h-5 mt-0.5 accent-[#3B5BFD] shrink-0" ${prev.id ? 'checked' : ''}><span class="text-ink-soft text-[0.95rem]">Acepto que las empresas de +Humanos vean mi perfil y me contacten por WhatsApp o email (Ley 25.326).</span></label>`}
+        <p id="ug-err" class="err hidden"></p>`;
+      $('#ug-back', c).classList.toggle('hidden', step === 0);
+      $('#ug-next', c).innerHTML = step ? `<i class="ph-bold ph-check"></i>${prev.id ? 'Guardar cambios' : 'Publicar mi perfil'}` : 'Siguiente<i class="ph-bold ph-arrow-right"></i>';
+      const sc = c.querySelector('.sheet-scroll'); if (sc) sc.scrollTop = 0;
+      $$('[data-ug]', c).forEach(x => x.oninput = x.onchange = () => { A[x.dataset.ug] = x.value; });
+      $$('[data-ug-piece]', c).forEach(x => x.oninput = () => { A.pieces[+x.dataset.ugPiece] = x.value.trim(); });
+      const f = $('#ug-file', c); if (f) f.onchange = async () => {
+        const file = f.files[0]; if (!file) return;
+        try { if (!/^image\/(png|jpe?g|webp)$/.test(file.type) || file.size > 8 * 1048576) throw 'La foto tiene que ser PNG, JPG o WEBP de hasta 8 MB.'; A.photo = await (new Promise((res, rej) => { const url = URL.createObjectURL(file), im = new Image(); im.onload = () => { const W = 540, H = 840, k = Math.max(W / im.width, H / im.height), cv = document.createElement('canvas'); cv.width = W; cv.height = H; cv.getContext('2d').drawImage(im, (W - im.width * k) / 2, (H - im.height * k) / 2, im.width * k, im.height * k); URL.revokeObjectURL(url); res(cv.toDataURL('image/jpeg', 0.82)); }; im.onerror = () => rej('No pudimos leer la imagen.'); im.src = url; })); draw(c); }
+        catch (m) { const er = $('#ug-err', c); er.textContent = typeof m === 'string' ? m : 'No pudimos leer la imagen.'; er.classList.remove('hidden'); }
+      };
+    };
+    openSheet(`<div class="sheet-scroll flex-1 overflow-y-auto overscroll-contain px-5 sm:px-7 pt-3 pb-6"><div id="ug-body"></div></div>`
+      + sheetFoot('<button id="ug-back" class="btn btn-outline h-14 px-5 hidden"><i class="ph-bold ph-arrow-left"></i>Atrás</button><button id="ug-next" class="btn btn-primary h-14 flex-1"></button>'), c => {
+      draw(c);
+      c.addEventListener('click', e => {
+        const t = e.target.closest('[data-ug-tag]'); if (!t) return;
+        const v = t.dataset.ugTag; if (A.tags.includes(v)) A.tags = A.tags.filter(x => x !== v); else { if (A.tags.length >= 5) { toast('Elegí hasta 5 tags', 'ph-info'); return; } A.tags.push(v); }
+        t.setAttribute('aria-pressed', A.tags.includes(v)); t.classList.toggle('chip-on', A.tags.includes(v));
+      });
+      $('#ug-back', c).onclick = () => { step = 0; draw(c); };
+      $('#ug-next', c).onclick = () => {
+        const er = $('#ug-err', c), err = m => { er.textContent = m; er.classList.remove('hidden'); };
+        if (step === 0) {
+          if (A.name.trim().length < 3) return err('Escribí tu nombre y apellido.');
+          if (!A.city.trim()) return err('Escribí tu ciudad.');
+          if (digits(A.phone).length < 8) return err('Dejanos un celular válido.');
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(A.email.trim())) return err('Escribí un email válido.');
+          if (!(A.instagram.trim() || A.tiktok.trim() || A.youtube.trim())) return err('Sumá al menos una red.');
+          if (!A.followers) return err('Elegí cuántos seguidores tenés.');
+          step = 1; draw(c); return;
+        }
+        if (!A.tags.length) return err('Elegí al menos un tag.');
+        const pieces = A.pieces.map(u => u.trim()).filter(Boolean);
+        if (pieces.some(u => !/^https?:\/\/[^\s]+\.[^\s]+/i.test(u))) return err('Revisá los links: tienen que empezar con https://');
+        if (!$('#ug-ok', c).checked) return err('Para publicar tu perfil, aceptá que las empresas lo vean.');
+        const rec = { id: prev.id || 'ug' + Date.now().toString(36), name: A.name.trim(), city: A.city.trim(), province: A.province, phone: A.phone.trim(), email: A.email.trim().toLowerCase(), instagram: A.instagram.trim(), tiktok: A.tiktok.trim(), youtube: A.youtube.trim(), followers: A.followers, photo: A.photo || prev.photo || UGC_PHOTOS[(Store.creators().length) % UGC_PHOTOS.length], tags: A.tags, interests: A.interests.trim(), bio: A.bio.trim(), pieces, at: prev.at || new Date().toISOString(), updatedAt: new Date().toISOString(), consent: { at: new Date().toISOString() } };
+        Store.saveCreator(rec); S.dirty = true;
+        setSheet(sheetScroll(`<div class="text-center py-8"><div class="success-pop w-16 h-16 mx-auto rounded-full bg-ok text-white grid place-items-center"><i class="ph-bold ph-check text-3xl"></i></div>
+          <h2 class="mt-4 text-[1.5rem] font-extrabold">${prev.id ? 'Perfil actualizado' : '¡Tu perfil ya está publicado!'}</h2><p class="mt-2 text-ink-soft max-w-sm mx-auto">Las marcas de +Humanos ya pueden encontrarte por tus tags. Cuando una te elija para un proyecto, te escribe a tu WhatsApp o email.</p></div>`)
+          + sheetFoot('<button data-close-sheet class="btn btn-primary w-full h-14">Listo</button>'));
+      };
+    });
+  }
+
+  // Panel de empresas: buscar creadores
+  function CoCreators() {
+    ugcSeed();
+    const co = Store.company(), F = S.ugF || (S.ugF = { q: '', tag: '', fol: '' });
+    const all = Store.creators();
+    const html = `<div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div><h1 class="text-[2rem] font-extrabold tracking-tight leading-tight">Creadores UGC</h1><p class="text-ink-soft mt-1">Creadores de contenido que publicaron su perfil en +Humanos. Filtrá por estilo y contactalos para tu campaña.</p></div>
+        <a href="#/creadores" class="btn btn-outline btn-sm"><i class="ph ph-arrow-square-out"></i>Ver la página para creadores</a>
+      </div>
+      <div class="mt-5 flex flex-col gap-3 lg:flex-row">
+        <div class="relative flex-1"><i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-xl text-ink-mute"></i><input id="ugf-q" type="search" class="input pl-12 bg-white" placeholder="Nombre, ciudad o interés" value="${esc(F.q)}" aria-label="Buscar creadores"></div>
+        <select id="ugf-fol" data-dd class="input bg-white lg:w-64" aria-label="Seguidores"><option value="">Cualquier cantidad de seguidores</option>${UGC_FOL.map(f => `<option ${f === F.fol ? 'selected' : ''}>${f}</option>`).join('')}</select>
+      </div>
+      <div class="mt-3 flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap" role="group" aria-label="Tags">${['', ...UGC_TAGS].map(t => `<button type="button" data-ugf-tag="${t}" aria-pressed="${F.tag === t}" class="chip shrink-0 h-9 px-3.5 text-[0.9rem] ${F.tag === t ? 'chip-on' : ''}">${t || 'Todos'}</button>`).join('')}</div>
+      <div id="ugf-list" class="mt-5"></div>
+    </div>`;
+    const net = (c, k, ic, base) => c[k] ? `<a href="${esc(toUrl(c[k].replace(/^@/, ''), base))}" target="_blank" rel="noopener" class="icon-btn w-10 h-10 border border-line" aria-label="${k} de ${esc(c.name)}"><i class="ph ${ic} text-lg"></i></a>` : '';
+    return {
+      title: 'Creadores', html,
+      mount() {
+        const draw = () => {
+          const q = norm(F.q.trim());
+          const L = all.filter(c => (!F.tag || (c.tags || []).includes(F.tag)) && (!F.fol || c.followers === F.fol) && (!q || norm([c.name, c.city, c.province, c.interests, c.bio, ...(c.tags || [])].join(' ')).includes(q)));
+          $('#ugf-list').innerHTML = L.length ? `<p class="text-ink-mute mb-3">${L.length} creador${L.length === 1 ? '' : 'es'}</p><ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">${L.map(c => {
+            const wa = waLink(c.phone, `Hola ${c.name.split(' ')[0]}, te escribo de ${co ? co.name : 'una empresa'} por +Humanos. Vimos tu perfil de creador y queremos proponerte una campaña.`);
+            return `<li class="rounded-[22px] bg-white border border-line overflow-hidden flex flex-col">
+              <div class="relative aspect-[16/10] bg-ink"><img src="${esc(ugcImg(c.photo || UGC_PHOTOS[0], 700))}" alt="" class="absolute inset-0 w-full h-full object-cover" loading="lazy" data-rm>
+                <span class="absolute top-3 left-3 rounded-full bg-white/95 px-2.5 py-1 text-[0.8rem] font-bold"><i class="ph-fill ph-users"></i> ${esc(c.followers || '')}</span></div>
+              <div class="p-4 flex-1 flex flex-col">
+                <p class="font-extrabold text-[1.15rem] leading-tight">${esc(c.name)}</p><p class="text-ink-mute text-[0.92rem]"><i class="ph ph-map-pin"></i> ${esc([c.city, c.province].filter(Boolean).join(', '))}</p>
+                <div class="mt-2 flex flex-wrap gap-1.5">${(c.tags || []).map(t => `<span class="rounded-full bg-brand-soft text-brand px-2.5 py-0.5 text-[0.8rem] font-semibold">${esc(t)}</span>`).join('')}</div>
+                ${c.bio ? `<p class="mt-2 text-ink-soft text-[0.95rem] leading-snug">${esc(c.bio)}</p>` : ''}
+                ${(c.pieces || []).length ? `<ul class="mt-2 space-y-1">${c.pieces.map((u, i) => `<li><a href="${esc(toUrl(u))}" target="_blank" rel="noopener" class="text-brand font-semibold text-[0.92rem] hover:underline"><i class="ph ph-play-circle"></i> Pieza ${i + 1} · ${esc(u.replace(/^https?:\/\/(www\.)?/, '').split('/')[0])}</a></li>`).join('')}</ul>` : ''}
+                <div class="mt-auto pt-4 flex items-center gap-2">
+                  <a href="${esc(wa)}" target="_blank" rel="noopener" class="btn btn-primary btn-sm flex-1 justify-center"><i class="ph-fill ph-whatsapp-logo"></i>Contactar</a>
+                  ${net(c, 'instagram', 'ph-instagram-logo', INSTAGRAM)}${net(c, 'tiktok', 'ph-tiktok-logo', 'https://www.tiktok.com/@')}${net(c, 'youtube', 'ph-youtube-logo', 'https://www.youtube.com/@')}
+                </div></div></li>`;
+          }).join('')}</ul>` : emptyState('ph-video-camera', 'No hay creadores con esos filtros', 'Probá con otro tag o con menos filtros.');
+        };
+        draw();
+        let t; $('#ugf-q').oninput = e => { F.q = e.target.value; clearTimeout(t); t = setTimeout(draw, 150); };
+        $('#ugf-fol').onchange = e => { F.fol = e.target.value; draw(); };
+        $$('[data-ugf-tag]').forEach(b => b.onclick = () => { F.tag = b.dataset.ugfTag; $$('[data-ugf-tag]').forEach(x => { const on = x === b; x.setAttribute('aria-pressed', on); x.classList.toggle('chip-on', on); }); draw(); });
+      }
+    };
+  }
+
   /* ================= ADMIN: EMPRESAS Y CONSULTORAS ADHERIDAS =================
      Lista todo lo que aparece en "Empresas adheridas": cuentas registradas, perfiles cargados a mano por el admin
      y las cuentas de ejemplo. Desde acá se agrega una empresa a mano, se edita su perfil o se oculta de la página. */
@@ -8688,10 +8899,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const ROUTES = {
     '/': Welcome, '/chat': Chat, '/vacantes': Jobs, '/guardadas': Saved, '/postulaciones': MyApps, '/notificaciones': Notifs,
     '/empresa': CoHome, '/empresa/busquedas': CoDash, '/empresa/b': JobSpace, '/empresa/candidatos': CoCands,
-    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/acceso': AccessPage, '/encuesta': SurveyPage, '/beneficios': BenefitsPage, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
+    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/acceso': AccessPage, '/encuesta': SurveyPage, '/beneficios': BenefitsPage, '/creadores': CreatorsPage, '/empresa/creadores': CoCreators, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
     '/nosotros': AboutPage, '/vacante': JobPage, '/empresas': Employers, '/faqs': () => InfoPage('faqs'), '/terminos': () => InfoPage('terminos'), '/privacidad': () => InfoPage('privacidad'), '/admin': AdminPage, '/cafe': CafePage, '/cafe/nota': CafePost
   };
-  const TITLES = { '/admin': 'Admin', '/acceso': 'Acceso', '/encuesta': 'Encuesta Laboral', '/beneficios': 'Beneficios', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
+  const TITLES = { '/admin': 'Admin', '/acceso': 'Acceso', '/encuesta': 'Encuesta Laboral', '/beneficios': 'Beneficios', '/creadores': 'Creadores UGC', '/empresa/creadores': 'Creadores', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
 
   function render(opts = {}) {
     const { path, params } = parseHash();

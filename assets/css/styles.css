@@ -226,3 +226,12 @@ a.ben-card:hover, button.ben-card:hover { transform: translateY(-4px); border-co
   .ben-hero-img, .ben-orb, .ben-ticket-1, .ben-ticket-2, .ben-bounce { animation: none; }
   .ben-card, .ben-ic, .ben-go, .ben-chip, .ben-slide-bg, .ben-slide-ic { transition: none; }
 }
+
+/* Creadores UGC: tira continua y tarjetas */
+.ugc-strip .swiper-wrapper { transition-timing-function: linear !important; }
+.ugc-strip { padding-left: 16px; }
+.ugc-card { transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s; box-shadow: 0 18px 40px -24px rgba(0, 0, 0, .7); }
+.ugc-card img { transition: transform .8s cubic-bezier(.2, .8, .2, 1); }
+.ugc-card:hover { transform: translateY(-6px) rotate(-1deg); }
+.ugc-card:hover img { transform: scale(1.06); }
+@media (prefers-reduced-motion: reduce) { .ugc-card, .ugc-card img { transition: none; } }
