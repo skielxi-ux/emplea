@@ -377,3 +377,10 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
   - descarga en CSV.
 - **Regla de privacidad:** con menos de 5 respuestas no se muestran sueldos.
 - **Demo:** trae 640 respuestas de ejemplo (`demo: true`) con montos ficticios. En producción, las respuestas van a la base de datos y se limita a una por persona.
+
+## Beneficios
+- **Dónde:** botón "Beneficios" en el pie (`#/beneficios`), pensado para consultoras y empresas.
+- **Arriba:** contadores animados (adheridas, búsquedas abiertas y cantidad de beneficios) y dos botones: "Crear mi cuenta gratis" y "Hablemos por WhatsApp".
+- **Carrusel Swiper:** 5 beneficios clave, con avance automático (se pausa con el mouse y no se mueve si el sistema pide menos animaciones) y flechas.
+- **Grilla de 19 beneficios en 4 grupos:** gestión, visibilidad, red y datos, y comunidad. Una barra fija permite saltar a cada grupo. Las tarjetas aparecen al hacer scroll, se elevan al pasar el mouse y llevan a la sección que corresponde.
+- **Alianza con TuCuponApp:** bloque destacado con los pasos y el botón "Sumar mi negocio gratis". Hoy abre WhatsApp; cuando tengas el link de TuCuponApp, se pone en `TUCUPON_URL` en app.js.

@@ -914,7 +914,7 @@
     ['Facebook', 'ph-facebook-logo', 'https://www.facebook.com/emplea'],
     ['WhatsApp', 'ph-whatsapp-logo', 'https://wa.me/5493815550000']
   ];
-  const INFO_PATHS = ['/nosotros', '/faqs', '/terminos', '/privacidad', '/cafe', '/cafe/nota', '/encuesta'];
+  const INFO_PATHS = ['/nosotros', '/faqs', '/terminos', '/privacidad', '/cafe', '/cafe/nota', '/encuesta', '/beneficios'];
   function siteFooter() {
     const col = (t, links) => `<div><p class="font-display font-bold text-ink">${t}</p><ul class="mt-3 space-y-1">${links.map(([h, l, ic]) => `<li><a href="#${h}" class="flex items-center gap-2 min-h-[44px] py-1 text-ink-soft font-semibold hover:text-brand"><i class="ph-fill ${ic} text-brand text-[1.15rem] shrink-0" aria-hidden="true"></i><span class="min-w-0">${l}</span></a></li>`).join('')}</ul></div>`;
     return `<footer class="border-t border-line bg-white">
@@ -925,7 +925,7 @@
               <p class="mt-3 text-ink-soft max-w-xs">El portal de gestión para consultoras: publicá, calificá y presentá candidatos en un solo lugar.</p>
               <ul class="mt-5 flex gap-2" aria-label="Redes sociales">${SOCIAL.map(([n, ic, u]) => `<li><a href="${u}" target="_blank" rel="noopener" aria-label="${n} de +Humanos" title="${n}" class="w-11 h-11 rounded-full bg-surface text-ink grid place-items-center hover:bg-brand hover:text-white transition"><i class="ph-fill ${ic} text-[1.35rem]"></i></a></li>`).join('')}</ul>
             </div>
-            ${col('+Humanos', [['/nosotros', 'Nosotros', 'ph-hand-heart'], ['/empresas', 'Empresas adheridas', 'ph-buildings'], ['/cafe', 'Charla de café', 'ph-coffee'], ['/encuesta', 'Encuesta Laboral', 'ph-chart-bar'], ['/faqs', 'Preguntas frecuentes', 'ph-question']])}
+            ${col('+Humanos', [['/nosotros', 'Nosotros', 'ph-hand-heart'], ['/empresas', 'Empresas adheridas', 'ph-buildings'], ['/beneficios', 'Beneficios', 'ph-gift'], ['/cafe', 'Charla de café', 'ph-coffee'], ['/encuesta', 'Encuesta Laboral', 'ph-chart-bar'], ['/faqs', 'Preguntas frecuentes', 'ph-question']])}
             ${col('Legal', [['/terminos', 'Términos y condiciones', 'ph-scroll'], ['/privacidad', 'Política de privacidad', 'ph-shield-check']])}
           </div>
           <div class="mt-10 pt-6 border-t border-line flex flex-col sm:flex-row gap-2 sm:items-center justify-between text-ink-mute text-[0.92rem]">
@@ -8090,6 +8090,160 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     };
   }
 
+  /* ================= BENEFICIOS (para consultoras y empresas) =================
+     Carrusel Swiper con los beneficios clave, grilla por grupos con microinteracciones (aparecen al hacer scroll,
+     se elevan al pasar el mouse), bloque de la alianza con TuCuponApp y llamado a sumarse. */
+  const CONTACT_WA = '3816335234';
+  const TUCUPON_URL = ''; // link de TuCuponApp para sumar un negocio. Vacío: el botón abre WhatsApp.
+  const BEN_GROUPS = [
+    ['gestion', 'Gestión de búsquedas', 'ph-kanban', 'Todo el proceso de selección en un solo lugar.', [
+      ['ph-lightning', 'Publicá en 2 minutos', 'Descripción, responsabilidades, calificaciones, preguntas filtro y beneficios, con secciones listas para completar.', '/empresa'],
+      ['ph-tray', 'CVs ordenados y calificados', 'Cada postulante con su CV, tu calificación, tus notas y la etapa en la que está.', '/empresa'],
+      ['ph-columns', 'Tablero por etapas', 'Arrastrá a cada persona de Nuevo a Entrevista, Terna o Contratado.', '/empresa'],
+      ['ph-link', 'Terna con link para tu cliente', 'Tu cliente ve los finalistas y los CVs sin crear cuenta, y te responde desde ahí.', '/empresa'],
+      ['ph-calendar-check', 'Entrevistas y avisos', 'Agendá entrevistas y avisá por WhatsApp o email con mensajes listos.', '/empresa'],
+      ['ph-list-checks', 'Preguntas filtro', 'Los candidatos responden al postularse y ves de un vistazo quién cumple.', '/empresa']]],
+    ['visibilidad', 'Visibilidad', 'ph-megaphone', 'Que te encuentren los mejores candidatos de Tucumán.', [
+      ['ph-storefront', 'Tu página propia', 'Logo, descripción, contacto y todas tus búsquedas en una página para compartir.', '/empresas'],
+      ['ph-seal-check', 'Tilde de verificada', 'El equipo de +Humanos confirma tu empresa y los candidatos lo ven en cada aviso.', '/empresas'],
+      ['ph-bell-ringing', 'Seguidores', 'Quien te sigue recibe un aviso cada vez que publicás una búsqueda.', '/empresas'],
+      ['ph-buildings', 'Tu edificio en el mapa 3D', 'Con tu logo, en la calle de tu rubro y con una luz roja cuando estás buscando gente.', '/mapa'],
+      ['ph-star', 'Vacantes destacadas', 'Tus búsquedas más urgentes, primeras en el listado.', '/empresa/planes'],
+      ['ph-linkedin-logo', 'Compartí en LinkedIn', 'Cada aviso se comparte en un toque en LinkedIn, WhatsApp y redes.', '/vacantes']]],
+    ['datos', 'Red y datos', 'ph-chart-line-up', 'Información de primera mano del mercado laboral del NOA.', [
+      ['ph-users-three', 'Hub de consultoras', 'Pedí perfiles a otros selectores y recomendá a quienes no quedaron en tu terna.', '/empresa/hub'],
+      ['ph-address-book', 'Base de CVs de +Humanos', 'Candidatos que enviaron su CV y aceptaron que los contacten, filtrados por área y provincia.', '/empresa/candidatos'],
+      ['ph-currency-circle-dollar', 'Sueldos y pretensiones', 'Rangos salariales reales por área y experiencia, para armar ofertas que cierren.', '/encuesta'],
+      ['ph-clipboard-text', 'Encuesta Laboral anual', 'Beneficios, conformidad y cómo se busca trabajo en Tucumán, en vivo.', '/encuesta']]],
+    ['comunidad', 'Comunidad', 'ph-hand-heart', 'Más que un portal: una red de RRHH en la provincia.', [
+      ['ph-coffee', 'Charla de café', 'Notas, novedades y buenas prácticas de selección escritas por la comunidad.', '/cafe'],
+      ['ph-ticket', 'Partners: TuCuponApp', 'Si tenés un negocio, sumate sin costo a TuCuponApp y publicá cupones de descuento.', '#tucupon'],
+      ['ph-handshake', 'Encuentros de la comunidad', 'Desayunos y charlas entre consultoras y empresas de Tucumán.', '', 'Próximamente']]]
+  ];
+  const BEN_SLIDES = [
+    ['ph-kanban', 'Toda tu selección en un tablero', 'Publicás, recibís CVs, calificás y movés a cada candidato de etapa. Sin planillas ni mails perdidos.', '#3B5BFD', ['Nuevo', 'Entrevista', 'Terna']],
+    ['ph-link', 'La terna, con un link', 'Tu cliente ve a los finalistas y responde sin crear cuenta. Vos te enterás al instante.', '#7B4FD6', ['Finalista 1', 'Finalista 2', 'Finalista 3']],
+    ['ph-buildings', 'Tu edificio en la Ciudad +Humanos', 'Aparecés en el mapa 3D con tu logo, en la calle de tu rubro, y se prende una luz roja cuando buscás gente.', '#16A085', ['Mapa 3D', 'Tu logo', 'Búsquedas']],
+    ['ph-users-three', 'Una red de selectores', 'Pedí perfiles al Hub y recibí recomendaciones de otras consultoras de la provincia.', '#E0603A', ['Pedí', 'Recomendá', 'Contratá']],
+    ['ph-ticket', 'Somos partners de TuCuponApp', 'Si tenés una empresa o negocio, sumate sin costo y publicá cupones de descuento para atraer clientes.', '#D9488A', ['Sin costo', 'Cupones', 'Clientes']]
+  ];
+  function BenefitsPage() {
+    const nCos = new Set(Store.jobs().map(j => j.company)).size + Object.keys(Store.coProfilesAll()).filter(n => Store.coProfile(n).manual).length;
+    const nJobs = Store.activeJobs().length, nCons = Object.keys(COMPANIES).filter(n => COMPANIES[n].type === 'Consultora').length;
+    const waJoin = waLink(CONTACT_WA, 'Hola, quiero sumar mi empresa a +Humanos. ¿Me cuentan cómo empezar?');
+    const waCupon = TUCUPON_URL || waLink(CONTACT_WA, 'Hola, tengo un negocio y quiero sumarme sin costo a TuCuponApp con +Humanos.');
+    const total = BEN_GROUPS.reduce((a, g) => a + g[4].length, 0);
+    const html = `
+      <section class="ben-hero relative overflow-hidden bg-ink text-white">
+        <div class="ben-orb ben-orb-1" aria-hidden="true"></div><div class="ben-orb ben-orb-2" aria-hidden="true"></div>
+        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-12 md:pt-20 md:pb-16 grid lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] gap-10 items-end">
+          <div>
+            <span class="rv inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 font-semibold text-[0.95rem]"><i class="ph-fill ph-gift text-sun"></i>Para consultoras y empresas</span>
+            <h1 class="rv mt-4 text-[2.4rem] sm:text-[3.4rem] lg:text-[4rem] leading-[1] font-extrabold tracking-[-0.035em]">Sumarte a +Humanos <span class="ben-grad">tiene beneficios</span></h1>
+            <p class="rv mt-4 text-[1.15rem] text-white/80 max-w-xl">${total} razones para hacer tus búsquedas con nosotros: gestión, visibilidad, datos del mercado y una comunidad de RRHH en Tucumán. Empezás sin costo.</p>
+            <div class="rv mt-6 flex flex-wrap gap-3">
+              <a href="#/empresa?crear=1" class="btn h-14 px-7 text-[1.05rem] bg-white text-ink hover:bg-sun ben-cta"><i class="ph-bold ph-rocket-launch"></i>Crear mi cuenta gratis</a>
+              <a href="${esc(waJoin)}" target="_blank" rel="noopener" class="btn h-14 px-6 text-white border border-white/35 hover:bg-white/10"><i class="ph-fill ph-whatsapp-logo text-xl text-[#25D366]"></i>Hablemos por WhatsApp</a>
+            </div>
+          </div>
+          <ul class="rv grid grid-cols-3 gap-3">
+            ${[[nCos, 'adheridas'], [nJobs, 'búsquedas abiertas'], [total, 'beneficios']].map(([n, l]) => `<li class="rounded-[20px] bg-white/[.07] border border-white/10 p-4"><p class="text-[2rem] sm:text-[2.4rem] font-extrabold leading-none" data-count="${n}">${n}</p><p class="mt-1 text-white/70 text-[0.9rem] leading-tight">${l}</p></li>`).join('')}
+          </ul>
+        </div>
+      </section>
+
+      <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 md:pt-16" aria-label="Beneficios destacados">
+        <div class="flex items-end justify-between gap-4">
+          <div><p class="rv text-brand font-bold uppercase tracking-wide text-[0.85rem]">Lo más elegido</p><h2 class="rv mt-1 text-[1.9rem] sm:text-[2.3rem] font-extrabold tracking-tight leading-tight">Lo que cambia cuando te sumás</h2></div>
+          <div class="hidden md:flex gap-2"><button type="button" id="ben-prev" class="icon-btn w-12 h-12 border border-line bg-white" aria-label="Anterior"><i class="ph-bold ph-caret-left text-xl"></i></button><button type="button" id="ben-next" class="icon-btn w-12 h-12 border border-line bg-white" aria-label="Siguiente"><i class="ph-bold ph-caret-right text-xl"></i></button></div>
+        </div>
+        <div class="swiper js-ben mt-6 !overflow-visible md:!overflow-hidden !pb-12">
+          <div class="swiper-wrapper">
+            ${BEN_SLIDES.map(([ic, t, d, c, tags], i) => `<div class="swiper-slide !h-auto">
+              <article class="ben-slide h-full rounded-[26px] p-6 sm:p-7 text-white relative overflow-hidden" style="--c:${c}">
+                <span class="ben-slide-ic w-16 h-16 rounded-2xl bg-white/15 grid place-items-center"><i class="ph-fill ${ic} text-[2.1rem]"></i></span>
+                <p class="mt-5 text-white/70 font-semibold text-[0.9rem]">${String(i + 1).padStart(2, '0')} / ${String(BEN_SLIDES.length).padStart(2, '0')}</p>
+                <h3 class="mt-1 text-[1.5rem] sm:text-[1.65rem] font-extrabold leading-tight">${esc(t)}</h3>
+                <p class="mt-2 text-white/85">${esc(d)}</p>
+                <div class="mt-5 flex flex-wrap gap-2">${tags.map((x, k) => `<span class="ben-chip" style="--d:${k * 90}ms">${esc(x)}</span>`).join('')}</div>
+                <i class="ph-fill ${ic} ben-slide-bg" aria-hidden="true"></i>
+              </article></div>`).join('')}
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </section>
+
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+        <nav class="sticky top-16 z-20 -mx-4 px-4 py-2 bg-surface/90 backdrop-blur flex gap-2 overflow-x-auto no-scrollbar" aria-label="Grupos de beneficios">
+          ${BEN_GROUPS.map(([k, t, ic]) => `<button type="button" data-ben-go="${k}" class="chip shrink-0 bg-white"><i class="ph ${ic}"></i>${esc(t)}</button>`).join('')}
+        </nav>
+        ${BEN_GROUPS.map(([k, t, ic, sub, items]) => `<section id="ben-${k}" class="mt-10 scroll-mt-32" aria-labelledby="ben-${k}-t">
+          <div class="rv flex items-center gap-3"><span class="w-12 h-12 rounded-2xl bg-brand-soft text-brand grid place-items-center shrink-0"><i class="ph-fill ${ic} text-2xl"></i></span>
+            <div><h2 id="ben-${k}-t" class="text-[1.6rem] font-extrabold tracking-tight leading-tight">${esc(t)}</h2><p class="text-ink-soft">${esc(sub)}</p></div></div>
+          <ul class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">${items.map(([bic, bt, bd, href, soon], i) => {
+            const inner = `<span class="ben-ic w-12 h-12 rounded-2xl bg-surface grid place-items-center text-brand shrink-0"><i class="ph-fill ${bic} text-2xl"></i></span>
+              <span class="min-w-0 flex-1"><span class="flex items-center gap-2 font-bold text-[1.08rem] leading-snug">${esc(bt)}${soon ? `<span class="rounded-full bg-sun px-2 py-0.5 text-[0.72rem] font-bold">${soon}</span>` : ''}</span><span class="block mt-1 text-ink-soft text-[0.95rem] leading-snug">${esc(bd)}</span></span>
+              ${href ? '<i class="ph-bold ph-arrow-up-right ben-go text-ink-mute shrink-0"></i>' : ''}`;
+            return `<li class="rv" style="--d:${(i % 3) * 80}ms">${href ? (href.startsWith('#/') ? `<a href="${href}" class="ben-card">${inner}</a>` : `<button type="button" data-ben-go="${href.slice(1)}" class="ben-card text-left w-full">${inner}</button>`) : `<div class="ben-card">${inner}</div>`}</li>`;
+          }).join('')}</ul>
+        </section>`).join('')}
+
+        <section id="ben-tucupon" class="mt-14 scroll-mt-32 rounded-[30px] overflow-hidden ben-cupon text-white relative" aria-labelledby="ben-cupon-t">
+          <div class="relative p-6 sm:p-10 grid md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-8 items-center">
+            <div>
+              <span class="rv inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 font-semibold text-[0.92rem]"><i class="ph-fill ph-handshake"></i>Alianza</span>
+              <h2 id="ben-cupon-t" class="rv mt-3 text-[2rem] sm:text-[2.6rem] font-extrabold leading-[1.05] tracking-tight">Somos partners de TuCuponApp</h2>
+              <p class="rv mt-3 text-white/90 text-[1.08rem] max-w-lg">TuCuponApp es la app de cupones de descuento de Tucumán. Si sos una empresa o un negocio, <b class="text-white">sumate sin costo</b> por ser parte de +Humanos y publicá cupones para atraer clientes.</p>
+              <ol class="mt-5 space-y-2.5">${[['ph-chat-circle-dots', 'Escribinos y te damos de alta'], ['ph-ticket', 'Cargás tus cupones de descuento'], ['ph-storefront', 'La gente los usa en tu local']].map(([i2, t2], k) => `<li class="rv flex items-center gap-3" style="--d:${k * 100}ms"><span class="w-9 h-9 rounded-full bg-white text-[#B5306E] font-extrabold grid place-items-center shrink-0">${k + 1}</span><span class="font-semibold flex items-center gap-2"><i class="ph ${i2} text-xl text-white/80"></i>${t2}</span></li>`).join('')}</ol>
+              <a href="${esc(waCupon)}" target="_blank" rel="noopener" class="rv mt-6 btn h-14 px-7 bg-white text-[#B5306E] hover:bg-sun hover:text-ink ben-cta"><i class="ph-bold ph-storefront"></i>Sumar mi negocio gratis</a>
+            </div>
+            <div class="rv relative h-64 sm:h-72" aria-hidden="true">
+              <div class="ben-ticket ben-ticket-2"><span class="text-[0.8rem] font-bold uppercase tracking-wide opacity-70">Cupón</span><span class="text-[2.2rem] font-extrabold leading-none">2x1</span><span class="text-[0.85rem] opacity-80">en cafés</span></div>
+              <div class="ben-ticket ben-ticket-1"><span class="text-[0.8rem] font-bold uppercase tracking-wide opacity-70">Cupón</span><span class="text-[2.6rem] font-extrabold leading-none">-20%</span><span class="text-[0.85rem] opacity-80">en tu negocio</span><i class="ph-fill ph-scissors ben-cut"></i></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-14 rounded-[30px] bg-white border border-line p-6 sm:p-10 text-center" aria-label="Sumate">
+          <span class="rv w-16 h-16 mx-auto rounded-2xl bg-brand text-white grid place-items-center ben-bounce"><i class="ph-fill ph-rocket-launch text-3xl"></i></span>
+          <h2 class="rv mt-4 text-[2rem] sm:text-[2.4rem] font-extrabold tracking-tight leading-tight">¿Empezamos?</h2>
+          <p class="rv mt-2 text-ink-soft text-[1.08rem] max-w-xl mx-auto">Creá tu cuenta en un minuto y publicá tu primera búsqueda sin costo. Si preferís, te lo mostramos por WhatsApp.</p>
+          <div class="rv mt-6 flex flex-wrap justify-center gap-3">
+            <a href="#/empresa?crear=1" class="btn btn-primary h-14 px-7 ben-cta"><i class="ph-bold ph-rocket-launch"></i>Crear mi cuenta gratis</a>
+            <a href="${esc(waJoin)}" target="_blank" rel="noopener" class="btn btn-outline h-14 px-6"><i class="ph-fill ph-whatsapp-logo text-xl text-[#25D366]"></i>Escribinos</a>
+          </div>
+        </section>
+      </div>
+      ${siteFooter()}`;
+    return {
+      title: 'Beneficios', html,
+      mount() {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Carrusel de beneficios clave
+        const el = $('.js-ben', view);
+        if (el && window.Swiper) {
+          const sw = new Swiper(el, {
+            slidesPerView: 1.08, spaceBetween: 14, grabCursor: true, speed: 550,
+            autoplay: reduce ? false : { delay: 4200, disableOnInteraction: false, pauseOnMouseEnter: true },
+            pagination: { el: el.querySelector('.swiper-pagination'), clickable: true },
+            a11y: { enabled: true, prevSlideMessage: 'Beneficio anterior', nextSlideMessage: 'Beneficio siguiente' },
+            breakpoints: { 640: { slidesPerView: 1.6, spaceBetween: 16 }, 1024: { slidesPerView: 2.6, spaceBetween: 20 } }
+          });
+          S.swipers.push(sw);
+          $('#ben-prev').onclick = () => sw.slidePrev(); $('#ben-next').onclick = () => sw.slideNext();
+        }
+        // Aparecen al entrar en pantalla
+        const rv = $$('.rv', view);
+        if (reduce || !('IntersectionObserver' in window)) rv.forEach(x => x.classList.add('in'));
+        else { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }); rv.forEach(x => io.observe(x)); }
+        // Contadores que suben
+        $$('[data-count]', view).forEach(x => { const n = +x.dataset.count; if (reduce || !n) return; const t0 = performance.now(), d = 1100; const tick = t => { const k = Math.min(1, (t - t0) / d); x.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1 && document.body.contains(x)) requestAnimationFrame(tick); }; x.textContent = '0'; requestAnimationFrame(tick); });
+        // Atajos a cada grupo
+        view.addEventListener('click', e => { const b = e.target.closest('[data-ben-go]'); if (!b) return; const s = $('#ben-' + b.dataset.benGo); if (s) s.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); });
+      }
+    };
+  }
+
   /* ================= ADMIN: EMPRESAS Y CONSULTORAS ADHERIDAS =================
      Lista todo lo que aparece en "Empresas adheridas": cuentas registradas, perfiles cargados a mano por el admin
      y las cuentas de ejemplo. Desde acá se agrega una empresa a mano, se edita su perfil o se oculta de la página. */
@@ -8442,10 +8596,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const ROUTES = {
     '/': Welcome, '/chat': Chat, '/vacantes': Jobs, '/guardadas': Saved, '/postulaciones': MyApps, '/notificaciones': Notifs,
     '/empresa': CoHome, '/empresa/busquedas': CoDash, '/empresa/b': JobSpace, '/empresa/candidatos': CoCands,
-    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/acceso': AccessPage, '/encuesta': SurveyPage, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
+    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/acceso': AccessPage, '/encuesta': SurveyPage, '/beneficios': BenefitsPage, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
     '/nosotros': AboutPage, '/vacante': JobPage, '/empresas': Employers, '/faqs': () => InfoPage('faqs'), '/terminos': () => InfoPage('terminos'), '/privacidad': () => InfoPage('privacidad'), '/admin': AdminPage, '/cafe': CafePage, '/cafe/nota': CafePost
   };
-  const TITLES = { '/admin': 'Admin', '/acceso': 'Acceso', '/encuesta': 'Encuesta Laboral', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
+  const TITLES = { '/admin': 'Admin', '/acceso': 'Acceso', '/encuesta': 'Encuesta Laboral', '/beneficios': 'Beneficios', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
 
   function render(opts = {}) {
     const { path, params } = parseHash();
