@@ -249,6 +249,13 @@ const Store = (() => {
       write(KC, clientsDb); write(K.jobs, jobs);
     },
     deleteClient(co, name) { if (clientsDb[co]) { delete clientsDb[co][name]; write(KC, clientsDb); } },
+    logoDarkOf(name) {
+      if (coProfiles[name] && coProfiles[name].logo) return !!coProfiles[name].logoDark;
+      for (const co in clientsDb) { const c = clientsDb[co][name]; if (c && c.logo) return !!c.logoDark; }
+      return false;
+    },
+    clientsAll: () => clientsDb,
+    patchClient(co, name, patch) { if (clientsDb[co] && clientsDb[co][name]) { clientsDb[co][name] = { ...clientsDb[co][name], ...patch }; write(KC, clientsDb); } },
     logoOf(name) {
       if (coProfiles[name] && coProfiles[name].logo) return coProfiles[name].logo;
       for (const co in clientsDb) { const c = clientsDb[co][name]; if (c && c.logo) return c.logo; }

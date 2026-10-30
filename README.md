@@ -387,5 +387,7 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Foto del hero:** `assets/img/hero-beneficios.webp`, con un degradé oscuro para que el texto se lea.
 
 ## Logos y portada de las empresas
+- **Logos prolijos:** al subirlos se recortan los márgenes vacíos (transparentes o blancos). Si el logo es claro sobre fondo transparente (por ejemplo, blanco), se muestra sobre fondo oscuro. Los logos cargados antes se corrigen solos la primera vez que se abre el sitio.
+- **En el mapa 3D:** cada empresa con logo tiene un cartel sobre el techo, mirando a la cámara. Las verificadas tienen además el poste alto.
 - **Logos cuadrados** con bordes suaves en todo el sitio: listado de empresas, página de cada empresa, avisos, panel y mapa. El logo va sobre fondo blanco, con un margen interno, para que entre completo aunque sea apaisado.
 - **Portada (banner) opcional** en Mi perfil → Identidad, y también desde el editor de empresas del Admin. Se recorta a 4:1 (1584 × 396, como LinkedIn) y se muestra arriba de la página pública de la empresa, con el logo encima. Sin portada, se usa un degradé con el color de la empresa.
