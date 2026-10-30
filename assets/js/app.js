@@ -40,7 +40,7 @@
   const senLabel = id => (SENIORITIES.find(s => s.id === id) || {}).label || '';
   const hashColor = s => PALETTE[[...String(s)].reduce((a, c) => a + c.charCodeAt(0), 0) % PALETTE.length];
   // Fotos propias del sitio (cada ruta aparece una sola vez: en el index.html único se incrustan)
-  const LOCAL_IMG = { buscar: 'assets/img/hero-buscar.webp', equipo: 'assets/img/hero-equipo.webp', p1: 'assets/img/pain-1.webp', p2: 'assets/img/pain-2.webp', p3: 'assets/img/pain-3.webp', p4: 'assets/img/pain-4.webp', p5: 'assets/img/pain-5.webp', p6: 'assets/img/pain-6.webp' };
+  const LOCAL_IMG = { buscar: 'assets/img/hero-buscar.webp', equipo: 'assets/img/hero-equipo.webp', p1: 'assets/img/pain-1.webp', p2: 'assets/img/pain-2.webp', p3: 'assets/img/pain-3.webp', p4: 'assets/img/pain-4.webp', p5: 'assets/img/pain-5.webp', p6: 'assets/img/pain-6.webp', beneficios: 'assets/img/hero-beneficios.webp' };
   // Imagen de una nota o slide: 'lib:p2' (foto propia), data URL, ruta local o id de Unsplash
   const imgSrc = (id, w = 1600) => !id ? '' : id.startsWith('lib:') ? (LOCAL_IMG[id.slice(4)] || '') : /^(assets\/|data:|https?:)/.test(id) ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
   // Rubro de la lista fija (los escritos a mano antes se reconocen por palabras clave)
@@ -8094,7 +8094,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
      Carrusel Swiper con los beneficios clave, grilla por grupos con microinteracciones (aparecen al hacer scroll,
      se elevan al pasar el mouse), bloque de la alianza con TuCuponApp y llamado a sumarse. */
   const CONTACT_WA = '3816335234';
-  const TUCUPON_URL = ''; // link de TuCuponApp para sumar un negocio. Vacío: el botón abre WhatsApp.
+  const TUCUPON_URL = 'https://tucuponapp.com/';
   const BEN_GROUPS = [
     ['gestion', 'Gestión de búsquedas', 'ph-kanban', 'Todo el proceso de selección en un solo lugar.', [
       ['ph-lightning', 'Publicá en 2 minutos', 'Descripción, responsabilidades, calificaciones, preguntas filtro y beneficios, con secciones listas para completar.', '/empresa'],
@@ -8131,10 +8131,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const nCos = new Set(Store.jobs().map(j => j.company)).size + Object.keys(Store.coProfilesAll()).filter(n => Store.coProfile(n).manual).length;
     const nJobs = Store.activeJobs().length, nCons = Object.keys(COMPANIES).filter(n => COMPANIES[n].type === 'Consultora').length;
     const waJoin = waLink(CONTACT_WA, 'Hola, quiero sumar mi empresa a +Humanos. ¿Me cuentan cómo empezar?');
-    const waCupon = TUCUPON_URL || waLink(CONTACT_WA, 'Hola, tengo un negocio y quiero sumarme sin costo a TuCuponApp con +Humanos.');
+    const waCupon = TUCUPON_URL;
     const total = BEN_GROUPS.reduce((a, g) => a + g[4].length, 0);
     const html = `
       <section class="ben-hero relative overflow-hidden bg-ink text-white">
+        <img src="${LOCAL_IMG.beneficios}" alt="" class="ben-hero-img absolute inset-0 w-full h-full object-cover" fetchpriority="high" data-rm>
+        <div class="ben-hero-shade absolute inset-0" aria-hidden="true"></div>
         <div class="ben-orb ben-orb-1" aria-hidden="true"></div><div class="ben-orb ben-orb-2" aria-hidden="true"></div>
         <div class="relative max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-12 md:pt-20 md:pb-16 grid lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] gap-10 items-end">
           <div>
@@ -8193,9 +8195,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             <div>
               <span class="rv inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 font-semibold text-[0.92rem]"><i class="ph-fill ph-handshake"></i>Alianza</span>
               <h2 id="ben-cupon-t" class="rv mt-3 text-[2rem] sm:text-[2.6rem] font-extrabold leading-[1.05] tracking-tight">Somos partners de TuCuponApp</h2>
-              <p class="rv mt-3 text-white/90 text-[1.08rem] max-w-lg">TuCuponApp es la app de cupones de descuento de Tucumán. Si sos una empresa o un negocio, <b class="text-white">sumate sin costo</b> por ser parte de +Humanos y publicá cupones para atraer clientes.</p>
+              <p class="rv mt-3 text-white/90 text-[1.08rem] max-w-lg">TuCuponApp es la guía de gastronomía y descuentos de Tucumán. Si sos una empresa o un negocio, <b class="text-white">sumate sin costo</b> por ser parte de +Humanos y publicá cupones para atraer clientes.</p>
               <ol class="mt-5 space-y-2.5">${[['ph-chat-circle-dots', 'Escribinos y te damos de alta'], ['ph-ticket', 'Cargás tus cupones de descuento'], ['ph-storefront', 'La gente los usa en tu local']].map(([i2, t2], k) => `<li class="rv flex items-center gap-3" style="--d:${k * 100}ms"><span class="w-9 h-9 rounded-full bg-white text-[#B5306E] font-extrabold grid place-items-center shrink-0">${k + 1}</span><span class="font-semibold flex items-center gap-2"><i class="ph ${i2} text-xl text-white/80"></i>${t2}</span></li>`).join('')}</ol>
-              <a href="${esc(waCupon)}" target="_blank" rel="noopener" class="rv mt-6 btn h-14 px-7 bg-white text-[#B5306E] hover:bg-sun hover:text-ink ben-cta"><i class="ph-bold ph-storefront"></i>Sumar mi negocio gratis</a>
+              <a href="${esc(waCupon)}" target="_blank" rel="noopener" class="rv mt-6 btn h-14 px-7 bg-white text-[#B5306E] hover:bg-sun hover:text-ink ben-cta"><i class="ph-bold ph-arrow-square-out"></i>Ver TuCuponApp</a>
             </div>
             <div class="rv relative h-64 sm:h-72" aria-hidden="true">
               <div class="ben-ticket ben-ticket-2"><span class="text-[0.8rem] font-bold uppercase tracking-wide opacity-70">Cupón</span><span class="text-[2.2rem] font-extrabold leading-none">2x1</span><span class="text-[0.85rem] opacity-80">en cafés</span></div>

@@ -383,4 +383,5 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Arriba:** contadores animados (adheridas, búsquedas abiertas y cantidad de beneficios) y dos botones: "Crear mi cuenta gratis" y "Hablemos por WhatsApp".
 - **Carrusel Swiper:** 5 beneficios clave, con avance automático (se pausa con el mouse y no se mueve si el sistema pide menos animaciones) y flechas.
 - **Grilla de 19 beneficios en 4 grupos:** gestión, visibilidad, red y datos, y comunidad. Una barra fija permite saltar a cada grupo. Las tarjetas aparecen al hacer scroll, se elevan al pasar el mouse y llevan a la sección que corresponde.
-- **Alianza con TuCuponApp:** bloque destacado con los pasos y el botón "Sumar mi negocio gratis". Hoy abre WhatsApp; cuando tengas el link de TuCuponApp, se pone en `TUCUPON_URL` en app.js.
+- **Alianza con TuCuponApp:** bloque destacado con los pasos y el botón "Ver TuCuponApp", que abre https://tucuponapp.com/ (`TUCUPON_URL` en app.js).
+- **Foto del hero:** `assets/img/hero-beneficios.webp`, con un degradé oscuro para que el texto se lea.

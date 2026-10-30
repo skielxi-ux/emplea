@@ -181,8 +181,11 @@ button.dd-btn:focus-visible { outline: 2px solid #3B5BFD; outline-offset: 2px; b
 .city-tags.is-far .city-tag-badge { display: none !important; }
 
 /* Beneficios: microinteracciones */
-.ben-hero { background: radial-gradient(120% 90% at 85% 0%, #2A2F7A 0%, #14123A 55%); }
-.ben-orb { position: absolute; border-radius: 999px; filter: blur(60px); opacity: .55; animation: benFloat 9s ease-in-out infinite alternate; }
+.ben-hero { background: #14123A; }
+.ben-hero-img { object-position: 50% 62%; animation: heroZoom 9s ease-out both; }
+.ben-hero-shade { background: linear-gradient(90deg, rgba(20, 18, 58, .92) 0%, rgba(20, 18, 58, .7) 45%, rgba(20, 18, 58, .2) 100%), linear-gradient(0deg, rgba(20, 18, 58, .6), transparent 40%); }
+@media (max-width: 767px) { .ben-hero-shade { background: linear-gradient(180deg, rgba(20, 18, 58, .55), rgba(20, 18, 58, .88) 55%); } }
+.ben-orb { position: absolute; border-radius: 999px; filter: blur(60px); opacity: .35; animation: benFloat 9s ease-in-out infinite alternate; }
 .ben-orb-1 { width: 340px; height: 340px; background: #3B5BFD; right: -60px; top: -80px; }
 .ben-orb-2 { width: 260px; height: 260px; background: #F2715A; left: -80px; bottom: -120px; animation-delay: -3s; opacity: .35; }
 @keyframes benFloat { to { transform: translate(-30px, 24px) scale(1.08); } }
@@ -220,6 +223,6 @@ a.ben-card:hover, button.ben-card:hover { transform: translateY(-4px); border-co
 @keyframes benBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @media (prefers-reduced-motion: reduce) {
   .rv { opacity: 1; transform: none; transition: none; }
-  .ben-orb, .ben-ticket-1, .ben-ticket-2, .ben-bounce { animation: none; }
+  .ben-hero-img, .ben-orb, .ben-ticket-1, .ben-ticket-2, .ben-bounce { animation: none; }
   .ben-card, .ben-ic, .ben-go, .ben-chip, .ben-slide-bg, .ben-slide-ic { transition: none; }
 }
