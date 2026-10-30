@@ -40,7 +40,7 @@
   const senLabel = id => (SENIORITIES.find(s => s.id === id) || {}).label || '';
   const hashColor = s => PALETTE[[...String(s)].reduce((a, c) => a + c.charCodeAt(0), 0) % PALETTE.length];
   // Fotos propias del sitio (cada ruta aparece una sola vez: en el index.html único se incrustan)
-  const LOCAL_IMG = { buscar: 'assets/img/hero-buscar.webp', equipo: 'assets/img/hero-equipo.webp', p1: 'assets/img/pain-1.webp', p2: 'assets/img/pain-2.webp', p3: 'assets/img/pain-3.webp', p4: 'assets/img/pain-4.webp', p5: 'assets/img/pain-5.webp', p6: 'assets/img/pain-6.webp', beneficios: 'assets/img/hero-beneficios.webp' };
+  const LOCAL_IMG = { buscar: 'assets/img/hero-buscar.webp', equipo: 'assets/img/hero-equipo.webp', p1: 'assets/img/pain-1.webp', p2: 'assets/img/pain-2.webp', p3: 'assets/img/pain-3.webp', p4: 'assets/img/pain-4.webp', p5: 'assets/img/pain-5.webp', p6: 'assets/img/pain-6.webp', beneficios: 'assets/img/hero-beneficios.webp', creadores: 'assets/img/hero-creadores.webp' };
   // Imagen de una nota o slide: 'lib:p2' (foto propia), data URL, ruta local o id de Unsplash
   const imgSrc = (id, w = 1600) => !id ? '' : id.startsWith('lib:') ? (LOCAL_IMG[id.slice(4)] || '') : /^(assets\/|data:|https?:)/.test(id) ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
   // Rubro de la lista fija (los escritos a mano antes se reconocen por palabras clave)
@@ -8370,9 +8370,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const list = Store.creators(), mine = Store.myCreator();
     const html = `
       <section class="relative overflow-hidden bg-ink text-white">
-        <div class="ben-orb ben-orb-1" aria-hidden="true"></div>
+        <img src="${LOCAL_IMG.creadores}" alt="" class="ugc-hero-img absolute top-0 right-0 h-[min(100%,46rem)] w-full lg:w-[62%] object-cover" fetchpriority="high" data-rm>
+        <div class="ugc-hero-shade absolute inset-0" aria-hidden="true"></div>
         <div class="relative max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-10 md:pt-20 md:pb-12">
-          <span class="rv inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 font-semibold text-[0.95rem]"><i class="ph-fill ph-video-camera text-sun"></i>Creadores UGC</span>
+          <span class="rv inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-3.5 py-1.5 font-semibold text-[0.95rem]"><i class="ph-fill ph-video-camera text-sun"></i>Creadores UGC</span>
           <h1 class="rv mt-4 max-w-3xl text-[2.3rem] sm:text-[3.3rem] lg:text-[3.9rem] leading-[1.02] font-extrabold tracking-[-0.035em]">¿Sos creador de contenido o te gustaría serlo?</h1>
           <p class="rv mt-4 text-[1.3rem] sm:text-[1.5rem] font-bold text-sun">Accedé a oportunidades que matchean con vos.</p>
           <p class="rv mt-3 text-[1.08rem] text-white/80 max-w-2xl">Conectamos a través de nuestra plataforma a creadores de contenido con las marcas que lideran el mercado para crear campañas que generan resultados.</p>

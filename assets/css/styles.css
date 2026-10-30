@@ -235,3 +235,10 @@ a.ben-card:hover, button.ben-card:hover { transform: translateY(-4px); border-co
 .ugc-card:hover { transform: translateY(-6px) rotate(-1deg); }
 .ugc-card:hover img { transform: scale(1.06); }
 @media (prefers-reduced-motion: reduce) { .ugc-card, .ugc-card img { transition: none; } }
+.ugc-hero-img { object-position: 32% 30%; animation: heroZoom 9s ease-out both; }
+.ugc-hero-shade { background: linear-gradient(180deg, rgba(20, 18, 58, .62) 0%, rgba(20, 18, 58, .9) 48%, #14123A 72%); }
+@media (min-width: 1024px) {
+  .ugc-hero-img { -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 42%), linear-gradient(0deg, transparent 0%, #000 34%); -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent 0%, #000 42%), linear-gradient(0deg, transparent 0%, #000 34%); mask-composite: intersect; }
+  .ugc-hero-shade { background: linear-gradient(90deg, rgba(20, 18, 58, .9) 30%, rgba(20, 18, 58, .35) 60%, rgba(20, 18, 58, 0) 85%); }
+}
+@media (prefers-reduced-motion: reduce) { .ugc-hero-img { animation: none; } }

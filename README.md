@@ -398,5 +398,6 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
   2. Portfolio: hasta 5 tags, intereses, bio y hasta 3 links a sus mejores piezas, con consentimiento para que lo contacten.
   Desde el mismo navegador se puede editar después.
 - **Panel de empresas → Creadores** (`#/empresa/creadores`): buscador por nombre, ciudad o interés, filtro por tag y por seguidores, y tarjetas con foto, tags, bio, piezas, redes y botón "Contactar" por WhatsApp con mensaje listo.
+- **Foto del hero:** `assets/img/hero-creadores.webp`. En compu va a la derecha y se funde con el fondo; en el celular queda detrás del texto, oscurecida.
 - **Demo:** 9 creadores ficticios con fotos libres de Unsplash (personas grabando contenido, sin marcas). Se reemplazan por creadores reales.
 - Con 8 secciones en el panel de empresas, en pantallas de menos de 1536 px se muestran solo los íconos (salvo la sección activa).
