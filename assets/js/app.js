@@ -7207,6 +7207,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <button type="button" id="city-zin" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Acercar"><i class="ph-bold ph-plus"></i></button>
         <button type="button" id="city-zout" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Alejar"><i class="ph-bold ph-minus"></i></button>
         <button type="button" id="city-home" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Ver toda la ciudad"><i class="ph-bold ph-arrows-out"></i></button>
+ <button type="button" id="city-fs" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Pantalla completa" title="Pantalla completa"><i class="ph-bold ph-corners-out"></i></button>
         <button type="button" id="city-sky" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Día y noche: según la hora" title="Día y noche: según la hora"><i class="ph-bold ph-circle-half"></i></button>
       </div>
       <aside id="city-card" class="hidden absolute z-10 rounded-[22px] bg-white border border-line shadow-lift max-sm:left-3 max-sm:right-3 max-sm:bottom-3 sm:right-5 sm:bottom-5 sm:w-[23rem] max-sm:max-h-[62%] max-sm:overflow-y-auto overscroll-contain" aria-live="polite"></aside>
@@ -7269,6 +7270,12 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         $('#city-zin').onclick = () => S.map3d && S.map3d.zoom(1.35);
         $('#city-zout').onclick = () => S.map3d && S.map3d.zoom(1 / 1.35);
         $('#city-home').onclick = () => S.map3d && S.map3d.home();
+        // Pantalla completa (si el navegador lo permite)
+        const wrap = box.parentElement, fsb = $('#city-fs');
+        if (!document.fullscreenEnabled || !wrap.requestFullscreen) fsb.classList.add('hidden');
+        fsb.onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else wrap.requestFullscreen().catch(() => toast('Tu navegador no permite pantalla completa', 'ph-warning')); };
+        const fsSync = () => { if (!$('#city-fs')) { document.removeEventListener('fullscreenchange', fsSync); return; } const on = document.fullscreenElement === wrap; fsb.innerHTML = `<i class="ph-bold ${on ? 'ph-corners-in' : 'ph-corners-out'}"></i>`; fsb.setAttribute('aria-label', on ? 'Salir de pantalla completa' : 'Pantalla completa'); fsb.title = fsb.getAttribute('aria-label'); };
+        document.addEventListener('fullscreenchange', fsSync);
         // Día y noche: según la hora de Tucumán → siempre de día → siempre de noche
         const SKYS = { auto: ['ph-circle-half', 'según la hora'], day: ['ph-sun', 'siempre de día'], night: ['ph-moon-stars', 'siempre de noche'] };
         const skyBtn = m => { const b = $('#city-sky'); if (!b) return; b.innerHTML = `<i class="ph-bold ${SKYS[m][0]}"></i>`; b.setAttribute('aria-label', `Día y noche: ${SKYS[m][1]}`); b.title = `Día y noche: ${SKYS[m][1]}`; };
@@ -7317,24 +7324,24 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     cam.position.set(cx + 150, 160, cz + 150); cam.lookAt(cx, 0, cz);
     const ctl = new T.OrbitControls(cam, renderer.domElement);
     ctl.target.set(cx, 0, cz); ctl.enableDamping = true; ctl.dampingFactor = 0.12; ctl.screenSpacePanning = false;
-    ctl.minZoom = 0.6; ctl.maxZoom = 5; ctl.minPolarAngle = 0.5; ctl.maxPolarAngle = 1.05;
+    ctl.minZoom = 0.35; ctl.maxZoom = 5; ctl.minPolarAngle = 0.5; ctl.maxPolarAngle = 1.05;
     ctl.touches = { ONE: T.TOUCH.PAN, TWO: T.TOUCH.DOLLY_ROTATE }; ctl.mouseButtons = { LEFT: T.MOUSE.PAN, MIDDLE: T.MOUSE.DOLLY, RIGHT: T.MOUSE.ROTATE };
     ctl.update();
     // Luces cálidas
     const hemi = new T.HemisphereLight(0xFFFBF2, 0xD9CBB8, 0.82); scene.add(hemi);
     const sun = new T.DirectionalLight(0xFFF1DE, 0.62); sun.position.set(cx - 90, 170, cz + 120); sun.target.position.set(cx, 0, cz);
     sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0008;
-    const sc = sun.shadow.camera, half = Math.max(len, depth) * 0.85 + 30; sc.left = -half; sc.right = half; sc.top = half; sc.bottom = -half; sc.near = 1; sc.far = 600;
+    const sc = sun.shadow.camera, half = Math.max(len, depth) * 0.85 + 90; sc.left = -half; sc.right = half; sc.top = half; sc.bottom = -half; sc.near = 1; sc.far = 600;
     scene.add(sun, sun.target);
     const mat = c => new T.MeshLambertMaterial({ color: new T.Color(c).convertSRGBToLinear() });
     const box3 = (m, x, y, z, sx, sy, sz, shadow) => { const o = new T.Mesh(kit.cube, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); if (shadow) { o.castShadow = true; o.receiveShadow = true; } scene.add(o); return o; };
     // Maqueta: base gruesa con pasto arriba, tierra a los costados y sombra suave sobre blanco
-    const M = 7, TH = 7, MW = 70, bw = len + S + M * 2 + MW, bd = depth + S + M * 2, bx = cx - MW / 2;
+    const M = 7, TH = 7, MW = 70, FE = 120, FN = 100, FS = 100, bw = len + S + M * 2 + MW + FE, bd = depth + S + M * 2 + FN + FS, bx = cx - MW / 2 + FE / 2, bz = cz + (FS - FN) / 2;
     const base = new T.Mesh(kit.cube, [mat(0xDCC3A0), mat(0xDCC3A0), mat(0xB9D68F), mat(0xC9AE88), mat(0xE5CFAE), mat(0xE5CFAE)]);
-    base.position.set(bx, -TH / 2 - 0.02, cz); base.scale.set(bw, TH, bd); base.receiveShadow = true; scene.add(base);
+    base.position.set(bx, -TH / 2 - 0.02, bz); base.scale.set(bw, TH, bd); base.receiveShadow = true; scene.add(base);
     const ground = new T.Mesh(new T.PlaneGeometry(bw * 6, bd * 6), new T.ShadowMaterial({ opacity: 0.13 }));
-    ground.rotation.x = -Math.PI / 2; ground.position.set(bx, -TH, cz); ground.receiveShadow = true; scene.add(ground);
-    const ao = box3(new T.MeshBasicMaterial({ color: 0xE9E4DC }), bx + 2, -TH - 0.01, cz + 2, bw + 3, 0.01, bd + 3); ao.material.transparent = true; ao.material.opacity = 0.55;
+    ground.rotation.x = -Math.PI / 2; ground.position.set(bx, -TH, bz); ground.receiveShadow = true; scene.add(ground);
+    const ao = box3(new T.MeshBasicMaterial({ color: 0xE9E4DC }), bx + 2, -TH - 0.01, bz + 2, bw + 3, 0.01, bd + 3); ao.material.transparent = true; ao.material.opacity = 0.55;
     const put = (name, c, r, rot = 0, sc2 = 1) => { const o = kit.clone(name); o.position.set(X(c), 0, Z(r)); o.rotation.y = rot; o.scale.setScalar(S * sc2); scene.add(o); return o; };
     // Carteles con texto (canvas → textura)
     // Carteles con texto: van en HTML encima del 3D (texto nítido en cualquier zoom y pantalla).
@@ -7378,7 +7385,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     // Cordón de montañas low-poly al oeste, sobre la misma base
     const hills = [mat(0x8DB66C), mat(0x7FAA61), mat(0x9CC07A), mat(0x739F58)], rock = mat(0xA89B8C), snow = mat(0xFAFAF7);
     const mx0 = -S * 0.5 - M - 6, rnd = (() => { let t = 11; return () => (t = (t * 9301 + 49297) % 233280) / 233280; })();
-    for (let zz = -S * 0.5 - M + 8, i = 0; zz < depth + S * 0.5 + M - 6; zz += 13 + rnd() * 8, i++) {
+    for (let zz = -S * 0.5 - M - FN + 8, i = 0; zz < depth + S * 0.5 + M + FS - 6; zz += 13 + rnd() * 8, i++) {
       [0, 1].forEach(row => {
         const big = row === 1, hgt = (big ? 38 : 20) + rnd() * (big ? 34 : 14), rad = (big ? 17 : 12) + rnd() * 6;
         const geo = new T.ConeGeometry(rad, hgt, 6 + Math.floor(rnd() * 3), 1); const pos = geo.attributes.position;
@@ -7389,6 +7396,81 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         if (big && hgt > 52) { const cap = new T.Mesh(new T.ConeGeometry(rad * 0.36, hgt * 0.36, geo.parameters.radialSegments, 1), snow); cap.position.set(m.position.x, hgt * 0.82 + 0.3, m.position.z); cap.rotation.y = m.rotation.y; scene.add(cap); }
       });
     }
+    /* ---- Vegetación y campo tucumano (todo en código, con InstancedMesh para que sea liviano) ---- */
+    const veg = { trunk: [], blob: [], cone: [], tuft: [], flower: [], cane: [], fruit: [], post: [] };
+    const vrnd = (() => { let t = 97; return () => (t = (t * 9301 + 49297) % 233280) / 233280; })();
+    const GREENS = [0x4F8A3C, 0x5E9B45, 0x46803A, 0x6AA34C, 0x3F7A3A, 0x7AAE4E], PINES = [0x2F6B45, 0x3A7A4E, 0x2C5F3F], LAPACHO = [0xE58FB6, 0xD8689E, 0xF0A9C8], AUTUMN = [0xC9A43B, 0xB8862F];
+    const vpick = a => a[Math.floor(vrnd() * a.length)];
+    // Un árbol = tronco + varias copas. kind: 'round' | 'tall' | 'pine' | 'lapacho'
+    const addTree = (x, z, s = 1, kind) => {
+      kind = kind || (vrnd() < 0.55 ? 'round' : vrnd() < 0.5 ? 'pine' : vrnd() < 0.6 ? 'tall' : 'lapacho');
+      const th = (kind === 'pine' ? 1.6 : kind === 'tall' ? 2.4 : 2) * s;
+      veg.trunk.push([x, th / 2, z, 0.28 * s, th, 0.28 * s, 0, 0x7A5A3F]);
+      if (kind === 'pine') { const c = vpick(PINES); [[0, 3.2, 2.1], [2.2, 2.6, 1.6], [4, 2, 1.1]].forEach(([y, h, r]) => veg.cone.push([x, th + y * s, z, r * s, h * s, r * s, vrnd() * 6, c])); return; }
+      if (kind === 'tall') { veg.blob.push([x, th + 2.6 * s, z, 1.3 * s, 3.2 * s, 1.3 * s, vrnd() * 6, vpick(GREENS)]); return; }
+      const col = kind === 'lapacho' ? vpick(LAPACHO) : vrnd() < 0.08 ? vpick(AUTUMN) : vpick(GREENS), n = 3 + Math.floor(vrnd() * 2);
+      for (let i = 0; i < n; i++) { const a = i / n * 6.28 + vrnd(), r = (i ? 1 : 0) * 0.9 * s, k = (1.35 + vrnd() * 0.5) * s; veg.blob.push([x + Math.cos(a) * r, th + 1.2 * s + (i ? 0 : 0.7 * s) + vrnd() * 0.4 * s, z + Math.sin(a) * r, k, k * (0.85 + vrnd() * 0.2), k, vrnd() * 6, col]); }
+    };
+    const addTufts = (x0, z0, w, d, n, flowers = 0.25) => { for (let i = 0; i < n; i++) { const x = x0 + vrnd() * w, z = z0 + vrnd() * d; if (vrnd() < flowers) veg.flower.push([x, 0.35, z, 0.22, 0.22, 0.22, 0, vpick([0xFFFFFF, 0xFFE066, 0xF7A8C8, 0xC9B6FF])]); else { const k = 0.5 + vrnd() * 0.6; veg.tuft.push([x, 0.35 * k, z, 0.45 * k, 0.9 * k, 0.45 * k, vrnd() * 6, vpick([0x7DAA4A, 0x8DB955, 0x6E9E43, 0x9CC45F])]); } } };
+    // Lotes verdes de la ciudad: árboles variados + matas de pasto
+    const greenLot = (c, r, h) => { const x = X(c), z = Z(r), n = 2 + (h % 4); for (let i = 0; i < n; i++) addTree(x + (vrnd() - 0.5) * S * 0.7, z + (vrnd() - 0.5) * S * 0.7, 0.75 + vrnd() * 0.4); addTufts(x - S * 0.45, z - S * 0.45, S * 0.9, S * 0.9, 10); };
+    // Pasto con variación de color: un plano con colores por vértice debajo de toda la maqueta
+    {
+      const gw = bw, gd = bd, seg = 70, geo = new T.PlaneGeometry(gw, gd, seg, Math.round(seg * gd / gw)); geo.rotateX(-Math.PI / 2);
+      const pos = geo.attributes.position, cols2 = new Float32Array(pos.count * 3), a = new T.Color(0x9CC46A).convertSRGBToLinear(), b2 = new T.Color(0x7FAE52).convertSRGBToLinear(), tmpc = new T.Color();
+      for (let i = 0; i < pos.count; i++) { const x = pos.getX(i), z = pos.getZ(i), n = (Math.sin(x * 0.045) + Math.cos(z * 0.06) + Math.sin((x + z) * 0.11) * 0.6) / 2.6 * 0.5 + 0.5; tmpc.copy(a).lerp(b2, Math.min(1, Math.max(0, n + (vrnd() - 0.5) * 0.25))); cols2.set([tmpc.r, tmpc.g, tmpc.b], i * 3); }
+      geo.setAttribute('color', new T.BufferAttribute(cols2, 3));
+      const gm = new T.Mesh(geo, new T.MeshLambertMaterial({ vertexColors: true })); gm.position.set(bx, -0.015, bz); gm.receiveShadow = true; scene.add(gm);
+    }
+    // Campo: parcelas alrededor de la ciudad, con caminos de tierra, alambrados, cañaverales, limoneros, soja, arado y galpones
+    const stripeTex = (bg, line, gap) => { const cv = document.createElement('canvas'); cv.width = 64; cv.height = 64; const x = cv.getContext('2d'); x.fillStyle = bg; x.fillRect(0, 0, 64, 64); x.fillStyle = line; for (let y = 0; y < 64; y += gap) x.fillRect(0, y, 64, gap / 2); const t = new T.CanvasTexture(cv); t.wrapS = t.wrapT = T.RepeatWrapping; if (T.sRGBEncoding) t.encoding = T.sRGBEncoding; return t; };
+    const FIELD_TEX = { soja: stripeTex('#A9C95E', '#8EB548', 16), arado: stripeTex('#A9805A', '#8F6A48', 16), rastrojo: stripeTex('#D8C27A', '#C7AE62', 16), pastura: stripeTex('#9FC86B', '#93BE60', 32) };
+    const dirt = mat(0xC9A97E), cityX0 = -S / 2 - M, cityX1 = len + S / 2 + M, cityZ0 = -S / 2 - M, cityZ1 = depth + S / 2 + M;
+    const fX0 = cityX0 - 4, fX1 = cityX1 + FE - 4, fZ0 = cityZ0 - FN + 4, fZ1 = cityZ1 + FS - 4, PW = 38, PD = 30, GAP = 5;
+    const barnSpots = [];
+    for (let z = fZ0; z + PD <= fZ1; z += PD + GAP) for (let x = fX0; x + PW <= fX1; x += PW + GAP) {
+      const inCity = x + PW > cityX0 - 2 && x < cityX1 + 2 && z + PD > cityZ0 - 2 && z < cityZ1 + 2; if (inCity) continue;
+      if (x < cityX0 - 6 && x + PW < cityX0) continue; // al oeste quedan los cerros
+      const t = vrnd(), type = t < 0.3 ? 'cana' : t < 0.48 ? 'limon' : t < 0.66 ? 'soja' : t < 0.78 ? 'arado' : t < 0.88 ? 'rastrojo' : 'pastura';
+      const cxp = x + PW / 2, czp = z + PD / 2;
+      // camino de tierra alrededor
+      box3(dirt, cxp, 0.02, z + PD + GAP / 2, PW + GAP, 0.04, GAP * 0.55); box3(dirt, x + PW + GAP / 2, 0.02, czp, GAP * 0.55, 0.04, PD + GAP);
+      if (type === 'soja' || type === 'arado' || type === 'rastrojo' || type === 'pastura') {
+        const tx = FIELD_TEX[type].clone(); tx.needsUpdate = true; tx.repeat.set(1, PD / 4); if (vrnd() < 0.5) { tx.rotation = Math.PI / 2; tx.center.set(0.5, 0.5); tx.repeat.set(PD / 4, 1); }
+        const fm = new T.Mesh(kit.plane, new T.MeshLambertMaterial({ map: tx })); fm.rotation.x = -Math.PI / 2; fm.scale.set(PW, PD, 1); fm.position.set(cxp, 0.03, czp); fm.receiveShadow = true; scene.add(fm);
+        if (type === 'pastura') addTufts(x, z, PW, PD, 40, 0.35);
+      }
+      if (type === 'cana') { const fm = new T.Mesh(kit.plane, mat(0x8A7B52)); fm.rotation.x = -Math.PI / 2; fm.scale.set(PW, PD, 1); fm.position.set(cxp, 0.03, czp); scene.add(fm);
+        for (let zz = z + 1.5; zz < z + PD - 1; zz += 2.4) for (let xx = x + 1; xx < x + PW - 0.5; xx += 1.5) { const h = 2.6 + vrnd() * 1.4; veg.cane.push([xx + (vrnd() - 0.5) * 0.5, h / 2, zz + (vrnd() - 0.5) * 0.5, 0.55, h, 0.55, vrnd() * 6, vpick([0x9DBE4C, 0xB3C95C, 0x8DB044, 0xC2CF6A])]); } }
+      if (type === 'limon') for (let zz = z + 3; zz < z + PD - 2; zz += 5) for (let xx = x + 3; xx < x + PW - 2; xx += 5) {
+        veg.trunk.push([xx, 0.6, zz, 0.25, 1.2, 0.25, 0, 0x6F5440]); const k = 1.7 + vrnd() * 0.3; veg.blob.push([xx, 1.9, zz, k, k * 0.9, k, vrnd() * 6, vpick([0x3E7D32, 0x467F35, 0x387531])]);
+        for (let f = 0; f < 3; f++) { const a = vrnd() * 6.28; veg.fruit.push([xx + Math.cos(a) * k * 0.85, 1.6 + vrnd() * 0.9, zz + Math.sin(a) * k * 0.85, 0.24, 0.24, 0.24, 0, 0xF2D33B]); }
+      }
+      // alambrado en algunas parcelas
+      if (vrnd() < 0.55) { for (let xx = x; xx <= x + PW; xx += 3) { veg.post.push([xx, 0.6, z, 0.18, 1.2, 0.18, 0, 0x8A6A4C]); veg.post.push([xx, 0.6, z + PD, 0.18, 1.2, 0.18, 0, 0x8A6A4C]); } for (let zz = z; zz <= z + PD; zz += 3) { veg.post.push([x, 0.6, zz, 0.18, 1.2, 0.18, 0, 0x8A6A4C]); veg.post.push([x + PW, 0.6, zz, 0.18, 1.2, 0.18, 0, 0x8A6A4C]); } }
+      // cortina de álamos sobre el camino
+      if (vrnd() < 0.3) for (let xx = x + 2; xx < x + PW; xx += 4) addTree(xx, z + PD + GAP / 2 + 2.2, 0.85, 'tall');
+      if (vrnd() < 0.18 && barnSpots.length < 6) barnSpots.push([x + 4, z + 4]);
+    }
+    barnSpots.forEach(([x, z], i) => { const g = kit.clone('building-garage', 7 + i * 13, true); g.position.set(x + 3, 0, z + 3); g.rotation.y = vrnd() * 6; g.scale.setScalar(S * 0.75); scene.add(g); });
+    // Bosquecitos al pie de los cerros y árboles sueltos en el campo
+    for (let i = 0; i < 70; i++) addTree(cityX0 - 8 - vrnd() * 40, fZ0 + vrnd() * (fZ1 - fZ0), 0.9 + vrnd() * 0.6, vrnd() < 0.5 ? 'pine' : 'round');
+    for (let i = 0; i < 40; i++) { const x = fX0 + vrnd() * (fX1 - fX0), z = fZ0 + vrnd() * (fZ1 - fZ0); if (x > cityX0 - 4 && x < cityX1 + 4 && z > cityZ0 - 4 && z < cityZ1 + 4) continue; addTree(x, z, 0.9 + vrnd() * 0.5); }
+    addTufts(cityX0 - 50, fZ0, 46, fZ1 - fZ0, 260, 0.3);
+    // Arma las InstancedMesh (un dibujo por tipo de pieza)
+    const buildVeg = () => {
+      const phong = () => new T.MeshPhongMaterial({ flatShading: true, shininess: 0, specular: 0x000000 });
+      const GEO = { trunk: new T.CylinderGeometry(0.5, 0.65, 1, 6), blob: new T.IcosahedronGeometry(1, 0), cone: new T.ConeGeometry(1, 1, 7), tuft: new T.ConeGeometry(1, 1, 3), flower: new T.IcosahedronGeometry(1, 0), cane: new T.ConeGeometry(0.5, 1, 4), fruit: new T.IcosahedronGeometry(0.5, 0), post: new T.BoxGeometry(1, 1, 1) };
+      const SHADOW = { trunk: true, blob: true, cone: true, cane: true, post: true };
+      const m4 = new T.Matrix4(), q = new T.Quaternion(), e = new T.Euler(), v = new T.Vector3(), sc2 = new T.Vector3(), col = new T.Color();
+      Object.entries(veg).forEach(([k, list]) => {
+        if (!list.length) return;
+        const im = new T.InstancedMesh(GEO[k], phong(), list.length);
+        list.forEach(([x, y, z, sx, sy, sz, ry, c], i) => { e.set(0, ry, 0); q.setFromEuler(e); m4.compose(v.set(x, y, z), q, sc2.set(sx, sy, sz)); im.setMatrixAt(i, m4); im.setColorAt(i, col.setHex(c).convertSRGBToLinear()); });
+        im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true;
+        im.castShadow = !!SHADOW[k]; im.receiveShadow = true; scene.add(im);
+      });
+    };
     // Calles, avenidas y esquinas
     const used = new Set(), key = (c, r) => c + ',' + r, tags = [], lamps = [];
     const roadY = 0.06 * S, white = mat(0xFFFFFF);
@@ -7471,8 +7553,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       if (centre) { fountain = true; put('pavement-fountain', c, r); continue; }
       const si = Math.floor(r / 3), blk = Math.floor(c / (BLK + 1)), busy = streets[si] && streets[si].cos.some((e, k) => Math.floor(lotCols[Math.floor(k / 2)] / (BLK + 1)) === blk);
       if (!busy && h % 100 < 60) { const g = kit.clone(homes[(h >>> 3) % homes.length], h >>> 5, true); g.position.set(X(c), 0, Z(r)); g.rotation.y = r % 3 === 0 ? 0 : Math.PI; g.scale.setScalar(S); scene.add(g); continue; }
-      put(fill[(h >>> 4) % fill.length], c, r, (h % 4) * Math.PI / 2);
+      const ft = fill[(h >>> 4) % fill.length];
+      if (ft.startsWith('grass')) { put('grass', c, r, (h % 4) * Math.PI / 2); greenLot(c, r, h); } else put(ft, c, r, (h % 4) * Math.PI / 2);
     }
+    buildVeg();
     // Autitos por calles (eje x) y avenidas (eje z). Frenan en el semáforo en rojo.
     const CAR = [0xE4572E, 0x3B7DD8, 0xF2C14E, 0xFFFFFF, 0x6BAA75, 0x2E3A59].map(mat), glass = mat(0xCFE3F1), tire = mat(0x3A3533), headM = new T.MeshBasicMaterial({ color: 0xFFF3C4 }), tailM = new T.MeshBasicMaterial({ color: 0xE23B2E }), cars = [];
     const aves = [...Array(cols).keys()].filter(isAve).map(X), roads = streets.map((_, si) => Z(si * 3 + 1));
