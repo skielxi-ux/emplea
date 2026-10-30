@@ -73,13 +73,13 @@
     'Premio por presentismo', 'Comedor o viandas', 'Transporte', 'Vacaciones extra', 'Clases de inglés', 'Descuentos en productos'];
 
   function logoBox(name, src, size = 'w-12 h-12 text-base') {
-    if (src) return `<div class="${size} shrink-0 rounded-xl bg-white border border-line overflow-hidden grid place-items-center p-0.5" aria-hidden="true"><img src="${src}" alt="" class="w-full h-full object-contain"></div>`;
-    return `<div class="${size} shrink-0 rounded-xl grid place-items-center font-bold text-white" style="background:${companyOf(name).color}" aria-hidden="true">${esc(initials(name))}</div>`;
+    if (src) return `<div class="${size} shrink-0 rounded-lg bg-white border border-line overflow-hidden grid place-items-center p-[8%]" aria-hidden="true"><img src="${src}" alt="" class="w-full h-full object-contain"></div>`;
+    return `<div class="${size} shrink-0 rounded-lg grid place-items-center font-bold text-white" style="background:${companyOf(name).color}" aria-hidden="true">${esc(initials(name))}</div>`;
   }
   function logo(name, size = 'w-12 h-12 text-base') {
     const src = Store.logoOf(name);
     if (src) return logoBox(name, src, size);
-    return `<div class="${size} shrink-0 rounded-xl grid place-items-center font-bold text-white" style="background:${companyOf(name).color}" aria-hidden="true">${esc(initials(name))}</div>`;
+    return `<div class="${size} shrink-0 rounded-lg grid place-items-center font-bold text-white" style="background:${companyOf(name).color}" aria-hidden="true">${esc(initials(name))}</div>`;
   }
   function avatar(name, size = 'w-12 h-12 text-base') {
     return `<div class="${size} shrink-0 rounded-full grid place-items-center font-bold text-white" style="background:${hashColor(name)}" aria-hidden="true">${esc(initials(name))}</div>`;
@@ -1171,7 +1171,7 @@
       $('#em-list').innerHTML = shown.length ? shown.map(e => {
         const loc = [e.city, e.home].filter(Boolean).join(', ');
         return `<li><a href="#/e?n=${encodeURIComponent(e.name)}" class="group flex items-center gap-4 sm:gap-6 rounded-[22px] bg-white border border-line p-4 sm:p-6 hover:border-brand/40 hover:shadow-lift transition">
-          <span class="rounded-full overflow-hidden shrink-0">${logo(e.name, 'w-16 h-16 sm:w-20 sm:h-20 text-xl sm:text-2xl !rounded-full')}</span>
+          <span class="shrink-0">${logo(e.name, 'w-16 h-16 sm:w-20 sm:h-20 text-xl sm:text-2xl')}</span>
           <span class="min-w-0 flex-1">
             <span class="flex flex-wrap items-center gap-x-2 gap-y-1"><span class="font-display font-bold text-[1.2rem] sm:text-[1.3rem] leading-tight group-hover:text-brand">${esc(e.name)}</span>${vBadge(e.name, 'text-[1.25rem]')}${e.type === 'Consultora' ? '<span class="rounded-full bg-lilac text-brand px-2.5 py-0.5 text-[0.8rem] font-bold">Consultora</span>' : ''}</span>
             ${e.industry ? `<span class="block text-ink-soft mt-0.5 truncate">${esc(e.industry)}</span>` : ''}
@@ -3208,7 +3208,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         const loc = [g.city, g.province].filter(Boolean).join(', ');
         return `<li><a href="#/empresa/cliente?n=${encodeURIComponent(g.key)}" class="group flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 rounded-[18px] bg-white border border-line px-5 py-5 sm:px-7 sm:py-6 hover:border-brand/40 hover:shadow-lift transition">
           <div class="flex items-start sm:items-center gap-4 sm:gap-6 min-w-0 flex-1">
-            <span class="rounded-full overflow-hidden shrink-0">${logo(g.logoName, 'w-14 h-14 sm:w-16 sm:h-16 text-base !rounded-full')}</span>
+            <span class="shrink-0">${logo(g.logoName, 'w-14 h-14 sm:w-16 sm:h-16 text-base')}</span>
             <span class="min-w-0">
               <span class="flex flex-wrap items-center gap-x-3 gap-y-0.5"><span class="font-display font-bold text-[1.25rem] leading-tight group-hover:text-brand">${esc(g.name)}</span>${g.feat ? '<span class="text-ok font-semibold text-[0.92rem]">Destacada</span>' : ''}</span>
               <span class="mt-1.5 flex flex-wrap items-center gap-x-6 gap-y-1 text-ink-soft">
@@ -5538,6 +5538,47 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     </div>
     <p data-lp-err class="err hidden"></p>`;
   }
+  // Portada (banner) de la página de la empresa: se recorta a 4:1 (1584 × 396) y se guarda en JPG
+  function readBanner(file) {
+    return new Promise((res, rej) => {
+      if (!file || !/^image\/(png|jpe?g|webp)$/.test(file.type)) return rej('La portada tiene que ser una imagen PNG, JPG o WEBP.');
+      if (file.size > 8 * 1048576) return rej('La imagen pesa más de 8 MB.');
+      const url = URL.createObjectURL(file), img = new Image();
+      img.onload = () => {
+        const W = 1584, H = 396, k = Math.max(W / img.width, H / img.height), w = img.width * k, h = img.height * k;
+        const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
+        x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); x.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+        URL.revokeObjectURL(url); res(cv.toDataURL('image/jpeg', 0.84));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej('No pudimos leer la imagen.'); };
+      img.src = url;
+    });
+  }
+  const bannerPrev = (name, src) => src ? `<img src="${src}" alt="" class="w-full h-full object-cover">` : `<div class="w-full h-full grid place-items-center text-white/90 font-semibold" style="background:linear-gradient(120deg, ${companyOf(name || '?').color}, ${companyOf(name || '?').color}cc 55%, #1C2B33)"><span class="inline-flex items-center gap-2"><i class="ph ph-image text-xl"></i>Sin portada: se usa tu color</span></div>`;
+  function bannerPicker(id, name, src) {
+    return `<div id="${id}">
+      <div data-bp-prev class="w-full aspect-[4/1] min-h-[5.5rem] rounded-xl overflow-hidden border border-line bg-surface">${bannerPrev(name, src)}</div>
+      <div class="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <label for="${id}-file" class="btn btn-soft btn-sm cursor-pointer"><i class="ph-bold ph-upload-simple"></i><span data-bp-lbl>${src ? 'Cambiar portada' : 'Subir portada'}</span></label>
+        <button type="button" data-bp-del class="text-bad font-semibold text-[0.95rem] px-1 ${src ? '' : 'hidden'}">Quitar portada</button>
+        <span class="text-ink-mute text-[0.9rem]">Opcional. Ideal 1584 × 396 px (como LinkedIn).</span>
+      </div>
+      <input id="${id}-file" type="file" accept="image/png,image/jpeg,image/webp" class="sr-only">
+    </div>
+    <p data-bp-err class="err hidden"></p>`;
+  }
+  function bindBannerPicker(root, id, getName, state, onChange) {
+    const box = $('#' + id, root), err = box.nextElementSibling;
+    const draw = () => { $('[data-bp-prev]', box).innerHTML = bannerPrev(getName(), state.banner); $('[data-bp-lbl]', box).textContent = state.banner ? 'Cambiar portada' : 'Subir portada'; $('[data-bp-del]', box).classList.toggle('hidden', !state.banner); };
+    $('#' + id + '-file', root).onchange = async e => {
+      err.classList.add('hidden');
+      try { state.banner = await readBanner(e.target.files[0]); draw(); onChange && onChange(); }
+      catch (m) { err.textContent = m; err.classList.remove('hidden'); }
+      e.target.value = '';
+    };
+    $('[data-bp-del]', box).onclick = () => { state.banner = null; draw(); onChange && onChange(); };
+    return draw;
+  }
   function bindLogoPicker(root, id, getName, state, onChange) {
     const box = $('#' + id, root), err = box.nextElementSibling;
     const draw = () => {
@@ -5565,7 +5606,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     const co = Store.company();
     const p = Store.coProfile(co.name);
     const isCons = co.type === 'Consultora';
-    const st = { logo: p.logo || null, provinces: [...(p.provinces || [])], type: co.type };
+    const st = { logo: p.logo || null, banner: p.banner || null, provinces: [...(p.provinces || [])], type: co.type };
     const pct = profileCompleteness(p);
     const field = (id, label, val, extra = '', icon = '') => `<div><label class="label" for="${id}">${label}</label>
       <div class="relative">${icon ? `<i class="ph ${icon} absolute left-4 top-1/2 -translate-y-1/2 text-xl text-ink-mute pointer-events-none"></i>` : ''}
@@ -5604,6 +5645,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       <form id="cp-form" class="space-y-5" novalidate>
         ${section('ph-identification-card', 'Identidad', 'Tu logo y nombre aparecen en cada búsqueda que publicás.', `
           ${logoPicker('cp-logo', co.name, st.logo)}
+          <div><p class="label">Portada de tu página</p>${bannerPicker('cp-banner', co.name, st.banner)}</div>
           ${field('cp-name', 'Nombre de la empresa o consultora *', co.name, 'maxlength="60" autocomplete="organization"')}
           <div><p class="label">Tipo de cuenta</p><div class="grid grid-cols-2 gap-2">
             ${['Consultora', 'Empresa'].map(t => `<label class="cursor-pointer"><input type="radio" name="cp-type" value="${t}" class="peer sr-only" ${co.type === t ? 'checked' : ''}>
@@ -5737,6 +5779,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       form.addEventListener('input', setDirty);
       form.addEventListener('change', setDirty);
       bindLogoPicker(form, 'cp-logo', () => $('#cp-name').value.trim() || co.name, st, setDirty);
+      bindBannerPicker(form, 'cp-banner', () => $('#cp-name').value.trim() || co.name, st, setDirty);
       $('#cp-name').addEventListener('input', () => { if (!st.logo) $('#cp-logo [data-lp-prev]').innerHTML = logoBox($('#cp-name').value.trim() || '?', null, 'w-20 h-20 text-2xl'); });
       $('#cp-desc').addEventListener('input', e => { $('#cp-desc-n').textContent = e.target.value.length; });
 
@@ -5792,7 +5835,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         const type = $('input[name="cp-type"]:checked').value;
         if (name !== co.name) Store.renameCompany(co.name, name);
         Store.saveCoProfile(name, {
-          logo: st.logo, description: v('cp-desc'), industry: v('cp-ind'), size: v('cp-size'),
+          logo: st.logo, banner: st.banner, description: v('cp-desc'), industry: v('cp-ind'), size: v('cp-size'),
           address: v('cp-addr'), city: v('cp-city'), province: v('cp-prov'), provinces: st.provinces,
           website: v('cp-web'), linkedin: v('cp-li'), instagram: v('cp-ig'),
           contactName: v('cp-cname'), contactEmail: v('cp-cemail'), contactPhone: v('cp-cphone'),
@@ -5878,10 +5921,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <i class="ph-fill ph-eye text-lg"></i><span class="flex-1">Así ven tu página los candidatos.</span>
         <a href="#/empresa/perfil" class="font-semibold underline underline-offset-2">Editar perfil</a></div></div>` : ''}
       <section class="bg-white border-b border-line">
-        <div class="h-28 sm:h-40" style="background:linear-gradient(120deg, ${cmp.color}, ${cmp.color}cc 55%, #1C2B33)"></div>
+        ${p.banner && /^data:image\//.test(p.banner) ? `<div class="max-w-6xl mx-auto sm:px-6 sm:pt-4"><img src="${esc(p.banner)}" alt="Portada de ${esc(name)}" class="w-full aspect-[4/1] min-h-[7rem] object-cover sm:rounded-[22px]"></div>` : `<div class="h-28 sm:h-40" style="background:linear-gradient(120deg, ${cmp.color}, ${cmp.color}cc 55%, #1C2B33)"></div>`}
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
           <div class="flex flex-col sm:flex-row sm:items-end gap-4">
-            <div class="-mt-12 sm:-mt-14 rounded-2xl ring-4 ring-white bg-white w-fit shadow-lift shrink-0">${logo(name, 'w-24 h-24 sm:w-28 sm:h-28 text-3xl')}</div>
+            <div class="-mt-12 sm:-mt-14 ${p.banner ? 'sm:ml-6' : ''} relative rounded-xl ring-4 ring-white bg-white w-fit shadow-lift shrink-0">${logo(name, 'w-24 h-24 sm:w-28 sm:h-28 text-3xl')}</div>
             <div class="min-w-0 flex-1 sm:pb-1">
               <h1 class="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight leading-tight flex items-center gap-2 flex-wrap">${esc(name)}${vBadge(name, 'text-[0.8em]')}</h1>
               <p class="text-ink-soft mt-1">${meta.map(esc).join(' · ')}</p>
@@ -7264,7 +7307,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       if (logoMats[name]) return logoMats[name];
       const cv = document.createElement('canvas'); cv.width = cv.height = 256; const x = cv.getContext('2d'), co = companyOf(name).color || '#3B5BFD';
       const tex = new T.CanvasTexture(cv); if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding; tex.anisotropy = 4;
-      const frame = bg => { x.clearRect(0, 0, 256, 256); x.fillStyle = bg; x.beginPath(); x.moveTo(36, 8); x.arcTo(248, 8, 248, 248, 28); x.arcTo(248, 248, 8, 248, 28); x.arcTo(8, 248, 8, 8, 28); x.arcTo(8, 8, 248, 8, 28); x.fill(); };
+      const frame = bg => { x.clearRect(0, 0, 256, 256); x.fillStyle = bg; x.beginPath(); x.moveTo(24, 8); x.arcTo(248, 8, 248, 248, 16); x.arcTo(248, 248, 8, 248, 16); x.arcTo(8, 248, 8, 8, 16); x.arcTo(8, 8, 248, 8, 16); x.fill(); };
       frame(co); x.fillStyle = '#fff'; x.font = '700 104px Poppins, Figtree, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(initials(name), 128, 136);
       const src = Store.logoOf(name);
       if (src) { const im = new Image(); im.onload = () => { frame('#ffffff'); const k = Math.min(200 / im.width, 200 / im.height), w = im.width * k, h = im.height * k; x.drawImage(im, 128 - w / 2, 128 - h / 2, w, h); tex.needsUpdate = true; }; im.src = src; }
@@ -8261,7 +8304,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
 
   function openCompanyEditor(name0, onDone) {
     const p0 = name0 ? Store.coProfile(name0) : {};
-    const st = { logo: p0.logo || null };
+    const st = { logo: p0.logo || null, banner: p0.banner || null };
     const type0 = p0.type || (name0 ? companyOf(name0).type : 'Empresa');
     const inp = (id, l, v, ph = '', t = 'text') => `<div><label class="label mt-4" for="ce-${id}">${l}</label><input id="ce-${id}" type="${t}" class="input" value="${esc(v || '')}" placeholder="${esc(ph)}"></div>`;
     const body = `<h2 class="text-[1.6rem] font-extrabold pr-10 leading-tight">${name0 ? 'Editar empresa' : 'Agregar empresa'}</h2>
@@ -8271,6 +8314,8 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       ${inp('name', 'Nombre', name0, 'Ej.: Estudio Contable Gramajo')}
       <p class="label mt-4">Logo <span class="font-normal text-ink-mute">(opcional)</span></p>
       ${logoPicker('ce-logo', name0, st.logo)}
+      <p class="label mt-4">Portada <span class="font-normal text-ink-mute">(opcional)</span></p>
+      ${bannerPicker('ce-banner', name0, st.banner)}
       <div class="grid sm:grid-cols-2 gap-x-3">
         <div><label class="label mt-4" for="ce-ind">Rubro</label><select id="ce-ind" data-dd class="input">${industryOpts(p0.industry || (name0 ? companyOf(name0).industry : ''))}</select></div>
         <div><label class="label mt-4" for="ce-size">Tamaño</label><select id="ce-size" data-dd class="input"><option value="">Sin dato</option>${SIZES.map(s => `<option ${p0.size === s ? 'selected' : ''}>${s}</option>`).join('')}</select></div>
@@ -8290,13 +8335,14 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       <p id="ce-err" class="err hidden mt-3" role="alert"></p>`;
     openSheet(sheetScroll(body) + sheetFoot(`<button type="button" id="ce-save" class="btn btn-primary w-full h-14"><i class="ph-bold ph-check text-xl"></i>${name0 ? 'Guardar cambios' : 'Agregar a Empresas adheridas'}</button>`), c => {
       bindLogoPicker(c, 'ce-logo', () => $('#ce-name', c).value.trim(), st);
+      bindBannerPicker(c, 'ce-banner', () => $('#ce-name', c).value.trim(), st);
       $('#ce-save', c).onclick = () => {
         const v = k => $('#ce-' + k, c).value.trim(), name = v('name'), er = $('#ce-err', c);
         if (name.length < 2) { er.textContent = 'Escribí el nombre.'; er.classList.remove('hidden'); return; }
         if (name !== name0 && Store.companyExists(name)) { er.textContent = 'Ya hay una empresa con ese nombre.'; er.classList.remove('hidden'); return; }
         if (name0 && name !== name0) Store.renameCompany(name0, name);
         const data = { type: $('input[name="ce-type"]:checked', c).value, industry: v('ind'), size: v('size'), province: v('prov'), city: v('city'), address: v('addr'), description: v('desc'),
-          website: v('web'), linkedin: v('li'), instagram: v('ig'), contactPhone: v('wa'), contactEmail: v('mail'), logo: st.logo || null };
+          website: v('web'), linkedin: v('li'), instagram: v('ig'), contactPhone: v('wa'), contactEmail: v('mail'), logo: st.logo || null, banner: st.banner || null };
         if (!name0) Object.assign(data, { manual: true, addedAt: new Date().toISOString() });
         Store.saveCoProfile(name, data);
         closeSheet(true); toast(name0 ? 'Empresa actualizada' : `${name} ya aparece en Empresas adheridas`, 'ph-buildings'); if (onDone) onDone();

@@ -385,3 +385,7 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Grilla de 19 beneficios en 4 grupos:** gestión, visibilidad, red y datos, y comunidad. Una barra fija permite saltar a cada grupo. Las tarjetas aparecen al hacer scroll, se elevan al pasar el mouse y llevan a la sección que corresponde.
 - **Alianza con TuCuponApp:** bloque destacado con los pasos y el botón "Ver TuCuponApp", que abre https://tucuponapp.com/ (`TUCUPON_URL` en app.js).
 - **Foto del hero:** `assets/img/hero-beneficios.webp`, con un degradé oscuro para que el texto se lea.
+
+## Logos y portada de las empresas
+- **Logos cuadrados** con bordes suaves en todo el sitio: listado de empresas, página de cada empresa, avisos, panel y mapa. El logo va sobre fondo blanco, con un margen interno, para que entre completo aunque sea apaisado.
+- **Portada (banner) opcional** en Mi perfil → Identidad, y también desde el editor de empresas del Admin. Se recorta a 4:1 (1584 × 396, como LinkedIn) y se muestra arriba de la página pública de la empresa, con el logo encima. Sin portada, se usa un degradé con el color de la empresa.
