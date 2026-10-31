@@ -8626,6 +8626,141 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     };
   }
 
+  /* ================= CIUDAD 2D (PRUEBA) =================
+     Página oculta #/ciudad-2d: una calle larga con edificios en corte (sin pared delantera) uno al lado del otro.
+     Cada edificio es una empresa con su cartel; tiene 1, 2 o 3 pisos (al azar, fijo por empresa) con muebles según el rubro
+     y personitas trabajando. Dibujos propios en SVG. No reemplaza al mapa 3D. */
+  const C2_KIND = { 'Salud': 'clinic', 'Retail': 'shop', 'Alimenticia': 'shop', 'Gastronomía': 'food', 'Hotelería/Turismo': 'hotel', 'Logística/Transporte': 'warehouse', 'Industria/Manufactura': 'warehouse', 'Agroindustria': 'warehouse', 'Automotriz': 'garage', 'Educación': 'school' };
+  const C2_WALL = { office: ['#E9DCC3', '#D9C7A6'], clinic: ['#DCEBEA', '#C3DCDA'], shop: ['#F1DFC2', '#E2C9A0'], food: ['#EBCFA8', '#D9B486'], hotel: ['#E7D3C0', '#D5BDA6'], warehouse: ['#D8CDBE', '#C2B5A2'], garage: ['#D5D2CC', '#BDB8AF'], school: ['#E4E6C9', '#CDD0A8'] };
+  const C2_SKIN = ['#F1C7A5', '#D9A27E', '#A8714F', '#7B4F35', '#FAD9C1'], C2_HAIR = ['#2B1D14', '#5A3A22', '#8C5A2B', '#D9B45A', '#1B1B1B', '#B0B0B0'], C2_SHIRT = ['#3B5BFD', '#E4572E', '#16A085', '#F2C14E', '#7B4FD6', '#2E3A59', '#D9488A', '#FFFFFF'];
+  function c2Rand(seed) { let t = seed >>> 0 || 1; return () => (t = (t * 1664525 + 1013904223) >>> 0) / 4294967296; }
+  const c2Hash = s => { let h = 2166136261; for (const ch of String(s)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
+  // Personita (dibujo propio): x en el piso, sentado o parado, caminando o quieta
+  function c2Person(r, x, opt = {}) {
+    const skin = C2_SKIN[Math.floor(r() * C2_SKIN.length)], hair = C2_HAIR[Math.floor(r() * C2_HAIR.length)], shirt = C2_SHIRT[Math.floor(r() * C2_SHIRT.length)], pants = ['#2E3A59', '#4A3B2F', '#33475B', '#1F2A44'][Math.floor(r() * 4)];
+    const long = r() < 0.45, y = 132, sit = !!opt.sit;
+    const body = `<g class="c2-pb">
+        ${sit ? '' : `<rect x="-7" y="${y - 26}" width="6" height="26" rx="3" fill="${pants}"/><rect x="1" y="${y - 26}" width="6" height="26" rx="3" fill="${pants}"/>`}
+        <rect x="-11" y="${y - (sit ? 44 : 56)}" width="22" height="${sit ? 24 : 32}" rx="9" fill="${shirt}" stroke="rgba(0,0,0,.12)"/>
+        <circle cx="0" cy="${y - (sit ? 54 : 66)}" r="10" fill="${skin}"/>
+        <path d="M-10 ${y - (sit ? 55 : 67)} q2 -12 10 -12 q9 0 10 12 q-4 -5 -10 -5 q-6 0 -10 5z${long ? ` M-10 ${y - (sit ? 56 : 68)} q-2 12 1 18 l3 0 q-2 -8 -1 -18z M10 ${y - (sit ? 56 : 68)} q2 12 -1 18 l-3 0 q2 -8 1 -18z` : ''}" fill="${hair}"/>
+        <circle cx="-3.5" cy="${y - (sit ? 55 : 67)}" r="1.3" fill="#1B1B1B"/><circle cx="3.5" cy="${y - (sit ? 55 : 67)}" r="1.3" fill="#1B1B1B"/>
+        <path d="M-3 ${y - (sit ? 50 : 62)} q3 3 6 0" stroke="#8A3B2B" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      </g>`;
+    const walk = !sit && opt.walk;
+    return `<g transform="translate(${x} 0)"><g class="${walk ? 'c2-walk' : 'c2-idle'}" style="--dx:${opt.dx || 90}px;--dur:${(7 + r() * 6).toFixed(1)}s;--del:-${(r() * 6).toFixed(1)}s">${body}</g></g>`;
+  }
+  // Muebles por tipo de lugar (coordenadas del piso: 380 × 150, piso en y = 132)
+  const C2F = {
+    lamp: x => `<g><line x1="${x}" y1="10" x2="${x}" y2="26" stroke="#3A3530" stroke-width="2"/><path d="M${x - 14} 34 q14 -14 28 0z" fill="#2E2A26"/><ellipse class="c2-glow" cx="${x}" cy="36" rx="22" ry="5" fill="#FFF3C4" opacity=".9"/></g>`,
+    frame: (x, y, w, h, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${c}" stroke="#6E5A44" stroke-width="2.5"/>`,
+    plant: x => `<g><rect x="${x - 8}" y="114" width="16" height="18" rx="3" fill="#B5643C"/><path d="M${x} 114 q-14 -14 -6 -30 q6 12 6 30 q2 -22 12 -28 q2 18 -12 28" fill="#4F8A3C"/></g>`,
+    desk: (x, scr = '#7FD1FF') => `<g><rect x="${x - 34}" y="${102}" width="68" height="6" rx="2" fill="#8C6A4A"/><rect x="${x - 30}" y="108" width="4" height="24" fill="#6E5236"/><rect x="${x + 26}" y="108" width="4" height="24" fill="#6E5236"/>
+      <rect x="${x - 14}" y="78" width="28" height="20" rx="2" fill="#2B2B33"/><rect class="c2-screen" x="${x - 12}" y="80" width="24" height="15" fill="${scr}"/><rect x="${x - 3}" y="98" width="6" height="5" fill="#2B2B33"/></g>`,
+    chair: x => `<g><rect x="${x - 9}" y="104" width="18" height="5" rx="2" fill="#3A3F4F"/><rect x="${x - 2}" y="109" width="4" height="16" fill="#3A3F4F"/><rect x="${x - 10}" y="125" width="20" height="3" rx="1.5" fill="#3A3F4F"/></g>`,
+    shelf: (x, r) => `<g><rect x="${x - 26}" y="54" width="52" height="78" fill="#9C7A55"/>${[64, 86, 108].map(y => `<rect x="${x - 24}" y="${y + 16}" width="48" height="3" fill="#7A5C3E"/>${[0, 1, 2, 3].map(i => `<rect x="${x - 22 + i * 12}" y="${y + 2}" width="9" height="14" rx="1.5" fill="${['#E4572E', '#F2C14E', '#3B5BFD', '#16A085', '#D9488A'][Math.floor(r() * 5)]}"/>`).join('')}`).join('')}</g>`,
+    counter: x => `<g><rect x="${x - 50}" y="96" width="100" height="36" rx="3" fill="#B07A4A"/><rect x="${x - 52}" y="92" width="104" height="6" rx="2" fill="#8C5E36"/><rect x="${x + 12}" y="76" width="26" height="16" rx="2" fill="#3A3F4F"/><rect x="${x + 15}" y="79" width="20" height="7" fill="#9BE7A0"/></g>`,
+    bed: x => `<g><rect x="${x - 40}" y="104" width="80" height="12" rx="3" fill="#FFFFFF" stroke="#B9C7C6"/><rect x="${x - 40}" y="116" width="80" height="6" fill="#9FB3B1"/><rect x="${x - 38}" y="122" width="4" height="10" fill="#7E8E8D"/><rect x="${x + 34}" y="122" width="4" height="10" fill="#7E8E8D"/><rect x="${x - 36}" y="96" width="22" height="9" rx="4" fill="#E9F3F2"/><rect x="${x - 14}" y="100" width="50" height="7" rx="3" fill="#7FC6BC"/>
+      <line x1="${x + 50}" y1="58" x2="${x + 50}" y2="130" stroke="#8E9A99" stroke-width="2"/><rect x="${x + 44}" y="58" width="12" height="16" rx="3" fill="#CFE9F6" stroke="#8E9A99"/></g>`,
+    cross: (x, y) => `<g><rect x="${x - 14}" y="${y - 14}" width="28" height="28" rx="5" fill="#fff" stroke="#C9D6D5"/><rect x="${x - 3.5}" y="${y - 10}" width="7" height="20" fill="#E23B2E"/><rect x="${x - 10}" y="${y - 3.5}" width="20" height="7" fill="#E23B2E"/></g>`,
+    crates: (x, r) => `<g>${[[0, 0], [24, 0], [12, -22], [48, 0]].map(([dx, dy]) => `<g><rect x="${x + dx - 11}" y="${110 + dy}" width="22" height="22" fill="${['#C9945A', '#B88246', '#D4A46A'][Math.floor(r() * 3)]}" stroke="#8C5E36" stroke-width="1.5"/><line x1="${x + dx - 11}" y1="${121 + dy}" x2="${x + dx + 11}" y2="${121 + dy}" stroke="#8C5E36" stroke-width="1.2"/></g>`).join('')}<rect x="${x - 14}" y="130" width="76" height="3" fill="#6E5236"/></g>`,
+    forklift: x => `<g class="c2-fork"><rect x="${x - 22}" y="98" width="34" height="24" rx="4" fill="#F2C14E"/><rect x="${x - 16}" y="84" width="20" height="16" rx="2" fill="none" stroke="#3A3530" stroke-width="2.5"/><rect x="${x + 12}" y="82" width="3" height="46" fill="#3A3530"/><rect x="${x + 15}" y="122" width="16" height="3" fill="#3A3530"/><circle cx="${x - 14}" cy="126" r="6" fill="#2B2B33"/><circle cx="${x + 6}" cy="126" r="6" fill="#2B2B33"/></g>`,
+    car: (x, c) => `<g><path d="M${x - 44} 116 q2 -12 14 -14 l12 -12 q6 -4 16 -4 l18 0 q10 0 16 8 l8 8 q14 2 14 14 l0 6 l-98 0z" fill="${c}"/><path d="M${x - 16} 92 l8 -2 l14 0 l0 12 l-28 0z M${x + 10} 90 l10 0 q6 0 9 6 l3 6 l-22 0z" fill="#CFE3F1"/><circle cx="${x - 22}" cy="122" r="9" fill="#2B2B33"/><circle cx="${x - 22}" cy="122" r="4" fill="#9AA0A6"/><circle cx="${x + 30}" cy="122" r="9" fill="#2B2B33"/><circle cx="${x + 30}" cy="122" r="4" fill="#9AA0A6"/></g>`,
+    tools: x => `<g><rect x="${x - 26}" y="58" width="52" height="40" fill="#8E8A84"/>${[0, 1, 2, 3, 4].map(i => `<rect x="${x - 22 + i * 10}" y="64" width="3" height="${14 + (i % 2) * 8}" fill="#2E3A59"/>`).join('')}</g>`,
+    bar: x => `<g><rect x="${x - 60}" y="96" width="120" height="36" rx="3" fill="#7A4A2B"/><rect x="${x - 62}" y="92" width="124" height="6" rx="2" fill="#5A3520"/>${[-40, -12, 16, 44].map(d => `<g><rect x="${x + d - 7}" y="108" width="14" height="4" rx="2" fill="#D9488A"/><rect x="${x + d - 1.5}" y="112" width="3" height="20" fill="#3A3530"/></g>`).join('')}
+      <rect x="${x - 50}" y="50" width="100" height="4" fill="#5A3520"/>${[0, 1, 2, 3, 4, 5].map(i => `<rect x="${x - 46 + i * 16}" y="${36 + (i % 2) * 2}" width="6" height="${14 - (i % 2) * 2}" rx="2" fill="${['#2E7D32', '#8E2B2B', '#C98516'][i % 3]}"/>`).join('')}</g>`,
+    table: x => `<g><ellipse cx="${x}" cy="106" rx="22" ry="4" fill="#C98516"/><rect x="${x - 2}" y="106" width="4" height="24" fill="#5A3520"/><rect x="${x - 12}" y="129" width="24" height="3" rx="1.5" fill="#5A3520"/><rect x="${x - 6}" y="96" width="6" height="10" rx="2" fill="#F5E6B8"/></g>`,
+    board: x => `<g><rect x="${x - 44}" y="46" width="88" height="46" rx="3" fill="#FFFFFF" stroke="#8C6A4A" stroke-width="3"/>${[56, 66, 76].map((y, i) => `<line x1="${x - 36}" y1="${y}" x2="${x + (i ? 20 : 34)}" y2="${y}" stroke="${['#3B5BFD', '#E4572E', '#16A085'][i]}" stroke-width="2.5" stroke-linecap="round"/>`).join('')}</g>`,
+    sofa: x => `<g><rect x="${x - 34}" y="108" width="68" height="16" rx="6" fill="#7B4FD6"/><rect x="${x - 34}" y="96" width="68" height="14" rx="6" fill="#6A40C2"/><rect x="${x - 38}" y="104" width="10" height="22" rx="4" fill="#5E36B0"/><rect x="${x + 28}" y="104" width="10" height="22" rx="4" fill="#5E36B0"/></g>`,
+    clock: x => `<g><circle cx="${x}" cy="56" r="10" fill="#fff" stroke="#6E5A44" stroke-width="2.5"/><line class="c2-hand" x1="${x}" y1="56" x2="${x}" y2="49" stroke="#3A3530" stroke-width="2" stroke-linecap="round"/><line x1="${x}" y1="56" x2="${x + 5}" y2="56" stroke="#3A3530" stroke-width="2" stroke-linecap="round"/></g>`
+  };
+  // Un piso: fondo, lámparas, muebles y gente
+  function c2Floor(kind, r, ground, initials, brand) {
+    const [w1, w2] = C2_WALL[kind] || C2_WALL.office, gid = 'g' + Math.floor(r() * 1e9);
+    let furn = '', ppl = '', back = '';
+    const P = (x, o) => { if (o && o.sit) back += c2Person(r, x, o); else ppl += c2Person(r, x, o); };
+    const deco = `${C2F.frame(30, 46, 30, 22, '#F3E9D7')}${C2F.clock(352)}<g><rect x="70" y="44" width="40" height="30" rx="3" fill="${brand}" opacity=".9"/><text x="90" y="64" text-anchor="middle" font-family="Poppins,Figtree,sans-serif" font-weight="800" font-size="13" fill="#fff">${esc(initials)}</text></g>`;
+    if (kind === 'office' || kind === 'hotel' && !ground) { furn = `${C2F.plant(18)}${C2F.desk(110)}${C2F.desk(240, r() < 0.5 ? '#9BE7A0' : '#7FD1FF')}${C2F.board(320)}`; P(110, { sit: true }); P(240, { sit: true }); P(170, { walk: true, dx: 60 }); }
+    else if (kind === 'clinic') { furn = `${C2F.bed(110)}${C2F.cross(250, 70)}${C2F.desk(300, '#CFF4F0')}${C2F.plant(358)}`; P(180, { walk: true, dx: 50 }); P(300, { sit: true }); }
+    else if (kind === 'shop') { furn = `${C2F.shelf(46, r)}${C2F.shelf(104, r)}${C2F.counter(250)}${C2F.plant(356)}`; P(250, {}); P(160, { walk: true, dx: 70 }); }
+    else if (kind === 'food') { furn = `${C2F.bar(120)}${C2F.table(260)}${C2F.table(334)}`; P(120, {}); P(240, { walk: true, dx: 80 }); P(334, { sit: true }); }
+    else if (kind === 'hotel') { furn = `${C2F.counter(110)}${C2F.sofa(270)}${C2F.plant(350)}`; P(110, {}); P(200, { walk: true, dx: 60 }); }
+    else if (kind === 'warehouse') { furn = ground ? `${C2F.crates(40, r)}${C2F.forklift(240)}${C2F.crates(300, r)}` : `${C2F.desk(110)}${C2F.crates(240, r)}`; P(170, { walk: true, dx: 70 }); if (!ground) P(110, { sit: true }); }
+    else if (kind === 'garage') { furn = ground ? `${C2F.car(130, ['#E4572E', '#3B5BFD', '#F2C14E'][Math.floor(r() * 3)])}${C2F.tools(290)}` : `${C2F.desk(110)}${C2F.sofa(270)}`; P(ground ? 230 : 200, { walk: true, dx: 60 }); if (!ground) P(110, { sit: true }); }
+    else if (kind === 'school') { furn = `${C2F.board(110)}${C2F.desk(250, '#FFE38A')}${C2F.plant(350)}`; P(70, {}); P(220, { sit: true }); P(290, { sit: true }); }
+    const door = ground ? `<g><rect x="356" y="74" width="22" height="58" rx="3" fill="#3A3530"/><rect x="358" y="76" width="18" height="54" rx="2" fill="#6E5A44"/><circle cx="373" cy="104" r="1.8" fill="#F2C14E"/></g>` : '';
+    return `<svg class="c2-room" viewBox="0 0 380 150" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${w1}"/><stop offset="1" stop-color="${w2}"/></linearGradient></defs>
+      <rect width="380" height="150" fill="url(#${gid})"/><rect y="0" width="380" height="8" fill="rgba(0,0,0,.12)"/><rect y="112" width="380" height="20" fill="rgba(0,0,0,.05)"/>
+      <rect y="132" width="380" height="18" fill="${kind === 'warehouse' || kind === 'garage' ? '#8E8A84' : kind === 'clinic' ? '#9FC6C2' : '#9A7652'}"/><rect y="132" width="380" height="3" fill="rgba(0,0,0,.18)"/>
+      ${deco}${C2F.lamp(130)}${C2F.lamp(260)}${r() < 0.5 ? `<g transform="translate(372 0) scale(-1 1)">${back}${furn}${ppl}</g>` : back + furn + ppl}${door}
+    </svg>`;
+  }
+  function c2Building(e, ind) {
+    const h = c2Hash(e.name), r = c2Rand(h), kind = C2_KIND[ind] || 'office', floors = 1 + (h % 3), brand = companyOf(e.name).color || '#3B5BFD';
+    const open = Store.activeJobs().filter(j => j.company === e.name).length, ini = initials(e.name);
+    const kinds = Array.from({ length: floors }, (_, i) => i === 0 ? kind : (kind === 'warehouse' || kind === 'garage' || kind === 'shop' || kind === 'food') ? 'office' : kind);
+    return `<button type="button" class="c2-bld" data-c2="${esc(e.name)}" style="--b:${brand}" aria-label="${esc(e.name)}, ${floors} piso${floors > 1 ? 's' : ''}${open ? `, ${open} búsquedas abiertas` : ''}">
+      <span class="c2-sign"><span class="c2-sign-in">${logo(e.name, 'w-9 h-9 text-[0.72rem]')}<span class="c2-sign-t">${esc(e.name)}${isVerified(e.name) ? ' <i class="ph-fill ph-seal-check text-[#1D9BF0]"></i>' : ''}</span></span>${open ? `<span class="c2-open" title="${open} búsquedas abiertas">${open}</span>` : ''}<span class="c2-bulbs" aria-hidden="true"></span></span>
+      <span class="c2-roof"></span>
+      ${kinds.map((k, i) => c2Floor(k, r, i === 0, ini, brand)).reverse().map(svg => `<span class="c2-floor">${svg}</span>`).join('')}
+    </button>`;
+  }
+  function City2DPage() {
+    const streets = cityData();
+    const hills = `<svg class="c2-hills" viewBox="0 0 1200 200" preserveAspectRatio="none" aria-hidden="true"><path d="M0 200 L0 120 Q120 40 240 110 T480 90 T720 120 T960 70 T1200 110 L1200 200Z" fill="#A9C98B"/><path d="M0 200 L0 150 Q160 90 320 150 T640 140 T960 130 T1200 150 L1200 200Z" fill="#8DB86E"/></svg>`;
+    const sign = s => `<div class="c2-street" style="--c:${indColor(s.ind)}" id="c2-s${s.n}"><span class="c2-street-plate"><b>Calle ${s.n}</b><span>${esc(s.ind)}</span></span><span class="c2-street-pole"></span></div>`;
+    const tree = i => `<svg class="c2-tree" viewBox="0 0 60 110" aria-hidden="true"><rect x="27" y="62" width="6" height="40" fill="#7A5A3F"/><circle cx="30" cy="46" r="24" fill="${['#5E9B45', '#4F8A3C', '#6AA34C'][i % 3]}"/><circle cx="18" cy="56" r="14" fill="${['#4F8A3C', '#6AA34C', '#5E9B45'][i % 3]}"/><circle cx="42" cy="58" r="13" fill="${['#6AA34C', '#5E9B45', '#4F8A3C'][i % 3]}"/></svg>`;
+    let row = '', i = 0;
+    streets.forEach(s => { row += sign(s); s.cos.forEach(e => { row += c2Building(e, s.ind); if (++i % 2 === 0) row += tree(i); }); row += tree(i + 1); });
+    const html = `<div class="c2 relative overflow-hidden" style="height:calc(100dvh - 4rem)">
+      <div class="c2-sky absolute inset-0"></div><div class="c2-cloud c2-cloud-1"></div><div class="c2-cloud c2-cloud-2"></div>
+      <div class="absolute left-3 right-3 top-3 sm:left-5 sm:right-auto sm:top-5 z-20 sm:w-[25rem] rounded-[20px] bg-white/95 backdrop-blur border border-line shadow-lift p-4">
+        <div class="flex items-center gap-2"><h1 class="text-[1.2rem] font-extrabold leading-tight flex-1">Ciudad +Humanos <span class="text-ink-mute font-semibold">· 2D</span></h1><span class="rounded-full bg-sun px-2.5 py-0.5 text-[0.75rem] font-bold">Prueba</span></div>
+        <p class="max-sm:hidden text-ink-soft text-[0.9rem] leading-snug mt-0.5">Arrastrá para recorrer la calle. Tocá un edificio para ver sus búsquedas.</p>
+        <div class="relative mt-2.5"><i class="ph ph-magnifying-glass text-lg text-ink-mute absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i><input id="c2-q" type="search" class="input h-11 pl-10" placeholder="Buscar una empresa" list="c2-names" aria-label="Buscar una empresa"><datalist id="c2-names">${streets.flatMap(s => s.cos).map(e => `<option value="${esc(e.name)}">`).join('')}</datalist></div>
+        <div class="mt-2.5 flex gap-1.5 overflow-x-auto no-scrollbar">${streets.map(s => `<button type="button" data-c2-go="${s.n}" class="shrink-0 h-8 px-2.5 rounded-lg text-white text-[0.82rem] font-bold" style="background:${indColor(s.ind)}" title="${esc(s.ind)}">${s.n}</button>`).join('')}</div>
+      </div>
+      <div class="absolute right-3 sm:right-5 bottom-[4%] z-20 flex gap-2"><button type="button" id="c2-prev" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Ir a la izquierda"><i class="ph-bold ph-caret-left"></i></button><button type="button" id="c2-next" class="icon-btn w-11 h-11 bg-white border border-line shadow-card" aria-label="Ir a la derecha"><i class="ph-bold ph-caret-right"></i></button></div>
+      <div id="c2-scroll" class="c2-scroll absolute inset-0 overflow-x-auto overflow-y-hidden no-scrollbar">
+        <div class="c2-world">
+          ${hills}
+          <div class="c2-row">${row}</div>
+          <div class="c2-ground"><div class="c2-walk-strip"></div><div class="c2-road"><span class="c2-car c2-car-1"></span><span class="c2-car c2-car-2"></span><span class="c2-car c2-car-3"></span></div></div>
+        </div>
+      </div>
+    </div>`;
+    return {
+      title: 'Ciudad 2D', html,
+      mount() {
+        const sc = $('#c2-scroll');
+        // Arrastrar con el mouse (en celular, scroll nativo)
+        let drag = null, moved = 0;
+        sc.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; drag = { x: e.clientX, l: sc.scrollLeft }; moved = 0; sc.classList.add('is-drag'); });
+        addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x; moved = Math.max(moved, Math.abs(dx)); sc.scrollLeft = drag.l - dx; });
+        addEventListener('pointerup', () => { drag = null; sc.classList.remove('is-drag'); });
+        sc.addEventListener('wheel', e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { sc.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
+        $('#c2-prev').onclick = () => sc.scrollBy({ left: -sc.clientWidth * 0.7, behavior: 'smooth' });
+        $('#c2-next').onclick = () => sc.scrollBy({ left: sc.clientWidth * 0.7, behavior: 'smooth' });
+        $$('[data-c2-go]').forEach(b => b.onclick = () => { const el = $('#c2-s' + b.dataset.c2Go); if (el) sc.scrollTo({ left: el.offsetLeft - 40, behavior: 'smooth' }); });
+        const focus = name => { const el = $$('[data-c2]').find(x => x.dataset.c2 === name); if (!el) return false; sc.scrollTo({ left: el.offsetLeft - (sc.clientWidth - el.offsetWidth) / 2, behavior: 'smooth' }); el.classList.remove('is-hi'); void el.offsetWidth; el.classList.add('is-hi'); return true; };
+        const q = $('#c2-q'), find = () => { const t = norm(q.value.trim()); if (!t) return; const e = streets.flatMap(s => s.cos).find(x => norm(x.name).includes(t)); if (!e || !focus(e.name)) toast('No encontramos esa empresa', 'ph-magnifying-glass'); q.blur(); };
+        q.addEventListener('change', find); q.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); find(); } });
+        sc.addEventListener('click', e => {
+          const b = e.target.closest('[data-c2]'); if (!b || moved > 6) return;
+          const name = b.dataset.c2, e2 = streets.flatMap(s => s.cos).find(x => x.name === name); if (!e2) return;
+          const st = streets.find(s => s.cos.includes(e2)), jobs = Store.activeJobs().filter(j => j.company === name);
+          openSheet(sheetScroll(`<div class="flex items-start gap-3">${logo(name, 'w-14 h-14 text-base')}<div class="min-w-0"><h2 class="text-[1.4rem] font-extrabold leading-tight flex items-center gap-1.5">${esc(name)}${vBadge(name)}</h2><p class="text-ink-soft">Calle ${st.n}, ${esc(st.ind)}</p></div></div>
+            <p class="mt-4 font-semibold">${jobs.length ? `${jobs.length} búsqueda${jobs.length === 1 ? '' : 's'} abierta${jobs.length === 1 ? '' : 's'}` : 'Sin búsquedas abiertas por ahora'}</p>
+            ${jobs.length ? `<ul class="mt-2 divide-y divide-line rounded-xl border border-line">${jobs.slice(0, 5).map(j => `<li><a href="#/vacante?id=${j.id}" data-close-sheet class="flex items-center gap-3 px-3.5 py-2.5 hover:bg-surface"><span class="min-w-0 flex-1"><span class="block font-semibold truncate">${esc(j.title)}</span><span class="block text-[0.86rem] text-ink-mute truncate">${esc(j.city)}, ${esc(j.province)} · ${esc(j.modality)}</span></span><i class="ph-bold ph-caret-right text-ink-mute"></i></a></li>`).join('')}</ul>` : ''}`)
+            + sheetFoot(`<a href="#/e?n=${encodeURIComponent(name)}" data-close-sheet class="btn btn-primary h-14 flex-1">Ver su página</a>${followBtn(name, 'h-14')}`));
+        });
+        // Parallax de los cerros
+        const hl = $('.c2-hills'); sc.addEventListener('scroll', () => { hl.style.transform = `translateX(${sc.scrollLeft * 0.55}px)`; }, { passive: true });
+      }
+    };
+  }
+
   /* ================= ADMIN: EMPRESAS Y CONSULTORAS ADHERIDAS =================
      Lista todo lo que aparece en "Empresas adheridas": cuentas registradas, perfiles cargados a mano por el admin
      y las cuentas de ejemplo. Desde acá se agrega una empresa a mano, se edita su perfil o se oculta de la página. */
@@ -8981,10 +9116,10 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const ROUTES = {
     '/': Welcome, '/chat': Chat, '/vacantes': Jobs, '/guardadas': Saved, '/postulaciones': MyApps, '/notificaciones': Notifs,
     '/empresa': CoHome, '/empresa/busquedas': CoDash, '/empresa/b': JobSpace, '/empresa/candidatos': CoCands,
-    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/acceso': AccessPage, '/encuesta': SurveyPage, '/beneficios': BenefitsPage, '/creadores': CreatorsPage, '/empresa/creadores': CoCreators, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
+    '/empresa/perfil': CoProfile, '/empresa/cliente': ClientPage, '/empresa/entrevistas': Interviews, '/empresa/reportes': Reports, '/empresa/hub': HubPage, '/mapa': MapPage, '/acceso': AccessPage, '/encuesta': SurveyPage, '/beneficios': BenefitsPage, '/creadores': CreatorsPage, '/ciudad-2d': City2DPage, '/empresa/creadores': CoCreators, '/recomendacion': RefPermission, '/empresa/candidato': CandidatePage, '/empresa/planes': Plans, '/e': CompanyPage, '/terna': ClientTerna, '/terna-respuesta': TernaReply,
     '/nosotros': AboutPage, '/vacante': JobPage, '/empresas': Employers, '/faqs': () => InfoPage('faqs'), '/terminos': () => InfoPage('terminos'), '/privacidad': () => InfoPage('privacidad'), '/admin': AdminPage, '/cafe': CafePage, '/cafe/nota': CafePost
   };
-  const TITLES = { '/admin': 'Admin', '/acceso': 'Acceso', '/encuesta': 'Encuesta Laboral', '/beneficios': 'Beneficios', '/creadores': 'Creadores UGC', '/empresa/creadores': 'Creadores', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
+  const TITLES = { '/admin': 'Admin', '/acceso': 'Acceso', '/encuesta': 'Encuesta Laboral', '/beneficios': 'Beneficios', '/creadores': 'Creadores UGC', '/ciudad-2d': 'Ciudad 2D', '/empresa/creadores': 'Creadores', '/mapa': 'Mapa', '/empresa/hub': 'Hub', '/recomendacion': 'Recomendación', '/cafe': 'Charla de café', '/cafe/nota': 'Charla de café', '/empresa/reportes': 'Reportes', '/empresa/cliente': 'Cliente', '/empresa/candidato': 'Perfil', '/empresa/candidatos': 'Base de datos', '/vacante': 'Aviso', '/empresa/entrevistas': 'Entrevistas', '/empresas': 'Empresas adheridas', '/nosotros': 'Nosotros', '/faqs': 'Preguntas frecuentes', '/terminos': 'Términos y condiciones', '/privacidad': 'Política de privacidad', '/chat': 'Armá tu alerta', '/vacantes': 'Vacantes', '/guardadas': 'Guardadas', '/postulaciones': 'Mis postulaciones', '/notificaciones': 'Notificaciones', '/empresa': 'Inicio', '/empresa/busquedas': 'Búsquedas', '/empresa/b': 'Búsqueda', '/empresa/perfil': 'Mi perfil', '/empresa/planes': 'Planes', '/e': 'Empresa', '/terna': 'Terna', '/terna-respuesta': 'Respuesta de terna' };
 
   function render(opts = {}) {
     const { path, params } = parseHash();
@@ -9004,7 +9139,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
     document.body.classList.remove('has-tbar');
     if (path !== '/chat') chatToken++;
     // Pantalla de ingreso del candidato: sin el menú de candidato hasta que ingrese
-    const mode = path === '/admin' ? 'admin' : path.startsWith('/terna') ? 'terna' : (path === '/empresa' || path.startsWith('/empresa/')) ? 'company' : path === '/' || path === '/empresas' || path === '/mapa' || path === '/acceso' || path === '/recomendacion' || INFO_PATHS.includes(path) ? 'home' : path === '/chat' ? 'chat'
+    const mode = path === '/admin' ? 'admin' : path.startsWith('/terna') ? 'terna' : (path === '/empresa' || path.startsWith('/empresa/')) ? 'company' : path === '/' || path === '/empresas' || path === '/mapa' || path === '/ciudad-2d' || path === '/acceso' || path === '/recomendacion' || INFO_PATHS.includes(path) ? 'home' : path === '/chat' ? 'chat'
       : (path === '/postulaciones' || path === '/notificaciones') && !Store.candidate() ? 'login' : 'candidate';
     { const src = params.get('src'), jid = params.get('id') || params.get('job'); if (src && jid && CHANNELS.some(c => c[0] === src)) { try { sessionStorage.setItem('emplea.src.' + jid, src); } catch (e) { /* sin storage */ } } }
     checkAlerts(); // Fedfu revisa si hay vacantes nuevas para las alertas del candidato
