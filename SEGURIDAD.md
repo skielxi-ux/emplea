@@ -22,7 +22,7 @@ Por la misma razón, los ingresos son de demostración. El panel de admin y las 
 
 ## Pendiente: la clave del admin
 
-La clave sigue siendo `admin`. Es la primera que prueba cualquiera, así que el bloqueo de intentos no alcanza. Conviene cambiarla por una de al menos 14 caracteres.
+La clave actual es corta y fácil de adivinar, así que el bloqueo de intentos no alcanza. Conviene cambiarla por una de al menos 14 caracteres.
 
 ## Antes de lanzar con datos reales (obligatorio)
 
