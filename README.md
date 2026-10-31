@@ -405,9 +405,3 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Demo:** 9 creadores ficticios con fotos libres de Unsplash (personas grabando contenido, sin marcas). Se reemplazan por creadores reales.
 - Con 8 secciones en el panel de empresas, en pantallas de menos de 1536 px se muestran solo los íconos (salvo la sección activa).
 
-## Ciudad 2D (prueba)
-- **Página oculta** `#/ciudad-2d`, sin link en el menú. No reemplaza al mapa 3D.
-- **Una calle larga** con edificios en corte (sin pared delantera) uno al lado del otro, agrupados por rubro con un cartel de calle entre grupos. Se recorre arrastrando, con la rueda del mouse o con las flechas. Los números de calle llevan a cada rubro y el buscador centra a la empresa.
-- **Cada edificio** es una empresa: cartel con su logo, nombre y tilde, con lamparitas que titilan y un globito con las búsquedas abiertas. Tiene 1, 2 o 3 pisos (al azar, siempre igual para la misma empresa). Los muebles dependen del rubro (oficina, clínica, local, restaurante, hotel, depósito, taller o escuela) y hay personitas trabajando o caminando, con dibujos propios en SVG.
-- **Al tocar un edificio** se abre su ficha, con búsquedas, "Ver su página" y "Seguir".
-- **Ambiente:** cielo, nubes que pasan, cerros con parallax, vereda, calle con autos y árboles.
