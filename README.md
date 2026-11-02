@@ -414,3 +414,30 @@ El sitio arranca vacío: sin avisos, empresas, postulantes, CVs del Admin, respu
 - Si un navegador tenía guardados los ejemplos de antes, se borran solos al entrar. Lo que cargó una persona (su cuenta, sus avisos, sus notas) se mantiene.
 - Los creadores UGC de ejemplo y el botón "Cargar postulantes de ejemplo" de la cuenta de empresa siguen disponibles.
 
+## Servidor (Supabase) · Etapa 1, punto 1: cuentas de empresas
+
+Las cuentas de empresas y consultoras pueden validarse en Supabase. Mientras `assets/js/config.js` esté vacío, el sitio sigue en modo prototipo (cuentas guardadas en el navegador).
+
+**Qué hace:**
+- **Registro:** crea la cuenta en Supabase Auth y, en la base, la empresa con su nombre y tipo (trigger `handle_new_user`). No se pueden repetir nombres de empresa.
+- **Confirmación por mail:** la cuenta queda activa al tocar el link del mail.
+- **Ingreso con email y contraseña:** se valida en el servidor, y la sesión se mantiene al recargar. Una sesión escrita a mano en el navegador se descarta.
+- **"Olvidé mi contraseña":** manda un mail con un link, y al volver al sitio se elige la clave nueva.
+- **Perfil:** cambiar el nombre o el tipo se guarda en la base, y solo puede hacerlo el dueño de la cuenta.
+- **Cerrar sesión:** cierra la sesión en el servidor.
+
+**Archivos:**
+- `supabase/migrations/20261102120000_cuentas_empresas.sql`: tablas `companies`, `company_members` y `admins`, funciones y permisos (RLS).
+- `assets/js/config.js`: URL del proyecto y clave publicable.
+- `assets/js/backend.js`: conexión. La librería `@supabase/supabase-js@2.117.3` se carga desde jsDelivr con huella SRI, y solo si hay conexión configurada.
+
+**Para activarlo:**
+1. Aplicar la migración en el proyecto de Supabase.
+2. Completar `config.js` con la URL (`https://<ref>.supabase.co`) y la clave publicable (`sb_publishable_...`).
+3. En *Authentication → URL Configuration*, poner como **Site URL** la dirección del sitio y sumarla en **Redirect URLs**, por ejemplo `https://tudominio.com/**`.
+4. **Antes de lanzar, configurar un SMTP propio** en *Authentication → Emails → SMTP Settings*, con Resend, Brevo o similar. El servicio de mail que trae Supabase solo manda mails a los miembros del equipo del proyecto y tiene un límite muy bajo por hora, así que sin SMTP propio los clientes no reciben el mail de confirmación.
+
+**Sigue en el navegador hasta los próximos puntos:**
+- avisos, postulaciones y CVs (puntos 2 y 3);
+- el Admin y las invitaciones de acceso (punto 4).
+

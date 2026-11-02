@@ -2425,12 +2425,24 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         if ($('#co-demo')) $('#co-demo').onclick = () => enter({ name: 'Talento Norte', type: 'Consultora', email: 'talento@demo.com.ar' });
         const fl = $('#co-login');
         if (fl) {
-          $('#co-forgot').onclick = () => { const em = $('#co-email').value.trim(); toast(em ? `Te mandamos un link a ${em} para crear una contraseña nueva` : 'Escribí tu email y te mandamos un link', 'ph-envelope-simple'); };
+          $('#co-forgot').onclick = async () => {
+            const em = $('#co-email').value.trim().toLowerCase();
+            if (!/^\S+@\S+\.\S+$/.test(em)) { err('#co-err', 'Escribí tu email y te mandamos un link para crear una contraseña nueva.'); return; }
+            if (Cloud.on) { const r = await Cloud.resetPassword(em); if (r.error) { err('#co-err', r.error); return; } }
+            err('#co-err', ''); toast(`Si hay una cuenta con ${em}, te llega un mail para crear una contraseña nueva`, 'ph-envelope-simple');
+          };
           fl.onsubmit = async e => {
             e.preventDefault();
             const em = $('#co-email').value.trim().toLowerCase(), pass = $('#co-pass').value;
             if (!/^\S+@\S+\.\S+$/.test(em)) { err('#co-err', 'Escribí un email válido.'); return; }
             if (lockLeft('co')) { err('#co-err', lockMsg(lockLeft('co'))); return; }
+            if (Cloud.on) {
+              if (!pass) { err('#co-err', 'Escribí tu contraseña.'); return; }
+              const btn = fl.querySelector('button.btn-primary'); btn.disabled = true;
+              const r = await Cloud.signIn(em, pass); btn.disabled = false;
+              if (r.error) { if (/no son correctos/.test(r.error)) lockFail('co'); err('#co-err', lockLeft('co') ? lockMsg(lockLeft('co')) : r.error); return; }
+              lockClear('co'); S.coAuth = 'login'; toast(`Hola, ${r.company.name}`, 'ph-hand-waving'); render(); return;
+            }
             const acc = Store.coAccount(em);
             if (!acc) { err('#co-err', 'No encontramos una cuenta con ese email.'); $('#co-err').insertAdjacentHTML('beforeend', ' <button type="button" class="font-semibold text-brand underline" data-auth-go>Crear una cuenta</button>'); $('[data-auth-go]').onclick = () => { S.coAuth = 'signup'; render({ keep: true }); }; return; }
             const btn = fl.querySelector('button.btn-primary'); btn.disabled = true;
@@ -2450,6 +2462,20 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           if (Store.coAccount(em)) { err('#cs-err', 'Ya hay una cuenta con ese email. Ingresá desde "Ingresar".'); return; }
           if (pass.length < 8) { err('#cs-err', 'La contraseña tiene que tener al menos 8 caracteres.'); return; }
           if (!$('#cs-terms').checked) { err('#cs-err', 'Para crear la cuenta tenés que aceptar los términos.'); return; }
+          if (Cloud.on) {
+            if (!/[a-z]/i.test(pass) || !/\d/.test(pass)) { err('#cs-err', 'Usá letras y números en la contraseña.'); return; }
+            const btn = fs.querySelector('button.btn-primary'); btn.disabled = true;
+            let r; try { r = await Cloud.signUp({ name, type, email: em, password: pass }); } catch (x) { r = { error: Cloud.msg(x) }; }
+            btn.disabled = false;
+            if (r.error) { err('#cs-err', r.error); return; }
+            if (r.confirm) {
+              fs.innerHTML = `<div class="text-center py-6"><span class="w-16 h-16 rounded-full bg-brand-soft text-brand grid place-items-center mx-auto"><i class="ph-fill ph-envelope-simple-open text-3xl"></i></span>
+                <h2 class="mt-4 text-2xl font-extrabold tracking-tight">Revisá tu email</h2>
+                <p class="mt-2 text-ink-soft">Te mandamos un link a <b>${esc(em)}</b> para confirmar la cuenta de ${esc(name)}. Si no lo ves, buscalo en spam.</p></div>`;
+              return;
+            }
+            Store.saveCoProfile(name, { contactEmail: em }); S.coAuth = 'login'; toast(`Hola, ${name}`, 'ph-hand-waving'); render(); return;
+          }
           Store.addCoAccount(em, { name, type, pass: await hashPass(pass), createdAt: new Date().toISOString() });
           if (!Store.coProfile(name).contactEmail) Store.saveCoProfile(name, { contactEmail: em });
           enter({ name, type, email: em });
@@ -5868,9 +5894,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       $$('[data-client]').forEach(b => b.onclick = () => openClientSheet(b.dataset.client));
       $$('[data-client-new]').forEach(b => b.onclick = () => openClientSheet(null));
 
-      $('#cp-logout').onclick = async () => { if (await askConfirm({ title: `¿Cerrar la sesión de ${esc(co.name)}?`, ok: 'Cerrar sesión', icon: 'ph-sign-out' })) { Store.logoutCompany(); location.hash = '#/empresa'; render(); } };
+      $('#cp-logout').onclick = async () => { if (await askConfirm({ title: `¿Cerrar la sesión de ${esc(co.name)}?`, ok: 'Cerrar sesión', icon: 'ph-sign-out' })) { if (Cloud.on) await Cloud.signOut(); else Store.logoutCompany(); location.hash = '#/empresa'; render(); } };
       $('#cp-discard').onclick = () => refresh();
-      $('#cp-save').onclick = () => {
+      $('#cp-save').onclick = async () => {
         const v = id => $('#' + id).value.trim();
         const err = $('#cp-err'); const fail = m => { err.textContent = m; err.classList.remove('hidden'); };
         err.classList.add('hidden');
@@ -5879,6 +5905,11 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         if (name !== co.name && Store.companyExists(name)) return fail('Ya existe una empresa con ese nombre.');
         if (v('cp-cemail') && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('cp-cemail'))) return fail('Revisá el email de contacto.');
         const type = $('input[name="cp-type"]:checked').value;
+        if (Cloud.on && co.cloud && (name !== co.name || type !== co.type)) {
+          const btn = $('#cp-save'); btn.disabled = true;
+          const r = await Cloud.updateCompany(co.id, { name, type }); btn.disabled = false;
+          if (r.error) return fail(r.error);
+        }
         if (name !== co.name) Store.renameCompany(co.name, name);
         Store.saveCoProfile(name, {
           logo: st.logo, logoDark: !!st.logoDark, logoV: 2, banner: st.banner, description: v('cp-desc'), industry: v('cp-ind'), size: v('cp-size'),
@@ -5888,7 +5919,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           msgWhatsapp: v('cp-mwa'), msgEmailSubject: v('cp-msubj'), msgEmailBody: $('#cp-mbody').value, msgReject: $('#cp-mrej').value
         });
         Store.jobs().filter(j => j.company === name).forEach(j => { if (j.companyType !== type) Store.updateJob(j.id, { companyType: type }); });
-        Store.setCompany({ name, type });
+        Store.setCompany({ ...co, name, type });
         toast('Perfil guardado');
         render({ keep: true });
       };
@@ -9065,8 +9096,30 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   });
   window.addEventListener('hashchange', () => render());
 
-  render();
-  migrateLogos();
+  // Con servidor, la primera pantalla espera a saber si hay una sesión de empresa
+  Cloud.ready.then(() => {
+    render();
+    migrateLogos();
+    if (Cloud.recovery) openNewPassword();
+    else if (Cloud.linkError) toast('El link venció o ya se usó. Pedí uno nuevo.', 'ph-warning');
+  });
+
+  // Contraseña nueva (después de tocar el link del mail "Olvidé mi contraseña")
+  function openNewPassword() {
+    openSheet(sheetScroll(`<h2 class="text-2xl font-extrabold tracking-tight">Elegí tu contraseña nueva</h2>
+      <p class="mt-1 text-ink-soft">Mínimo 8 caracteres, con letras y números.</p>
+      <label class="label mt-5" for="np-pass">Contraseña nueva</label>
+      <input id="np-pass" type="password" class="input" autocomplete="new-password" minlength="8">
+      <p id="np-err" class="err hidden"></p>`) + sheetFoot('<button type="button" id="np-save" class="btn btn-primary w-full h-14">Guardar contraseña</button>'), c => {
+      $('#np-save', c).onclick = async () => {
+        const p = $('#np-pass', c).value, e = $('#np-err', c), fail = t => { e.textContent = t; e.classList.remove('hidden'); };
+        if (p.length < 8 || !/[a-z]/i.test(p) || !/\d/.test(p)) return fail('Usá al menos 8 caracteres, con letras y números.');
+        const r = await Cloud.updatePassword(p);
+        if (r.error) return fail(r.error);
+        closeSheet(true); toast('Listo, tu contraseña nueva ya funciona', 'ph-check-circle'); location.hash = '#/empresa'; render();
+      };
+    });
+  }
 
   // Exponer utilidades puras para pruebas
   window.__emplea = { analyzeCv, score, isForYou, detectArea, detectProvince, detectModality, detectSeniority, demoPdf, render };
