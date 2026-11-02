@@ -1,5 +1,5 @@
 {
- "revisado": "2026-11-02T13:26:42.771Z",
+ "revisado": "2026-11-02T13:31:06.846Z",
  "empresas": [
   {
    "nombre": "Mostaza",
@@ -811,15 +811,15 @@
   {
    "nombre": "Tresur",
    "rubro": "A confirmar",
-   "web": null,
-   "tituloWeb": null,
+   "web": "https://www.hugedomains.com/domain_profile.cfm?d=tresur.com",
+   "tituloWeb": "Tresur.com is for sale | HugeDomains",
    "empleo": null,
    "tipo": null,
    "plataforma": null,
    "robotsOk": null,
    "avisosJsonLd": 0,
    "redes": [],
-   "nota": "No respondió ninguno de los dominios probados."
+   "nota": "No encontré página de empleo en la web."
   },
   {
    "nombre": "Cencosud",
@@ -1399,15 +1399,15 @@
   {
    "nombre": "Tensolite",
    "rubro": "Construcción",
-   "web": null,
-   "tituloWeb": null,
+   "web": "https://tensolite.com/",
+   "tituloWeb": "Tensolite | Fábrica de Premoldeados y Pretensados de Hormigón",
    "empleo": null,
    "tipo": null,
    "plataforma": null,
    "robotsOk": null,
    "avisosJsonLd": 0,
    "redes": [],
-   "nota": "No respondió ninguno de los dominios probados."
+   "nota": "No encontré página de empleo en la web."
   },
   {
    "nombre": "Tecnopor",
@@ -1444,7 +1444,7 @@
    "rubro": "Construcción",
    "web": "https://www.maderplak.com/",
    "tituloWeb": "Maderplak - Home",
-   "empleo": "https://accounts.google.com/v3/signin/identifier?continue=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&followup=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&ltmpl=forms&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S119267322:1793625882863433",
+   "empleo": "https://accounts.google.com/v3/signin/identifier?continue=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&followup=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&ltmpl=forms&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-2112402979:1793626245753326",
    "tipo": "solo formulario de CV",
    "plataforma": "Google Forms",
    "robotsOk": true,
@@ -1468,15 +1468,15 @@
   {
    "nombre": "Sanatorio del Norte",
    "rubro": "Salud",
-   "web": "https://www.sanatoriodelnorte.com.ar/",
-   "tituloWeb": "Sanatorio del Norte | Corrientes",
+   "web": null,
+   "tituloWeb": null,
    "empleo": null,
    "tipo": null,
    "plataforma": null,
    "robotsOk": null,
    "avisosJsonLd": 0,
    "redes": [],
-   "nota": "No encontré página de empleo en la web."
+   "nota": "No respondió ninguno de los dominios probados."
   },
   {
    "nombre": "Grupo ODSE",

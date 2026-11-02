@@ -63,7 +63,7 @@ Revisado: 2026-11-02. Se respetó robots.txt de cada sitio.
 | Discomef | [Discomef](https://www.discomef.com.ar/) | — | — | — | No encontré página de empleo en la web. |
 | Control Union | [Control Union Global - Testing, Inspection &amp; C](https://www.controlunion.com/) | [link](https://uae.controlunion.com/) | página informativa | — | "Control Union UAE" Publica en: LinkedIn. |
 | Globant | — | [link](https://career.globant.com/) | avisos (plataforma) | SuccessFactors | "Join our team / Globant Careers" |
-| Tresur | — | — | — | — | No respondió ninguno de los dominios probados. |
+| Tresur | [Tresur.com is for sale / HugeDomains](https://www.hugedomains.com/domain_profile.cfm?d=tresur.com) | — | — | — | No encontré página de empleo en la web. |
 | Cencosud | [Cencosud / Cencosud](https://www.cencosud.com/) | [link](https://empleos.cencosud.com/) | avisos (plataforma) | Gupy | "Portal Laboral Cencosud" Publica en: LinkedIn. |
 | Yubrin | — | — | — | — | No respondió ninguno de los dominios probados. |
 | Yuhmak | [Yuhmak / Motos, Bicicletas y Accesorios en Cuotas](https://www.yuhmak.com/) | [link](https://www.yuhmak.com/trabajaconnosotros) | página informativa | — | "trabajaconnosotros - Yuhmak" |
@@ -107,12 +107,12 @@ Revisado: 2026-11-02. Se respetó robots.txt de cada sitio.
 | EMI | [EMI &#8211; EMERGENCIAS Y URGENCIAS MÉDICAS EN CÓR](https://emi.com.ar/) | [link](https://emi.com.ar/trabaja-en-emi/) | página informativa | — | "Trabaja en Emi &#8211; EMI" Publica en: LinkedIn. |
 | Red de Seguro Médico | — | — | — | — | No respondió ninguno de los dominios probados. |
 | RE/MAX | — | — | — | — | No respondió ninguno de los dominios probados. |
-| Tensolite | — | — | — | — | No respondió ninguno de los dominios probados. |
+| Tensolite | [Tensolite / Fábrica de Premoldeados y Pretensados ](https://tensolite.com/) | — | — | — | No encontré página de empleo en la web. |
 | Tecnopor | [ClickMateriales](https://www.clickmateriales.com/) | — | — | — | No encontré página de empleo en la web. Publica en: LinkedIn. |
 | Saiko | [SAIKO CONSTRUCTORA](https://saiko.com.ar/) | — | — | — | No encontré página de empleo en la web. Publica en: LinkedIn. |
-| Maderplak | [Maderplak - Home](https://www.maderplak.com/) | [link](https://accounts.google.com/v3/signin/identifier?continue=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&followup=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&ltmpl=forms&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S119267322:1793625882863433) | solo formulario de CV | Google Forms | "Formularios de Google: Acceso" |
+| Maderplak | [Maderplak - Home](https://www.maderplak.com/) | [link](https://accounts.google.com/v3/signin/identifier?continue=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&followup=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&ltmpl=forms&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-2112402979:1793626245753326) | solo formulario de CV | Google Forms | "Formularios de Google: Acceso" |
 | Sanatorio 9 de Julio | — | — | — | — | No respondió ninguno de los dominios probados. |
-| Sanatorio del Norte | [Sanatorio del Norte / Corrientes](https://www.sanatoriodelnorte.com.ar/) | — | — | — | No encontré página de empleo en la web. |
+| Sanatorio del Norte | — | — | — | — | No respondió ninguno de los dominios probados. |
 | Grupo ODSE | — | — | — | — | No respondió ninguno de los dominios probados. |
 | Méndez Collado | [Mendez Collado](https://www.mendezcollado.com/) | — | — | — | No encontré página de empleo en la web. |
 | Medifé | [Medifé - Medicina prepaga líder en Argentina / Med](https://www.medife.com.ar/) | [link](https://grupoaseconecta.hiringroom.com/jobs/microsite/medife) | avisos (plataforma) | HiringRoom | "¡Oportunidades de Empleo en Medifé!" Publica en: LinkedIn. |
