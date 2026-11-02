@@ -19,7 +19,7 @@ const ATS = [
 ];
 const NO_USAR = [['LinkedIn', /linkedin\.com/], ['Computrabajo', /computrabajo/], ['Bumeran/ZonaJobs', /bumeran|zonajobs/], ['Indeed', /indeed\./]];
 
-async function pedir(url, ms = 15000) {
+async function pedir(url, ms = 9000) {
   const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms);
   try {
     const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Language': 'es-AR,es' }, redirect: 'follow', signal: ac.signal });
@@ -55,7 +55,7 @@ const robotsCache = new Map();
 async function permitido(url) {
   const u = new URL(url);
   if (!robotsCache.has(u.origin)) {
-    const r = await pedir(u.origin + '/robots.txt', 10000);
+    const r = await pedir(u.origin + '/robots.txt', 7000);
     robotsCache.set(u.origin, r.ok && r.texto && !/<html/i.test(r.texto.slice(0, 500)) ? leerRobots(r.texto) : () => true);
     await dormir(PAUSA);
   }
@@ -135,8 +135,17 @@ async function revisarEmpresa(e) {
 }
 
 const empresas = JSON.parse(await readFile(new URL('./empresas.json', import.meta.url)));
-const res = [];
-for (const e of empresas) { const r = await revisarEmpresa(e); res.push(r); console.log(`${r.nombre}: ${r.tipo || '-'} ${r.empleo || r.nota}`); }
+// Varias empresas a la vez (cada una es un sitio distinto); a un mismo sitio se le pide de a uno y con pausa.
+const res = new Array(empresas.length); let sig = 0;
+const LIMITE = Date.now() + 40 * 60e3;
+await Promise.all(Array.from({ length: 8 }, async () => {
+  while (sig < empresas.length && Date.now() < LIMITE) {
+    const i = sig++; const e = empresas[i];
+    const r = await Promise.race([revisarEmpresa(e), dormir(150e3).then(() => ({ nombre: e.nombre, rubro: e.rubro, redes: [], nota: 'Tardó demasiado en responder.' }))]);
+    res[i] = r; console.log(`${r.nombre}: ${r.tipo || '-'} ${r.empleo || r.nota}`);
+  }
+}));
+for (let i = 0; i < empresas.length; i++) if (!res[i]) res[i] = { nombre: empresas[i].nombre, rubro: empresas[i].rubro, redes: [], nota: 'No llegó a revisarse.' };
 await writeFile(new URL('./fuentes.json', import.meta.url), JSON.stringify({ revisado: new Date().toISOString(), empresas: res }, null, 1));
 const md = ['# Páginas de empleo encontradas', '', `Revisado: ${new Date().toISOString().slice(0, 10)}. Se respetó robots.txt de cada sitio.`, '',
   '| Empresa | Web | Página de empleo | Tipo | Plataforma | Nota |', '|---|---|---|---|---|---|',
