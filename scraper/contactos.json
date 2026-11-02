@@ -1,0 +1,1789 @@
+{
+ "revisado": "2026-11-02T13:40:52.292Z",
+ "empresas": [
+  {
+   "nombre": "Mostaza",
+   "rubro": "Gastronomía",
+   "web": "https://www.mostazaweb.com.ar/",
+   "rrhh": [
+    "cvmostaza@mostazaweb.com.ar"
+   ],
+   "generales": [],
+   "paginas": [
+    "https://videocv.mostazaweb.com.ar/"
+   ]
+  },
+  {
+   "nombre": "La Argentina",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Benito Santos",
+   "rubro": "Comercio",
+   "web": "https://benitosantos.es/",
+   "rrhh": [],
+   "generales": [
+    "export@benitosantos.com",
+    "info@benitosantos.com",
+    "info@benitosantos.es"
+   ],
+   "paginas": [
+    "https://benitosantos.es/",
+    "https://benitosantos.es/contacto/"
+   ]
+  },
+  {
+   "nombre": "La Mariposa",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Naranja X",
+   "rubro": "Finanzas",
+   "web": "https://www.naranjax.com/",
+   "rrhh": [],
+   "generales": [
+    "soporte@naranjax.com",
+    "servicioaclientes@naranjax.com",
+    "soportepos@naranjax.com"
+   ],
+   "paginas": [
+    "https://www.naranjax.com/"
+   ]
+  },
+  {
+   "nombre": "Tarjeta Su Crédito",
+   "rubro": "Finanzas",
+   "web": "https://www.tarjetasucredito.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "contactanos@tarjetasucredito.com.ar"
+   ],
+   "paginas": [
+    "https://www.tarjetasucredito.com.ar/contacto-cliente"
+   ]
+  },
+  {
+   "nombre": "Gaman Brokers",
+   "rubro": "Seguros",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Ava Seguros",
+   "rubro": "Seguros",
+   "web": "https://avaseguros.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Acero del NOA",
+   "rubro": "Industria",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Hierronort",
+   "rubro": "Industria",
+   "web": "https://www.hierronort.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Cartón del Tucumán",
+   "rubro": "Industria",
+   "web": "https://www.cartondeltucuman.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Santander",
+   "rubro": "Banca",
+   "web": "https://www.santander.com.ar/personas",
+   "rrhh": [
+    "n_de_datos_personales@santander.com.ar"
+   ],
+   "generales": [],
+   "paginas": [
+    "https://www.santander.com.ar/nosotros/proteccion-de-datos-personales"
+   ]
+  },
+  {
+   "nombre": "Banco Hipotecario",
+   "rubro": "Banca",
+   "web": "https://www.hipotecario.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "tarshopmas@hipotecario.com.ar",
+    "adduc3@gmail.com",
+    "soportepapel@hipotecario.com.ar",
+    "gestioncobranzabh@hipotecario.com.ar",
+    "cargogestioncobranza@hipotecario.com.ar",
+    "reintegrocomisionreclamo@hipotecario.com.ar",
+    "lineaempresa@sancorsalud.com.ar",
+    "renovacionautomatica@hipotecario.com.ar",
+    "info@aduc.org.ar",
+    "mantenimientocuentatcbh@hipotecario.com.ar",
+    "info@ucu.org.ar",
+    "consumidoresfinancieros@yahoo.com.ar",
+    "institucionaljncomercial1.consumidores@pjn.gov.ar",
+    "jncomercial30.sec59@pjn.gov.ar",
+    "consultas@hipotecarioseguros.com.ar",
+    "atencion@www.hipotecario.com.ar"
+   ],
+   "paginas": [
+    "https://www.hipotecario.com.ar/",
+    "https://www.hipotecario.com.ar/personas/contactanos/"
+   ]
+  },
+  {
+   "nombre": "Petroarsa",
+   "rubro": "Energía",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "YPF",
+   "rubro": "Energía",
+   "web": "https://www.ypf.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Banco Macro",
+   "rubro": "Banca",
+   "web": "https://www.macro.com.ar/home-page",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "BBVA",
+   "rubro": "Banca",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Galicia",
+   "rubro": "Banca",
+   "web": "https://www.galicia.ar/personas",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Refinor",
+   "rubro": "Energía",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "EDET",
+   "rubro": "Energía",
+   "web": "https://www.edetsa.com/info/pwa",
+   "rrhh": [],
+   "generales": [
+    "serviciosalcliente@edetsa.com",
+    "medioambiente@edetsa.com"
+   ],
+   "paginas": [
+    "https://www.edetsa.com/info/pwa",
+    "https://www.edetsa.com/info/pwa/contactanos/canales-de-contacto"
+   ]
+  },
+  {
+   "nombre": "GMKT",
+   "rubro": "A confirmar",
+   "web": "https://gmkt.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "ventastuc@gmkt.com.ar",
+    "ventassgo@gmkt.com.ar",
+    "ventassal@gmkt.com.ar",
+    "yerbabuena@gmkt.com.ar"
+   ],
+   "paginas": [
+    "https://gmkt.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Zingaras",
+   "rubro": "Gastronomía",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Quilmes",
+   "rubro": "Consumo masivo",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Los Balcanes",
+   "rubro": "Alimentos",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Arcos Dorados",
+   "rubro": "Gastronomía",
+   "web": "https://www.arcosdorados.com/",
+   "rrhh": [],
+   "generales": [
+    "contacto.mcd@cubomagico.tv"
+   ],
+   "paginas": [
+    "https://www.arcosdorados.com/"
+   ]
+  },
+  {
+   "nombre": "UNSTA",
+   "rubro": "Educación",
+   "web": "https://www.unsta.edu.ar/",
+   "rrhh": [
+    "ebuscetto@unsta.edu.ar"
+   ],
+   "generales": [
+    "informes@unsta.edu.ar",
+    "ciu@unsta.edu.ar",
+    "informacionescuc@unsta.edu.ar",
+    "infoceop@unsta.edu.ar"
+   ],
+   "paginas": [
+    "https://www.unsta.edu.ar/",
+    "https://www.unsta.edu.ar/feriaempleo/"
+   ]
+  },
+  {
+   "nombre": "Universidad San Pablo-T",
+   "rubro": "Educación",
+   "web": "https://www.uspt.edu.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Rivolli",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Deloitte",
+   "rubro": "Servicios profesionales",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Produnoa",
+   "rubro": "Agroindustria",
+   "web": "https://www.produnoa.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "FGF Trapani",
+   "rubro": "Agroindustria",
+   "web": "https://fgftrapani.com/",
+   "rrhh": [],
+   "generales": [
+    "info@fgftrapani.com",
+    "ricardo@fgftrapani.com",
+    "fabricio@fgftrapani.com",
+    "industrysales@fgftrapani.com",
+    "facundo@fgftrapani.com"
+   ],
+   "paginas": [
+    "https://fgftrapani.com/",
+    "https://fgftrapani.com/en/contact-us"
+   ]
+  },
+  {
+   "nombre": "CASS",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Arca Continental",
+   "rubro": "Consumo masivo",
+   "web": "https://www.arcacontal.com/es",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Alimentaria SA",
+   "rubro": "Alimentos",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Ledesma",
+   "rubro": "Agroindustria",
+   "web": "https://www.ledesma.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Vicente Trapani",
+   "rubro": "Agroindustria",
+   "web": "https://vicentetrapani.com/",
+   "rrhh": [],
+   "generales": [
+    "andres.gonzalez@vicentetrapani.com",
+    "vitra@vicentetrapani.com"
+   ],
+   "paginas": [
+    "https://vicentetrapani.com/"
+   ]
+  },
+  {
+   "nombre": "San Miguel",
+   "rubro": "Agroindustria",
+   "web": "https://www.sanmiguelglobal.com/",
+   "rrhh": [],
+   "generales": [
+    "user@domain.com",
+    "hello@sanmiguelglobal.com"
+   ],
+   "paginas": [
+    "https://www.sanmiguelglobal.com/"
+   ]
+  },
+  {
+   "nombre": "Grupo Budeguer",
+   "rubro": "Agroindustria",
+   "web": "https://grupobudeguer.com/",
+   "rrhh": [
+    "postulante@budeguer.com"
+   ],
+   "generales": [
+    "info@budeguer.com"
+   ],
+   "paginas": [
+    "https://grupobudeguer.com/rrhh-trabaja-con-nosotros/",
+    "https://grupobudeguer.com/contacto-2022/"
+   ]
+  },
+  {
+   "nombre": "Latin Lemon",
+   "rubro": "Agroindustria",
+   "web": "https://www.latinlemon.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "info@latinlemon.com.ar"
+   ],
+   "paginas": [
+    "https://www.latinlemon.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Mistol Ancho",
+   "rubro": "Agroindustria",
+   "web": "https://mistolancho.com.ar/",
+   "rrhh": [
+    "rrhh@mistolancho.com.ar"
+   ],
+   "generales": [
+    "administracion@mistolancho.com.ar"
+   ],
+   "paginas": [
+    "https://mistolancho.com.ar/",
+    "https://mistolancho.com.ar/la-empresa/"
+   ]
+  },
+  {
+   "nombre": "Citromax",
+   "rubro": "Agroindustria",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Grupo Lucci",
+   "rubro": "Agroindustria",
+   "web": "https://grupolucci.com.ar/",
+   "rrhh": [
+    "busquedas@grupolucci.com.ar"
+   ],
+   "generales": [
+    "info@grupolucci.com.ar"
+   ],
+   "paginas": [
+    "https://grupolucci.com.ar/",
+    "https://grupolucci.com.ar/busquedas-laborales/"
+   ]
+  },
+  {
+   "nombre": "Agrolajitas",
+   "rubro": "Agroindustria",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Arbolar",
+   "rubro": "Agroindustria",
+   "web": "https://arbolar.com/",
+   "rrhh": [],
+   "generales": [
+    "informacion@arbolar.com",
+    "campamentosarbolar@gmail.com",
+    "n@arbolar.com"
+   ],
+   "paginas": [
+    "https://arbolar.com/",
+    "https://arbolar.com/escuela-de-animacion/",
+    "https://arbolar.com/localizacion-y-contacto/"
+   ]
+  },
+  {
+   "nombre": "Zamora Citrus",
+   "rubro": "Agroindustria",
+   "web": "https://www.zamoracitrus.com.ar/",
+   "rrhh": [
+    "rrhh@zamoracitrus.com.ar"
+   ],
+   "generales": [
+    "info@zamoracitrus.com.ar"
+   ],
+   "paginas": [
+    "https://www.zamoracitrus.com.ar/rrhh/",
+    "https://www.zamoracitrus.com.ar/contacto/"
+   ]
+  },
+  {
+   "nombre": "Terri Citrus",
+   "rubro": "Agroindustria",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Teleperformance",
+   "rubro": "Contact center",
+   "web": "https://www.tp.com/en-us/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Carlos V",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Hilton Garden Inn",
+   "rubro": "Hotelería",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Howard Johnson",
+   "rubro": "Hotelería",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Garden Park",
+   "rubro": "Hotelería",
+   "web": "https://www.gardenparkhotel.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "recepcion@gardenparkhotel.com.ar",
+    "reservas@gardenparkhotel.com.ar"
+   ],
+   "paginas": [
+    "https://www.gardenparkhotel.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Candy Viajes",
+   "rubro": "Turismo",
+   "web": "https://candyviajes.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Tucumán Center",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Tucumán BBS",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "La Gaceta",
+   "rubro": "Medios",
+   "web": "https://www.lagaceta.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "contacto@lagaceta.com.ar",
+    "comercialdigital@lagaceta.com.ar"
+   ],
+   "paginas": [
+    "https://www.lagaceta.com.ar/contacto"
+   ]
+  },
+  {
+   "nombre": "Flash",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Discomef",
+   "rubro": "Salud",
+   "web": "https://www.discomef.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "infoclientes@discomef.com.ar"
+   ],
+   "paginas": [
+    "https://www.discomef.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Control Union",
+   "rubro": "Servicios",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Globant",
+   "rubro": "Tecnología",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Tresur",
+   "rubro": "A confirmar",
+   "web": "https://www.hugedomains.com/domain_profile.cfm?d=tresur.com",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Cencosud",
+   "rubro": "Retail",
+   "web": "https://www.cencosud.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Yubrin",
+   "rubro": "Comercio",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Yuhmak",
+   "rubro": "Automotriz",
+   "web": "https://www.yuhmak.com/",
+   "rrhh": [
+    "vtex.search-page-context@0.2.0",
+    "u002fvtex.search-page-context@0.2.0",
+    "vtex.breadcrumb@1.9.6",
+    "u002fvtex.breadcrumb@1.9.6",
+    "vtex.search-result@3.150.2",
+    "u002fvtex.search-result@3.150.2",
+    "vtex.address-form@4.29.3",
+    "u002fvtex.address-form@4.29.3",
+    "vtex.search-result@3.x",
+    "vtex.breadcrumb@1.x"
+   ],
+   "generales": [
+    "vtex.store@2.x",
+    "vtex.admin-graphql@2.x",
+    "vtex.admin-offer-status@0.x",
+    "woowup.woowup@5.x",
+    "vtex.instore-admin@14.x",
+    "vtex.admin-defense-mode@0.x",
+    "vtex.checkout-ui-custom@0.x",
+    "vtex.auth-admin@3.x",
+    "vtex.admin-graphql-ide@3.x",
+    "vtex.admin-audit@2.x",
+    "vtex.admin-search@1.x",
+    "vtex.admin-graphql@1.x",
+    "connectif.connectif@1.x",
+    "vtex.search-graphql@0.x",
+    "vtex.myuser-io@2.x",
+    "vtex.mkp-category-mapper-ui@1.x",
+    "vtex.admin-pickup-points@2.x",
+    "vtex.session-client@1.x",
+    "vtex.app-store-compatibility-alert@0.x",
+    "vtex.mega-menu@2.x",
+    "vtex.extensions-highlight-manager@0.x",
+    "vtex.apps-graphql@3.x",
+    "vtex.facebook-fbe@1.x",
+    "vtex.store-graphql@2.x",
+    "vtex.my-account@1.x",
+    "vtex.wish-list@1.x",
+    "vtex.messages-templates@0.x",
+    "vtex.intercom-messenger@0.x",
+    "vtex.sales-performance-graphql@0.x",
+    "vtex.admin-sales-performance@1.x",
+    "vtex.catalog-graphql@1.x",
+    "vtex.seller-welcome@0.x",
+    "yuhmak.admin-sizes-guide@0.x",
+    "yuhmak.sizes-guide-service@1.x",
+    "vtex.pages-graphql@2.x",
+    "vtex.render-runtime@8.x",
+    "vtex.order-auth-graphql@0.x",
+    "vtex.order-auth@1.x",
+    "vtex.admin-sellers@1.x",
+    "vtex.sellers-graphql@9.x",
+    "yuhmak.pdp-motorbikes-details-service@0.x",
+    "yuhmak.pdp-motorbikes-details-custom@0.x",
+    "vtex.offer-quality-graphql@0.x",
+    "vtex.admin-offer-quality@0.x",
+    "vtex.si-survey-gateway@0.x",
+    "vtex.si-survey-admin@0.x",
+    "vtex.support-center-graphql@1.x",
+    "vtex.support-center@1.x",
+    "yuhmak.pdp-motorbikes-details-admin@1.x",
+    "vtex.mercadolibre-graphql@1.x",
+    "vtex.mercadolibre@2.x",
+    "vtex.marketplace-network-graphql@1.x",
+    "vtex.marketplace-network@0.x",
+    "vtexhelp.help-io-graphql@2.x",
+    "vtex.admin-v4-docs@0.x",
+    "vtex.openapi-schemas-internal@1.x",
+    "vtex.admin-docs@0.x",
+    "vtexhelp.help-io-graphql@3.x",
+    "vtex.mercadolivre-sizechart-graphql@2.x",
+    "vtex.admin-mercadolivre-sizechart@2.x",
+    "vtex.admin-collections@0.x",
+    "vtex.admin-cms-graphql-rc@1.x",
+    "vtex.admin-cms@1.x",
+    "vtex.releases-graphql-layer@0.x",
+    "vtex.admin-pages@4.x",
+    "vtex.tenant-graphql@0.x",
+    "vtex.rewriter@1.x",
+    "vtex.messages@1.x",
+    "vtex.pwa-graphql@1.x",
+    "vtex.styles-graphql@1.x",
+    "vtex.admin-vendor-invite@0.x",
+    "vtex.checkout-resources@0.x",
+    "vtex.checkout-graphql@0.x",
+    "yuhmak.yuhmak-offers-shelf-custom@0.x",
+    "vtex.admin-pricing-settings-graphql@1.x",
+    "vtex.admin-pricing-settings@1.x",
+    "vtex.suggestions-graphql@19.x",
+    "vtex.admin-suggestions@2.x",
+    "vtex.sellers-graphql@10.x",
+    "yuhmak.yuhmak-shipping-simulator-custom@0.x",
+    "yuhmak.stock-highlights-service@1.x",
+    "yuhmak.yuhmak-components-custom@3.x",
+    "vtex.order-placed-graphql@1.x",
+    "vtex.store-components@3.x",
+    "vtex.menu@2.x",
+    "vtex.admin-channels@5.x",
+    "vtex.channels-graphql@9.x",
+    "vtex.admin-logistics@1.x",
+    "vtex.logistics-carrier-graphql@0.x",
+    "vtex.admin@4.x",
+    "vtex.logistics-carrier-commons@0.x",
+    "vtex.inventory-graphql@0.x",
+    "vtex.admin-inventory@0.x",
+    "vtex.shelf@1.x",
+    "vtex.my-authentication@1.x",
+    "vtex.orders-graphql@0.x",
+    "vtex.my-orders-app@3.x",
+    "vtex.my-orders-packages@0.x",
+    "vtex.structured-data@0.x",
+    "vtex.admin-apps@4.x",
+    "vtex.billing@0.x",
+    "vtex.extensions-admin-api@0.x",
+    "vtex.delivery-promise-components@1.x",
+    "yuhmak.visir-op@0.x",
+    "vtex.order-placed@1.x",
+    "vtex.my-cards@1.x",
+    "vtex.my-cards-graphql@2.x",
+    "yuhmak.custom-sizes-guide@0.x",
+    "vtex.locale-switcher@0.x",
+    "vtex.category-menu@2.x",
+    "vtex.open-graph@1.x",
+    "vtex.order-placed@2.x",
+    "yuhmak.yuhmak-components-custom@4.x",
+    "vtex.store-form@0.x",
+    "yuhmak.orderplaced@0.x",
+    "vtex.admin-releases@0.x",
+    "vtex.store-resources@0.x",
+    "vtex.recommendation-graphql@0.x",
+    "vtex.vendor-onboarding-graphql@0.x",
+    "vtex.file-manager-graphql@0.x",
+    "vtex.gateway-graphql@1.x",
+    "vtex.telemarketing@2.x",
+    "vtex.store-newsletter@1.x",
+    "vtex.css-handles@0.4.4",
+    "u002fvtex.css-handles@0.4.4",
+    "vtex.stack-layout@0.1.4",
+    "u002fvtex.stack-layout@0.1.4",
+    "vtex.request-capture@2.3.0",
+    "u002fvtex.request-capture@2.3.0",
+    "vtex.render-runtime@8.136.3",
+    "u002fvtex.render-runtime@8.136.3",
+    "woowup.woowup@5.5.2",
+    "u002fwoowup.woowup@5.5.2",
+    "vtex.store-icons@0.19.4",
+    "u002fvtex.store-icons@0.19.4",
+    "yuhmak.pixel-apps@0.0.3",
+    "u002fyuhmak.pixel-apps@0.0.3",
+    "vtex.google-tag-manager@3.5.4",
+    "u002fvtex.google-tag-manager@3.5.4",
+    "vtex.css-handles@1.0.1",
+    "u002fvtex.css-handles@1.0.1",
+    "vtex.device-detector@0.2.6",
+    "u002fvtex.device-detector@0.2.6",
+    "vtex.list-context@0.2.0",
+    "u002fvtex.list-context@0.2.0",
+    "vtex.responsive-values@0.4.2",
+    "u002fvtex.responsive-values@0.4.2",
+    "vtex.slider-layout@0.24.10",
+    "u002fvtex.slider-layout@0.24.10",
+    "vtex.native-types@0.10.1",
+    "u002fvtex.native-types@0.10.1",
+    "vtex.rich-text@0.16.1",
+    "u002fvtex.rich-text@0.16.1",
+    "yuhmak.yuhmak-custom-miniapps@0.0.8",
+    "u002fyuhmak.yuhmak-custom-miniapps@0.0.8",
+    "connectif.connectif@1.2.28",
+    "u002fconnectif.connectif@1.2.28",
+    "vtex.pixel-manager@1.9.0",
+    "u002fvtex.pixel-manager@1.9.0",
+    "vtex.modal-layout@0.14.2",
+    "u002fvtex.modal-layout@0.14.2",
+    "vtex.flex-layout@0.21.6",
+    "u002fvtex.flex-layout@0.21.6",
+    "vtex.store-components@3.179.1",
+    "u002fvtex.store-components@3.179.1",
+    "vtex.admin-pages@4.59.3",
+    "u002fvtex.admin-pages@4.59.3",
+    "vtex.on-view@1.0.0",
+    "u002fvtex.on-view@1.0.0",
+    "vtex.store-image@0.24.0",
+    "u002fvtex.store-image@0.24.0",
+    "vtex.slider@0.8.3",
+    "u002fvtex.slider@0.8.3",
+    "vtex.product-context@0.11.1",
+    "u002fvtex.product-context@0.11.1",
+    "yuhmak.yuhmak-advice-form-custom@0.7.9",
+    "u002fyuhmak.yuhmak-advice-form-custom@0.7.9",
+    "yuhmak.yuhmak-offers-shelf-custom@0.7.0",
+    "u002fyuhmak.yuhmak-offers-shelf-custom@0.7.0",
+    "vtex.format-currency@0.4.1",
+    "u002fvtex.format-currency@0.4.1",
+    "vtex.product-price@1.33.0",
+    "u002fvtex.product-price@1.33.0",
+    "vtex.product-group-context@0.2.0",
+    "u002fvtex.product-group-context@0.2.0",
+    "vtex.product-summary-context@0.13.0",
+    "u002fvtex.product-summary-context@0.13.0",
+    "vtex.react-portal@0.4.1",
+    "u002fvtex.react-portal@0.4.1",
+    "vtex.styleguide@9.146.16",
+    "u002fvtex.styleguide@9.146.16",
+    "vtex.menu@2.35.3",
+    "u002fvtex.menu@2.35.3",
+    "vtex.mega-menu@2.10.4",
+    "u002fvtex.mega-menu@2.10.4",
+    "vtex.sae-analytics@2.17.0",
+    "u002fvtex.sae-analytics@2.17.0",
+    "vtex.product-list-context@0.4.1",
+    "u002fvtex.product-list-context@0.4.1",
+    "vtex.store-resources@0.107.0",
+    "u002fvtex.store-resources@0.107.0",
+    "vtex.product-summary@2.92.1",
+    "u002fvtex.product-summary@2.92.1",
+    "vtex.search@2.19.2",
+    "u002fvtex.search@2.19.2",
+    "vtex.structured-data@0.17.0",
+    "u002fvtex.structured-data@0.17.0",
+    "vtex.product-list@0.37.5",
+    "u002fvtex.product-list@0.37.5",
+    "vtex.formatted-price@0.8.1",
+    "u002fvtex.formatted-price@0.8.1",
+    "vtex.checkout-resources@0.50.1",
+    "u002fvtex.checkout-resources@0.50.1",
+    "vtex.checkout-splunk@0.1.1",
+    "u002fvtex.checkout-splunk@0.1.1",
+    "vtex.order-manager@0.12.0",
+    "u002fvtex.order-manager@0.12.0",
+    "vtex.facebook-fbe@1.14.4",
+    "u002fvtex.facebook-fbe@1.14.4",
+    "vtex.store-link@0.9.3",
+    "u002fvtex.store-link@0.9.3",
+    "vtex.checkout-summary@0.22.0",
+    "u002fvtex.checkout-summary@0.22.0",
+    "vtex.minicart@2.69.0",
+    "u002fvtex.minicart@2.69.0",
+    "vtex.store-drawer@0.18.1",
+    "u002fvtex.store-drawer@0.18.1",
+    "vtex.order-items@0.15.0",
+    "u002fvtex.order-items@0.15.0",
+    "vtex.overlay-layout@0.1.3",
+    "u002fvtex.overlay-layout@0.1.3",
+    "vtex.store-header@2.29.2",
+    "u002fvtex.store-header@2.29.2",
+    "vtex.store-footer@2.27.0",
+    "u002fvtex.store-footer@2.27.0",
+    "vtex.store@2.147.2",
+    "u002fvtex.store@2.147.2",
+    "vtex.open-graph@1.4.2",
+    "u002fvtex.open-graph@1.4.2",
+    "vtex.session-client@1.0.4",
+    "u002fvtex.session-client@1.0.4",
+    "vtex.delivery-promise-components@1.7.0",
+    "u002fvtex.delivery-promise-components@1.7.0",
+    "vtex.shipping-option-components@1.12.0",
+    "u002fvtex.shipping-option-components@1.12.0",
+    "cruce.store-components@4.10.0",
+    "u002fcruce.store-components@4.10.0",
+    "cruce.store-slider@4.3.3",
+    "u002fcruce.store-slider@4.3.3",
+    "vtex.add-to-cart-button@0.33.0",
+    "u002fvtex.add-to-cart-button@0.33.0",
+    "vtex.product-quantity@1.11.0",
+    "u002fvtex.product-quantity@1.11.0",
+    "yuhmak.yuhmak-components-custom@4.4.0",
+    "u002fyuhmak.yuhmak-components-custom@4.4.0",
+    "vtex.store-newsletter@1.3.0",
+    "u002fvtex.store-newsletter@1.3.0",
+    "vtex.product-highlights@2.3.2",
+    "u002fvtex.product-highlights@2.3.2",
+    "vtex.condition-layout@2.8.1",
+    "u002fvtex.condition-layout@2.8.1",
+    "vtex.sticky-layout@0.3.6",
+    "u002fvtex.sticky-layout@0.3.6",
+    "vtex.product-summary@2.x",
+    "vtex.product-price@1.x",
+    "vtex.checkout-summary@0.x",
+    "yuhmak.theme@1.x",
+    "u002fvtex.store@2.x",
+    "u002fyuhmak.theme@1.1.2",
+    "yuhmak.theme@1.1.2",
+    "animate.css@3.7.0",
+    "vtex.store-header@2.x",
+    "vtex.store-footer@2.x",
+    "vtex.pixel-interfaces@1.x",
+    "vtex.request-capture@2.x",
+    "yuhmak.pixel-apps@0.x",
+    "vtex.google-tag-manager@3.x",
+    "vtex.sae-analytics@2.x",
+    "cruce.store-components@4.x",
+    "vtex.modal-layout@0.x",
+    "cruce.store-slider@4.x",
+    "vtex.flex-layout@0.x",
+    "vtex.store-image@0.x",
+    "vtex.list-context@0.x",
+    "vtex.sticky-layout@0.x",
+    "vtex.slider-layout@0.x",
+    "vtex.overlay-layout@0.x",
+    "yuhmak.yuhmak-custom-miniapps@0.x",
+    "vtex.rich-text@0.x",
+    "u002fvtex.menu@2.x",
+    "vtex.product-highlights@2.x",
+    "vtex.store-link@0.x",
+    "nombre@mail.com",
+    "vtex.stack-layout@0.x",
+    "u002fvtex.product-highlights@2.x",
+    "vtex.minicart@2.x",
+    "vtex.store-icons@0.x",
+    "vtex.condition-layout@2.x",
+    "vtex.search@2.x",
+    "vtex.product-list@0.x"
+   ],
+   "paginas": [
+    "https://www.yuhmak.com/",
+    "https://www.yuhmak.com/trabajaconnosotros"
+   ]
+  },
+  {
+   "nombre": "Paco García",
+   "rubro": "Comercio",
+   "web": "https://www.pacogarcia.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "consultas@pacogarcia.com.ar"
+   ],
+   "paginas": [
+    "https://www.pacogarcia.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Antonio Luquin",
+   "rubro": "A confirmar",
+   "web": "https://www.antonioluquin.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Marathon",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Gómez Pardo",
+   "rubro": "Comercio",
+   "web": "https://www.gomezpardo.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "federicobus@gmail.com",
+    "ventas.laluguenze@gmail.com",
+    "ventasdt@gomezpardo.com.ar"
+   ],
+   "paginas": [
+    "https://www.gomezpardo.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Castillo",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Oscar Barbieri",
+   "rubro": "Comercio",
+   "web": "https://www.oscarbarbieri.com/",
+   "rrhh": [],
+   "generales": [
+    "ventas@oscarbarbieri.com"
+   ],
+   "paginas": [
+    "https://www.oscarbarbieri.com/"
+   ]
+  },
+  {
+   "nombre": "Andreani",
+   "rubro": "Logística",
+   "web": "https://www.andreani.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Cruz del Sur",
+   "rubro": "Logística",
+   "web": "https://www.cruzdelsur.com/",
+   "rrhh": [
+    "empleos@cruzdelsur.com"
+   ],
+   "generales": [
+    "presupuestos@cruzdelsur.com",
+    "atc@cruzdelsur.com"
+   ],
+   "paginas": [
+    "https://www.cruzdelsur.com/"
+   ]
+  },
+  {
+   "nombre": "Grupo Belgrano",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Grupo Romar",
+   "rubro": "A confirmar",
+   "web": "https://gruporomar.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "contacto@gruporomar.com.ar"
+   ],
+   "paginas": [
+    "https://gruporomar.com.ar/contacto"
+   ]
+  },
+  {
+   "nombre": "Fortunato Fortino",
+   "rubro": "Comercio",
+   "web": "https://www.fortunatofortino.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Lineup SA",
+   "rubro": "A confirmar",
+   "web": "https://www.lineup.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Scania",
+   "rubro": "Automotriz",
+   "web": "https://www.scania.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Taldo Distribuciones",
+   "rubro": "Distribución",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Ruiz Automotores",
+   "rubro": "Automotriz",
+   "web": "https://www.ruizautomotores.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Indiana Peugeot",
+   "rubro": "Automotriz",
+   "web": "https://www.indiana.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Grupo Pueble",
+   "rubro": "Automotriz",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "AGN Naun",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Grupo Silva",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Liprandi",
+   "rubro": "A confirmar",
+   "web": "https://www.liprandi.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Guzmán y Guzmán",
+   "rubro": "A confirmar",
+   "web": "https://www.guzmanyguzman.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "jefecomercial@guzmanyguzman.com.ar"
+   ],
+   "paginas": [
+    "https://www.guzmanyguzman.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Cerámica Marcos Paz",
+   "rubro": "Construcción",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "CB Developers",
+   "rubro": "Construcción",
+   "web": "https://www.cbdevelopers.com/",
+   "rrhh": [],
+   "generales": [
+    "user@domain.com",
+    "info@cbdevelopers.com"
+   ],
+   "paginas": [
+    "https://www.cbdevelopers.com/",
+    "https://www.cbdevelopers.com/about-1"
+   ]
+  },
+  {
+   "nombre": "Gama SA",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Avanco",
+   "rubro": "Construcción",
+   "web": "https://www.avanco.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "contacto@avanco.com.ar"
+   ],
+   "paginas": [
+    "https://www.avanco.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Galindo",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Abalum",
+   "rubro": "Construcción",
+   "web": "https://abalum.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "ventas@abalum.com.ar",
+    "web-vitals@3.5.2"
+   ],
+   "paginas": [
+    "https://abalum.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Forma Emprendimientos",
+   "rubro": "Construcción",
+   "web": "https://formaemprendimientos.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Link",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Grupo Uniber",
+   "rubro": "A confirmar",
+   "web": "https://www.grupouniber.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "contacto@uniber.com.ar"
+   ],
+   "paginas": [
+    "https://www.grupouniber.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Rosso Materiales",
+   "rubro": "Construcción",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Grupo Zeramiki",
+   "rubro": "Construcción",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Santiago Kohn",
+   "rubro": "A confirmar",
+   "web": "https://santiagokohn.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "ventas@santiagokohn.com.ar"
+   ],
+   "paginas": [
+    "https://santiagokohn.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Ituarte",
+   "rubro": "A confirmar",
+   "web": "https://www.ituarte.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "info@mysite.com",
+    "intl-segmenter@11.7.10",
+    "rspack@1.6.8",
+    "ventas@ituarte.com.ar",
+    "ejemplo@misitio.com"
+   ],
+   "paginas": [
+    "https://www.ituarte.com.ar/"
+   ]
+  },
+  {
+   "nombre": "Grupo Bercovich",
+   "rubro": "A confirmar",
+   "web": "https://www.grupobercovich.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Swiss Medical",
+   "rubro": "Salud",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Sancor Salud",
+   "rubro": "Salud",
+   "web": "https://sancorsalud.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "EMI",
+   "rubro": "Salud",
+   "web": "https://emi.com.ar/",
+   "rrhh": [],
+   "generales": [
+    "emi@emi.com.ar"
+   ],
+   "paginas": [
+    "https://emi.com.ar/contacto/"
+   ]
+  },
+  {
+   "nombre": "Red de Seguro Médico",
+   "rubro": "Salud",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "RE/MAX",
+   "rubro": "Inmobiliaria",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Tensolite",
+   "rubro": "Construcción",
+   "web": "https://tensolite.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Tecnopor",
+   "rubro": "Construcción",
+   "web": "https://www.clickmateriales.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Saiko",
+   "rubro": "A confirmar",
+   "web": "https://saiko.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Maderplak",
+   "rubro": "Construcción",
+   "web": "https://www.maderplak.com/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Sanatorio 9 de Julio",
+   "rubro": "Salud",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Sanatorio del Norte",
+   "rubro": "Salud",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Grupo ODSE",
+   "rubro": "Salud",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Méndez Collado",
+   "rubro": "Salud",
+   "web": "https://www.mendezcollado.com/",
+   "rrhh": [],
+   "generales": [
+    "turnos@mendezcollado.com",
+    "residencia@mendezcollado.com",
+    "u003ejornadas@mendezcollado.com",
+    "u003eturnos@mendezcollado.com"
+   ],
+   "paginas": [
+    "https://www.mendezcollado.com/"
+   ]
+  },
+  {
+   "nombre": "Medifé",
+   "rubro": "Salud",
+   "web": "https://www.medife.com.ar/",
+   "rrhh": [
+    "empleos@medife.com.ar"
+   ],
+   "generales": [
+    "intl-tel-input@v17.0.19"
+   ],
+   "paginas": [
+    "https://grupoaseconecta.hiringroom.com/jobs/microsite/medife",
+    "https://www.medife.com.ar/contacto/quiero-ser-prestador"
+   ]
+  },
+  {
+   "nombre": "Grupo Flores",
+   "rubro": "A confirmar",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Cofaral",
+   "rubro": "Salud",
+   "web": null,
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Boreal",
+   "rubro": "Salud",
+   "web": "https://borealsalud.com.ar/",
+   "rrhh": [],
+   "generales": [],
+   "paginas": []
+  },
+  {
+   "nombre": "Farmacias del Pueblo",
+   "rubro": "Salud",
+   "web": "https://www.farmaciasdelpueblo.com.ar/",
+   "rrhh": [
+    "vtex.flex-layout@0.21.6",
+    "u002fvtex.flex-layout@0.21.6",
+    "vtex.search-page-context@0.2.0",
+    "u002fvtex.search-page-context@0.2.0",
+    "vtex.breadcrumb@1.9.6",
+    "u002fvtex.breadcrumb@1.9.6",
+    "vtex.search-result@3.150.2",
+    "u002fvtex.search-result@3.150.2",
+    "vtex.address-form@4.29.3",
+    "u002fvtex.address-form@4.29.3",
+    "vtex.search-result@3.x",
+    "vtex.breadcrumb@1.x",
+    "vtex.flex-layout@0.x"
+   ],
+   "generales": [
+    "vtex.store@2.x",
+    "qualitydigital.google-drive-import@3.x",
+    "vtex.admin-graphql-ide@3.x",
+    "vtexarg.workspace-manager@2.x",
+    "woowup.woowup@5.x",
+    "vtex.admin-search@1.x",
+    "vtex.admin-graphql@1.x",
+    "vtex.admin-defense-mode@0.x",
+    "vtex.admin-audit@2.x",
+    "vtex.reviews-and-ratings@3.x",
+    "vtex.tenant-graphql@0.x",
+    "vtex.search-graphql@0.x",
+    "vtex.admin-graphql@2.x",
+    "vtex.admin-offer-status@0.x",
+    "vtex.checkout-ui-custom@0.x",
+    "vtex.auth-admin@3.x",
+    "vtex.session-client@1.x",
+    "vtex.mkp-category-mapper-ui@1.x",
+    "vtex.store-graphql@2.x",
+    "vtex.wish-list@1.x",
+    "vtex.myuser-io@2.x",
+    "vtex.app-store-compatibility-alert@0.x",
+    "vtex.admin-pickup-points@2.x",
+    "vtex.facebook-fbe@1.x",
+    "vtex.extensions-highlight-manager@0.x",
+    "vtex.apps-graphql@3.x",
+    "vtex.my-account@1.x",
+    "vtex.messages-templates@0.x",
+    "farmaciasdelpueblo.store-locator-service@0.x",
+    "farmaciasdelpueblo.admin-store-locator@0.x",
+    "farmaciasdelpueblo.bank-promotions-service@0.x",
+    "farmaciasdelpueblo.admin-bank-promotions@0.x",
+    "vtex.sales-performance-graphql@0.x",
+    "vtex.admin-sales-performance@1.x",
+    "vtex.pages-graphql@2.x",
+    "vtex.render-runtime@8.x",
+    "vtex.order-auth-graphql@0.x",
+    "vtex.order-auth@1.x",
+    "cruce.banners-service@0.x",
+    "cruce.banners-custom@0.x",
+    "vtex.marketplace-network-graphql@1.x",
+    "vtex.marketplace-network@0.x",
+    "vtex.intercom-messenger@0.x",
+    "vtex.catalog-graphql@1.x",
+    "vtex.admin-sellers@1.x",
+    "vtex.sellers-graphql@9.x",
+    "vtex.si-survey-gateway@0.x",
+    "vtex.si-survey-admin@0.x",
+    "vtex.admin-pages@4.x",
+    "vtex.rewriter@1.x",
+    "vtex.messages@1.x",
+    "vtex.pwa-graphql@1.x",
+    "vtex.styles-graphql@1.x",
+    "vtex.subscriptions-graphql@3.x",
+    "vtex.admin-subscriptions@3.x",
+    "vtex.orders-graphql@0.x",
+    "vtex.offer-quality-graphql@0.x",
+    "vtex.admin-offer-quality@0.x",
+    "vtex.checkout-resources@0.x",
+    "vtex.checkout-graphql@0.x",
+    "vtex.admin-collections@0.x",
+    "vtex.store-resources@0.x",
+    "vtex.recommendation-graphql@0.x",
+    "vtex.suggestions-graphql@19.x",
+    "vtex.admin-suggestions@2.x",
+    "vtex.sellers-graphql@10.x",
+    "vtex.shelf@1.x",
+    "vtex.openapi-schemas-internal@1.x",
+    "vtex.admin-docs@0.x",
+    "vtexhelp.help-io-graphql@3.x",
+    "vtex.admin-vendor-invite@0.x",
+    "cruce.highlights-service@3.x",
+    "cruce.highlights-admin@3.x",
+    "vtex.seller-welcome@0.x",
+    "vtex.admin-pricing-settings-graphql@1.x",
+    "vtex.admin-pricing-settings@1.x",
+    "farmaciasdelpueblo.custom-store-locator@0.x",
+    "vtexhelp.help-io-graphql@2.x",
+    "vtex.admin-v4-docs@0.x",
+    "farmaciasdelpueblo.store-components@4.x",
+    "farmaciasdelpueblo.catalog-service@0.x",
+    "cruce.checkout-discounts-service@3.x",
+    "cruce.mega-menu-server@2.x",
+    "cruce.admin-mega-menu@2.x",
+    "farmaciasdelpueblo.custom-bank-promotions@0.x",
+    "vtex.mercadolivre-sizechart-graphql@2.x",
+    "vtex.admin-mercadolivre-sizechart@2.x",
+    "vtex.my-authentication@1.x",
+    "vtex.admin-logistics@1.x",
+    "vtex.logistics-carrier-graphql@0.x",
+    "vtex.support-center-graphql@1.x",
+    "vtex.support-center@1.x",
+    "cruce.free-shipping-service@0.x",
+    "cruce.admin-free-shipping@1.x",
+    "vtex.structured-data@0.x",
+    "vtex.logistics-carrier-commons@0.x",
+    "vtex.admin-cms-graphql-rc@1.x",
+    "vtex.admin-cms@1.x",
+    "vtex.releases-graphql-layer@0.x",
+    "vtex.admin-apps@4.x",
+    "vtex.billing@0.x",
+    "vtex.extensions-admin-api@0.x",
+    "farmaciasdelpueblo.mega-menu@1.x",
+    "vtex.inventory-graphql@0.x",
+    "vtex.admin-inventory@0.x",
+    "vtex.store-components@3.x",
+    "vtex.admin@4.x",
+    "vtex.my-orders-app@3.x",
+    "vtex.my-orders-packages@0.x",
+    "vtex.delivery-promise-components@1.x",
+    "vtex.menu@2.x",
+    "cruce.google-geolocation-resolver@1.x",
+    "cruce.seller-geolocation@1.x",
+    "cruce.checkout-cart-components@3.x",
+    "vtex.my-cards@1.x",
+    "vtex.my-cards-graphql@2.x",
+    "vtex.order-placed-graphql@1.x",
+    "vtex.order-placed@1.x",
+    "vtex.locale-switcher@0.x",
+    "vtex.similar-products-variants@0.x",
+    "vtex.category-menu@2.x",
+    "vtex.open-graph@1.x",
+    "vtex.order-placed@2.x",
+    "vtex.store-form@0.x",
+    "cruce.highlights-custom@3.x",
+    "vtex.file-manager-graphql@0.x",
+    "vtex.gateway-graphql@1.x",
+    "vtex.vendor-onboarding-graphql@0.x",
+    "vtex.telemarketing@2.x",
+    "vtex.store-newsletter@1.x",
+    "vtex.css-handles@0.4.4",
+    "u002fvtex.css-handles@0.4.4",
+    "vtex.stack-layout@0.1.4",
+    "u002fvtex.stack-layout@0.1.4",
+    "vtex.render-runtime@8.136.3",
+    "u002fvtex.render-runtime@8.136.3",
+    "woowup.woowup@5.5.2",
+    "u002fwoowup.woowup@5.5.2",
+    "vtex.store-icons@0.19.4",
+    "u002fvtex.store-icons@0.19.4",
+    "vtex.request-capture@2.3.0",
+    "u002fvtex.request-capture@2.3.0",
+    "farmaciasdelpueblo.user-journey@0.0.4",
+    "u002ffarmaciasdelpueblo.user-journey@0.0.4",
+    "vtex.admin-pages@4.59.3",
+    "u002fvtex.admin-pages@4.59.3",
+    "vtex.device-detector@0.2.6",
+    "u002fvtex.device-detector@0.2.6",
+    "vtex.product-context@0.11.1",
+    "u002fvtex.product-context@0.11.1",
+    "vtex.styleguide@9.146.16",
+    "u002fvtex.styleguide@9.146.16",
+    "vtex.product-quantity@1.11.0",
+    "u002fvtex.product-quantity@1.11.0",
+    "vtex.css-handles@1.0.1",
+    "u002fvtex.css-handles@1.0.1",
+    "vtex.pixel-manager@1.9.0",
+    "u002fvtex.pixel-manager@1.9.0",
+    "vtex.responsive-values@0.4.2",
+    "u002fvtex.responsive-values@0.4.2",
+    "vtex.modal-layout@0.14.2",
+    "u002fvtex.modal-layout@0.14.2",
+    "vtex.checkout-resources@0.50.1",
+    "u002fvtex.checkout-resources@0.50.1",
+    "vtex.format-currency@0.4.1",
+    "u002fvtex.format-currency@0.4.1",
+    "vtex.checkout-splunk@0.1.1",
+    "u002fvtex.checkout-splunk@0.1.1",
+    "vtex.order-manager@0.12.0",
+    "u002fvtex.order-manager@0.12.0",
+    "farmaciasdelpueblo.ai-assistant@1.0.1",
+    "u002ffarmaciasdelpueblo.ai-assistant@1.0.1",
+    "vtex.native-types@0.10.1",
+    "u002fvtex.native-types@0.10.1",
+    "vtex.rich-text@0.16.1",
+    "u002fvtex.rich-text@0.16.1",
+    "vtex.google-tag-manager@3.5.4",
+    "u002fvtex.google-tag-manager@3.5.4",
+    "vtex.sae-analytics@2.17.0",
+    "u002fvtex.sae-analytics@2.17.0",
+    "cruce.checkout-cart-components@3.4.1",
+    "u002fcruce.checkout-cart-components@3.4.1",
+    "vtex.formatted-price@0.8.1",
+    "u002fvtex.formatted-price@0.8.1",
+    "vtex.order-items@0.15.0",
+    "u002fvtex.order-items@0.15.0",
+    "vtex.product-list@0.37.5",
+    "u002fvtex.product-list@0.37.5",
+    "vtex.on-view@1.0.0",
+    "u002fvtex.on-view@1.0.0",
+    "vtex.store-image@0.24.0",
+    "u002fvtex.store-image@0.24.0",
+    "vtex.store-resources@0.107.0",
+    "u002fvtex.store-resources@0.107.0",
+    "farmaciasdelpueblo.store-components@4.1.6",
+    "u002ffarmaciasdelpueblo.store-components@4.1.6",
+    "vtex.list-context@0.2.0",
+    "u002fvtex.list-context@0.2.0",
+    "vtex.slider-layout@0.24.10",
+    "u002fvtex.slider-layout@0.24.10",
+    "farmaciasdelpueblo.custom-bank-promotions@0.1.0",
+    "u002ffarmaciasdelpueblo.custom-bank-promotions@0.1.0",
+    "vtex.wish-list@1.19.3",
+    "u002fvtex.wish-list@1.19.3",
+    "cruce.admin-free-shipping@1.0.14",
+    "u002fcruce.admin-free-shipping@1.0.14",
+    "vtex.product-group-context@0.2.0",
+    "u002fvtex.product-group-context@0.2.0",
+    "vtex.product-summary-context@0.13.0",
+    "u002fvtex.product-summary-context@0.13.0",
+    "vtex.store-components@3.179.1",
+    "u002fvtex.store-components@3.179.1",
+    "vtex.product-summary@2.92.1",
+    "u002fvtex.product-summary@2.92.1",
+    "vtex.product-list-context@0.4.1",
+    "u002fvtex.product-list-context@0.4.1",
+    "vtex.structured-data@0.17.0",
+    "u002fvtex.structured-data@0.17.0",
+    "vtex.facebook-fbe@1.14.4",
+    "u002fvtex.facebook-fbe@1.14.4",
+    "farmaciasdelpueblo.mega-menu@1.0.6",
+    "u002ffarmaciasdelpueblo.mega-menu@1.0.6",
+    "vtex.react-portal@0.4.1",
+    "u002fvtex.react-portal@0.4.1",
+    "vtex.minicart@2.69.0",
+    "u002fvtex.minicart@2.69.0",
+    "vtex.store-drawer@0.18.1",
+    "u002fvtex.store-drawer@0.18.1",
+    "vtex.tab-layout@0.4.6",
+    "u002fvtex.tab-layout@0.4.6",
+    "vtex.store-footer@2.27.0",
+    "u002fvtex.store-footer@2.27.0",
+    "cruce.store-slider@4.3.3",
+    "u002fcruce.store-slider@4.3.3",
+    "vtex.react-vtexid@4.70.0",
+    "u002fvtex.react-vtexid@4.70.0",
+    "vtex.login@2.70.0",
+    "u002fvtex.login@2.70.0",
+    "vtex.sticky-layout@0.3.6",
+    "u002fvtex.sticky-layout@0.3.6",
+    "vtex.store-header@2.29.2",
+    "u002fvtex.store-header@2.29.2",
+    "vtex.store@2.147.2",
+    "u002fvtex.store@2.147.2",
+    "vtex.open-graph@1.4.2",
+    "u002fvtex.open-graph@1.4.2",
+    "vtex.session-client@1.0.4",
+    "u002fvtex.session-client@1.0.4",
+    "vtex.delivery-promise-components@1.7.0",
+    "u002fvtex.delivery-promise-components@1.7.0",
+    "vtex.shipping-option-components@1.12.0",
+    "u002fvtex.shipping-option-components@1.12.0",
+    "vtex.store-newsletter@1.3.0",
+    "u002fvtex.store-newsletter@1.3.0",
+    "vtex.product-price@1.33.0",
+    "u002fvtex.product-price@1.33.0",
+    "vtex.search@2.19.2",
+    "u002fvtex.search@2.19.2",
+    "cruce.store-components@4.10.0",
+    "u002fcruce.store-components@4.10.0",
+    "vtex.store-link@0.9.3",
+    "u002fvtex.store-link@0.9.3",
+    "farmaciasdelpueblo.sku-selector@1.1.6",
+    "u002ffarmaciasdelpueblo.sku-selector@1.1.6",
+    "cruce.highlights-custom@3.0.0",
+    "u002fcruce.highlights-custom@3.0.0",
+    "ejemplo@mail.com",
+    "vtex.product-summary@2.x",
+    "vtex.product-price@1.x",
+    "talopartnerar.talo-payment-page@2.x",
+    "farmaciasdelpueblo.store@8.x",
+    "u002fvtex.store@2.x",
+    "u002ffarmaciasdelpueblo.store@8.2.2",
+    "farmaciasdelpueblo.store@8.2.2",
+    "vtex.store-header@2.x",
+    "vtex.store-footer@2.x",
+    "vtex.pixel-interfaces@1.x",
+    "vtex.request-capture@2.x",
+    "farmaciasdelpueblo.user-journey@0.x",
+    "vtex.google-tag-manager@3.x",
+    "vtex.sae-analytics@2.x",
+    "cruce.store-components@4.x",
+    "vtex.store-image@0.x",
+    "vtex.list-context@0.x",
+    "vtex.rich-text@0.x",
+    "cruce.store-slider@4.x",
+    "vtex.tab-layout@0.x",
+    "vtex.slider-layout@0.x",
+    "vtex.sticky-layout@0.x",
+    "vtex.store-icons@0.x",
+    "vtex.store-link@0.x",
+    "vtex.modal-layout@0.x",
+    "vtex.stack-layout@0.x",
+    "farmaciasdelpueblo.sku-selector@1.x",
+    "vtex.product-quantity@1.x",
+    "vtex.search@2.x",
+    "farmaciasdelpueblo.ai-assistant@1.x",
+    "vtex.login@2.x",
+    "vtex.minicart@2.x",
+    "vtex.product-list@0.x"
+   ],
+   "paginas": [
+    "https://www.farmaciasdelpueblo.com.ar/",
+    "https://www.farmaciasdelpueblo.com.ar/trabajaconnosotros"
+   ]
+  }
+ ]
+}
