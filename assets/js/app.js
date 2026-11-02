@@ -643,17 +643,17 @@
     const IMG = id => /^(assets\/|data:)/.test(id) ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1800&q=70`;
     const SLIDES = [
       { key: 'buscar', label: 'Buscá trabajo', img: LOCAL_IMG.buscar, pos: '58% 30%', tint: '#3B5BFD',
-        tag: ['ph-briefcase', `${jobs.length} vacantes activas`],
+        tag: jobs.length ? ['ph-briefcase', `${jobs.length} vacante${jobs.length === 1 ? '' : 's'} activa${jobs.length === 1 ? '' : 's'}`] : null,
         title: 'Tu próximo trabajo está acá',
         text: 'Vacantes de consultoras y empresas de todo el país. Buscá por puesto, provincia, modalidad y rubro.',
         cta: ['Ver todas las vacantes', 'data-hs-jobs'] },
       { key: 'cerca', label: 'Cerca de casa', img: LOCAL_IMG.equipo, pos: '50% 30%', tint: '#11946A',
-        tag: ['ph-map-pin', `${topProv[1]} vacantes en ${topProv[0]}`],
+        tag: topProv[1] ? ['ph-map-pin', `${topProv[1]} vacante${topProv[1] === 1 ? '' : 's'} en ${topProv[0]}`] : null,
         title: `Trabajo cerca de casa, en ${topProv[0]}`,
         text: 'Consultoras y empresas de tu provincia publican acá todas las semanas.',
         cta: [`Ver vacantes en ${topProv[0]}`, `data-hero-prov="${esc(topProv[0])}"`] },
       { key: 'remoto', label: 'Desde tu casa', img: 'photo-1743865319071-929ac8a27bcd', pos: '50% 40%', tint: '#B7791F',
-        tag: ['ph-house-line', `${remote} vacantes remotas`],
+        tag: remote ? ['ph-house-line', `${remote} vacante${remote === 1 ? '' : 's'} remota${remote === 1 ? '' : 's'}`] : null,
         title: 'Trabajá desde tu casa',
         text: 'Vacantes 100% remotas para postularte desde cualquier provincia.',
         cta: ['Ver vacantes remotas', 'data-hero-remote'] },
@@ -661,7 +661,7 @@
         tag: ['ph-buildings', 'Para consultoras y empresas'],
         title: 'Encontrá a la persona indicada',
         text: 'Publicá una búsqueda en dos minutos y recibí los CVs ordenados por cliente, listos para revisar y calificar.',
-        cta: ['Publicar una búsqueda', 'data-hs-company'], cta2: ['Probar la cuenta demo', 'id="hero-demo"'] }
+        cta: ['Publicar una búsqueda', 'data-hs-company'] }
     ];
     const heroSlider = `
       <section class="relative bg-ink" aria-roledescription="carrusel" aria-label="Destacados">
@@ -673,8 +673,8 @@
               <div class="absolute inset-0 hero-shade" aria-hidden="true"></div>
               <div class="relative h-full max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-32 sm:pb-36 lg:pb-44 flex items-end">
                 <div class="max-w-[40rem] lg:max-w-[48rem] text-white">
-                  <span class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur px-3.5 py-1.5 font-semibold text-[0.95rem]"><i class="ph-fill ${sl.tag[0]}"></i>${esc(sl.tag[1])}</span>
-                  <${i ? 'h2' : 'h1'} class="mt-4 text-[2.5rem] sm:text-[3.4rem] lg:text-[4rem] leading-[0.98] font-extrabold tracking-[-0.035em]">${esc(sl.title)}</${i ? 'h2' : 'h1'}>
+                  ${sl.tag ? `<span class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur px-3.5 py-1.5 font-semibold text-[0.95rem] mb-4"><i class="ph-fill ${sl.tag[0]}"></i>${esc(sl.tag[1])}</span>` : ''}
+                  <${i ? 'h2' : 'h1'} class="text-[2.5rem] sm:text-[3.4rem] lg:text-[4rem] leading-[0.98] font-extrabold tracking-[-0.035em]">${esc(sl.title)}</${i ? 'h2' : 'h1'}>
                   <p class="mt-4 text-[1.1rem] sm:text-[1.2rem] text-white/85 max-w-[32rem]">${esc(sl.text)}</p>
                   <div class="mt-6 flex flex-wrap gap-3">
                     <button type="button" ${sl.cta[1]} class="btn h-14 px-7 text-[1.05rem] bg-white text-ink hover:bg-sun">${esc(sl.cta[0])}</button>
@@ -752,7 +752,7 @@
         </div>
       </section>
 
-      <section class="pt-16 md:pt-24 pb-14 md:pb-20" aria-labelledby="trust-t">
+      ${TRUSTED.length ? `<section class="pt-16 md:pt-24 pb-14 md:pb-20" aria-labelledby="trust-t">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 id="trust-t" class="text-[1.75rem] sm:text-[2.2rem] leading-tight font-extrabold">Empresas que confían en +Humanos</h2>
           <p class="mt-2 text-ink-soft text-[1.08rem]">Consultoras y empresas que ya publican sus búsquedas acá.</p>
@@ -764,7 +764,7 @@
           const group = hid => `<ul class="marquee-group !gap-12 sm:!gap-16 !pr-12 sm:!pr-16" ${hid ? 'aria-hidden="true"' : ''}>${TRUSTED.map(t => item(t, hid)).join('')}</ul>`;
           return `<div class="marquee mt-10 md:mt-12"><div class="marquee-track">${group(false)}${group(true)}</div></div>`;
         })()}
-      </section>
+      </section>` : ''}
 
       ${(() => {
         const act = Store.activeJobs();
@@ -1052,11 +1052,11 @@
             ${ph(4, 'hidden md:block col-start-3 row-start-6 row-span-3')}
             ${ph(5, 'hidden md:block col-start-4 row-start-1 row-span-8')}
           </div>
-          <div id="about-stats" class="mt-14 md:mt-20 grid sm:grid-cols-3 gap-10 max-w-4xl mx-auto">
+          ${jobs.length ? `<div id="about-stats" class="mt-14 md:mt-20 grid sm:grid-cols-3 gap-10 max-w-4xl mx-auto">
             ${stat(jobs.length, 'Vacantes activas hoy')}
             ${stat(nProv, `Provincias con vacantes`)}
             ${stat(nCos, 'Empresas que buscan talento')}
-          </div>
+          </div>` : ''}
         </div>
         <div class="max-w-3xl mx-auto px-4 sm:px-6 pt-16 md:pt-24 pb-20">
           <article class="info-prose">
@@ -2412,9 +2412,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         <div class="card p-5 sm:p-7 order-first md:order-none">
           ${tabs}
           ${tab === 'login' ? login : signup}
-          <div class="flex items-center gap-3 my-5 text-ink-mute"><span class="h-px bg-line flex-1"></span>o<span class="h-px bg-line flex-1"></span></div>
+          ${DEMO_DATA ? `<div class="flex items-center gap-3 my-5 text-ink-mute"><span class="h-px bg-line flex-1"></span>o<span class="h-px bg-line flex-1"></span></div>
           <button type="button" id="co-demo" class="btn btn-outline w-full h-14"><i class="ph ph-play-circle text-xl"></i>Probar cuenta demo</button>
-          <p class="mt-3 text-ink-mute text-[0.88rem]">Demo: talento@demo.com.ar · demo1234. Prototipo: las cuentas se guardan solo en este navegador.</p>
+          <p class="mt-3 text-ink-mute text-[0.88rem]">Demo: talento@demo.com.ar · demo1234. Prototipo: las cuentas se guardan solo en este navegador.</p>` : ''}
         </div>
       </div>`,
       mount() {
@@ -2422,7 +2422,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
         $$('[data-auth]').forEach(b => b.onclick = () => { S.coAuth = b.dataset.auth; render({ keep: true }); });
         $$('[data-pw]').forEach(b => b.onclick = () => { const i = $('#' + b.dataset.pw), show = i.type === 'password'; i.type = show ? 'text' : 'password'; b.innerHTML = `<i class="ph ${show ? 'ph-eye-slash' : 'ph-eye'} text-xl"></i>`; b.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña'); });
         const enter = acc => { Store.setCompany({ name: acc.name, type: acc.type, email: acc.email }); S.coAuth = 'login'; toast(`Hola, ${acc.name}`, 'ph-hand-waving'); render(); };
-        $('#co-demo').onclick = () => enter({ name: 'Talento Norte', type: 'Consultora', email: 'talento@demo.com.ar' });
+        if ($('#co-demo')) $('#co-demo').onclick = () => enter({ name: 'Talento Norte', type: 'Consultora', email: 'talento@demo.com.ar' });
         const fl = $('#co-login');
         if (fl) {
           $('#co-forgot').onclick = () => { const em = $('#co-email').value.trim(); toast(em ? `Te mandamos un link a ${em} para crear una contraseña nueva` : 'Escribí tu email y te mandamos un link', 'ph-envelope-simple'); };
@@ -7196,7 +7196,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
           <p id="city-fmsg" class="hidden mt-2 text-[0.88rem] text-ink-soft"></p>
         </div>
         <div id="city-panel" class="max-sm:hidden border-t border-line max-h-[40vh] sm:max-h-[calc(100dvh-17rem)] overflow-y-auto overscroll-contain">
-          <p class="px-4 pt-3 text-[0.85rem] text-ink-mute">${streets.length} calle${streets.length === 1 ? '' : 's'}, ${total} empresa${total === 1 ? '' : 's'} y consultora${total === 1 ? '' : 's'}</p>
+          <p class="px-4 pt-3 text-[0.85rem] text-ink-mute">${total ? `${streets.length} calle${streets.length === 1 ? '' : 's'}, ${total} empresa${total === 1 ? '' : 's'} y consultora${total === 1 ? '' : 's'}` : 'Las empresas y consultoras aparecen acá cuando se suman.'}</p>
           <ul class="p-2">${streets.map(s => `<li><button type="button" data-street="${s.n}" class="w-full flex items-center gap-3 rounded-xl px-2.5 py-2 text-left hover:bg-surface">
             <span class="w-10 h-10 rounded-lg bg-navy text-white grid place-items-center font-bold shrink-0 leading-none text-[0.95rem]" style="background:${indColor(s.ind)}">${s.n || '<i class="ph-bold ph-users-three text-lg"></i>'}</span>
             <span class="min-w-0 flex-1"><span class="block font-semibold leading-tight truncate">${esc(s.name)}</span><span class="block text-[0.88rem] text-ink-soft truncate">${esc(s.sub)}</span></span>
@@ -7628,7 +7628,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
       const gon = new T.Mesh(kit.cube, zDark); gon.scale.set(5, 1.6, 2); gon.position.set(1, -6.2, 0); gon.castShadow = true; zep.add(gon);
       const total = Object.values(openBy).reduce((a, b) => a + b, 0), cv = document.createElement('canvas'), x = cv.getContext('2d'); cv.width = 1024; cv.height = 192;
       x.fillStyle = '#1B2550'; x.fillRect(0, 0, 1024, 192); x.fillStyle = '#F2715A'; x.font = '800 92px Poppins, Figtree, sans-serif'; x.textBaseline = 'middle'; x.fillText('+', 40, 100);
-      x.fillStyle = '#fff'; x.font = '700 64px Poppins, Figtree, sans-serif'; x.fillText(`Humanos · ${total} búsqueda${total === 1 ? '' : 's'}`, 112, 100);
+      x.fillStyle = '#fff'; x.font = '700 64px Poppins, Figtree, sans-serif'; x.fillText(total ? `Humanos · ${total} búsqueda${total === 1 ? '' : 's'}` : 'Humanos · Hub de RRHH', 112, 100);
       const bt = new T.CanvasTexture(cv); if (T.sRGBEncoding) bt.encoding = T.sRGBEncoding; bt.anisotropy = 4;
       [1, -1].forEach(d => { const b = new T.Mesh(kit.plane, new T.MeshBasicMaterial({ map: bt, side: T.FrontSide })); b.scale.set(19, 3.6, 1); b.position.set(0, 0, d * 5.65); if (d < 0) b.rotation.y = Math.PI; zep.add(b); }); }
     zep.scale.setScalar(1.3); scene.add(zep);
@@ -7781,6 +7781,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
 
   // Respuestas de ejemplo para el demo (se marcan demo: true)
   function seedSalaryDemo() {
+    if (!DEMO_DATA) return;
     if (Store.salaries().some(x => x.demo)) return;
     const MULT = { tecnologia: 1.55, ingenieria: 1.45, arquitectura: 1.2, finanzas: 1.15, comex: 1.15, salud: 1.1, rrhh: 1.05, marketing: 1, ventas: 1, oficios: 1, administracion: 0.95, produccion: 0.95, logistica: 0.95, educacion: 0.9, atencion: 0.88, gastronomia: 0.85 };
     const BASE = { sin: 780000, jr: 950000, ssr: 1300000, sr: 1850000 }, PM = { 'Tucumán': 1, 'Salta': 0.97, 'Jujuy': 0.95, 'Santiago del Estero': 0.93, 'Córdoba': 1.1, 'Buenos Aires': 1.2 };
@@ -8041,6 +8042,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   const svLabel = (list, k) => (list.find(x => x[0] === k) || [, k])[1];
 
   function surveySeed() {
+    if (!DEMO_DATA) return;
     if (Store.surveys().some(x => x.demo)) return;
     const MULT = { tecnologia: 1.55, ingenieria: 1.45, arquitectura: 1.2, finanzas: 1.15, comex: 1.15, salud: 1.1, rrhh: 1.05, marketing: 1, ventas: 1, oficios: 1, administracion: 0.95, produccion: 0.95, logistica: 0.95, educacion: 0.9, atencion: 0.88, gastronomia: 0.85 };
     const BASE = { sin: 700000, jr: 860000, ssr: 1180000, sr: 1650000 };
@@ -8169,7 +8171,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
             ${done ? '<p class="mt-3 text-ok font-semibold"><i class="ph-fill ph-check-circle"></i> Ya respondiste esta edición. ¡Gracias!</p>' : ''}
           </div>
           <ul class="grid grid-cols-2 gap-3">
-            ${[['ph-users-three', all.length.toLocaleString('es-AR'), 'respuestas'], ['ph-timer', '5 min', 'para responder'], ['ph-shield-check', '100 %', 'anónima'], ['ph-calendar-check', 'Anual', 'para comparar año a año']]
+            ${[['ph-users-three', all.length ? all.length.toLocaleString('es-AR') : 'Nueva', all.length ? (all.length === 1 ? 'respuesta' : 'respuestas') : 'sumá la primera respuesta'], ['ph-timer', '5 min', 'para responder'], ['ph-shield-check', '100 %', 'anónima'], ['ph-calendar-check', 'Anual', 'para comparar año a año']]
               .map(([ic, n, l]) => `<li class="rounded-[22px] bg-surface p-5"><i class="ph-fill ${ic} text-2xl text-brand"></i><p class="mt-2 text-[1.7rem] font-extrabold leading-none">${n}</p><p class="mt-1 text-ink-soft">${l}</p></li>`).join('')}
           </ul>
         </div>
@@ -8300,7 +8302,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   ];
   function BenefitsPage() {
     const nCos = new Set(Store.jobs().map(j => j.company)).size + Object.keys(Store.coProfilesAll()).filter(n => Store.coProfile(n).manual).length;
-    const nJobs = Store.activeJobs().length, nCons = Object.keys(COMPANIES).filter(n => COMPANIES[n].type === 'Consultora').length;
+    const nJobs = Store.activeJobs().length;
     const waJoin = waLink(CONTACT_WA, 'Hola, quiero sumar mi empresa a +Humanos. ¿Me cuentan cómo empezar?');
     const waCupon = TUCUPON_URL;
     const total = BEN_GROUPS.reduce((a, g) => a + g[4].length, 0);
@@ -8319,9 +8321,9 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
               <a href="${esc(waJoin)}" target="_blank" rel="noopener" class="btn h-14 px-6 text-white border border-white/35 hover:bg-white/10"><i class="ph-fill ph-whatsapp-logo text-xl text-[#25D366]"></i>Hablemos por WhatsApp</a>
             </div>
           </div>
-          <ul class="rv grid grid-cols-3 gap-3">
-            ${[[nCos, 'adheridas'], [nJobs, 'búsquedas abiertas'], [total, 'beneficios']].map(([n, l]) => `<li class="rounded-[20px] bg-white/[.07] border border-white/10 p-4"><p class="text-[2rem] sm:text-[2.4rem] font-extrabold leading-none" data-count="${n}">${n}</p><p class="mt-1 text-white/70 text-[0.9rem] leading-tight">${l}</p></li>`).join('')}
-          </ul>
+          ${(() => { const st = [[nCos, 'adheridas'], [nJobs, 'búsquedas abiertas'], [total, 'beneficios']].filter(x => x[0]); return `<ul class="rv grid ${['', 'grid-cols-1', 'grid-cols-2', 'grid-cols-3'][st.length]} gap-3">
+            ${st.map(([n, l]) => `<li class="rounded-[20px] bg-white/[.07] border border-white/10 p-4"><p class="text-[2rem] sm:text-[2.4rem] font-extrabold leading-none" data-count="${n}">${n}</p><p class="mt-1 text-white/70 text-[0.9rem] leading-tight">${l}</p></li>`).join('')}
+          </ul>`; })()}
         </div>
       </section>
 
@@ -8785,6 +8787,7 @@ ${j.benefits?.length ? `<h3 class="mt-6 text-lg font-bold">Beneficios</h3>
   };
   const spSt = x => SP_ST[x.status] ? x.status : 'nuevo';
   function seedAdminCvs() {
+    if (!DEMO_DATA) return;
     try { if (localStorage.getItem('emplea.adminseed')) return; localStorage.setItem('emplea.adminseed', '1'); } catch (e) { return; }
     const d = h => new Date(Date.now() - h * 3600e3).toISOString();
     const mk = (id, name, phone, email, province, area, title, h, status, ext = 'pdf') => ({ id, name, phone, email, province, area, demo: true, status,

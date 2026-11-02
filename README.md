@@ -34,7 +34,7 @@ Para probar en el celular, abrí la IP de tu computadora en la misma red Wi‑Fi
 - Guardadas.
 - **Mis postulaciones con informe de avance**: el candidato ingresa con su celular y un código por WhatsApp (simulado en el prototipo: el código se muestra en pantalla) y ve cada postulación con una línea de tiempo **Enviada → CV leído → En proceso → Finalista → Resultado**, con la fecha de cada paso y un mensaje claro ("Leyeron tu CV", "¡Te quieren entrevistar!", "Sos finalista"). "CV leído" se marca solo cuando la empresa abre el detalle o el CV. Las novedades se marcan con un aviso en el menú y en cada postulación (en producción, además, se manda un WhatsApp). Si no queda seleccionado, ve el mensaje de la consultora y vacantes parecidas. "Ver un ejemplo" carga 5 postulaciones de prueba.
 
-**Consultoras y empresas** (`Soy empresa` → "Probar cuenta demo" entra como Talento Norte)
+**Consultoras y empresas** (`Soy empresa` → ingresar o crear cuenta; con los datos de ejemplo prendidos aparece "Probar cuenta demo")
 - **Menú**: Inicio · Búsquedas · Entrevistas · Base de datos · Perfil.
 - **Inicio "Para hacer hoy"**: lista de acciones pendientes ordenadas por prioridad (respuesta del cliente a una terna, CVs sin revisar, terna lista para enviar, avisar a no seleccionados, personas del banco que encajan, búsquedas sin movimiento para destacar, límite del plan), números que se pueden tocar y el plan. Las búsquedas se ven en su propia pestaña.
 - **Búsquedas**: lista compacta (una fila por búsqueda con cliente, postulantes, nuevos, estado de la terna) y selector de cliente con buscador.
@@ -404,4 +404,13 @@ Pestaña **Mapa** (`#/mapa`) en la barra pública.
 - **Foto del hero:** `assets/img/hero-creadores.webp`. En compu va a la derecha y se funde con el fondo; en el celular queda detrás del texto, oscurecida.
 - **Demo:** 9 creadores ficticios con fotos libres de Unsplash (personas grabando contenido, sin marcas). Se reemplazan por creadores reales.
 - Con 8 secciones en el panel de empresas, en pantallas de menos de 1536 px se muestran solo los íconos (salvo la sección activa).
+
+## Datos de ejemplo (apagados para el lanzamiento)
+
+El sitio arranca vacío: sin avisos, empresas, postulantes, CVs del Admin, respuestas de la Encuesta Laboral, sueldos ni notas de Charla de café inventadas. Los bloques "Empresas que confían en +Humanos" y "Últimos avisos" se ocultan hasta que haya contenido real, y los contadores en cero no se muestran.
+
+- La llave es `DEMO_DATA` al principio de `assets/js/data.js`.
+- Para ver los ejemplos en un navegador (para pruebas o para mostrar el producto): en la consola, `localStorage.setItem('emplea.demo', '1')` y recargar. Para volver: `localStorage.removeItem('emplea.demo')`.
+- Si un navegador tenía guardados los ejemplos de antes, se borran solos al entrar. Lo que cargó una persona (su cuenta, sus avisos, sus notas) se mantiene.
+- Los creadores UGC de ejemplo y el botón "Cargar postulantes de ejemplo" de la cuenta de empresa siguen disponibles.
 

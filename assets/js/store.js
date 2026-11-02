@@ -15,7 +15,7 @@ const Store = (() => {
 
   let jobs = read(K.jobs, null);
   if (!Array.isArray(jobs)) {
-    jobs = SEED_JOBS.map((j, i) => ({ ...j, postedAt: isoDaysAgo(j.daysAgo, (i % 6) + 1), status: 'activa' }));
+    jobs = DEMO_DATA ? SEED_JOBS.map((j, i) => ({ ...j, postedAt: isoDaysAgo(j.daysAgo, (i % 6) + 1), status: 'activa' })) : [];
     write(K.jobs, jobs);
   }
 
@@ -29,7 +29,7 @@ const Store = (() => {
   };
   let apps = read(K.apps, null);
   if (!Array.isArray(apps)) {
-    apps = SEED_APPS.map(seedApp);
+    apps = DEMO_DATA ? SEED_APPS.map(seedApp) : [];
     write(K.apps, apps);
   }
 
@@ -72,6 +72,16 @@ const Store = (() => {
       if (j && !j.featured) j.featured = v === 'plan' ? { source: 'plan', since: isoDaysAgo(2) } : { source: 'compra', since: isoDaysAgo(FEATURE_DAYS - v), until: isoDaysAgo(-v, 0) };
     });
     write(K.jobs, jobs); write('emplea.featseed', 2);
+  }
+
+  // Sin datos de ejemplo: se borran los avisos y postulaciones de ejemplo que hayan quedado guardados en este navegador
+  // (las copias que una empresa carga con "Cargar ejemplos" en su cuenta se mantienen).
+  if (!DEMO_DATA) {
+    const sj = new Set(SEED_JOBS.map(j => j.id)), sa = new Set(SEED_APPS.map(a => a.id));
+    const nj = jobs.filter(j => !sj.has(j.id));
+    if (nj.length !== jobs.length) { jobs = nj; write(K.jobs, jobs); }
+    const ids = new Set(jobs.map(j => j.id)), na = apps.filter(a => !sa.has(a.id) && ids.has(a.jobId));
+    if (na.length !== apps.length) { apps = na; write(K.apps, apps); }
   }
 
   // Planes: { [empresa]: { id, since, trialUntil?, payments:[{ at, concept, amount, method }] } }
@@ -121,8 +131,16 @@ const Store = (() => {
   // Empresas y consultoras que sigue el candidato: [{ name, since }]
   const KFO = 'emplea.follows';
   const KAL = 'emplea.alerts', KNT = 'emplea.notifs', KNS = 'emplea.notifseen', KNC = 'emplea.notifcleared';
-  // Cuenta demo: talento@demo.com.ar / demo1234
-  const DEMO_ACC = { 'talento@demo.com.ar': { name: 'Talento Norte', type: 'Consultora', pass: 'hbr2v10' } };
+  // Cuenta demo (solo con los datos de ejemplo prendidos)
+  const DEMO_ACC = DEMO_DATA ? { 'talento@demo.com.ar': { name: 'Talento Norte', type: 'Consultora', pass: 'hbr2v10' } } : {};
+  if (!DEMO_DATA) {
+    // Se borra lo de ejemplo que haya quedado guardado: cuenta demo, CVs del admin, encuestas, sueldos y notas
+    const acc = read(KACC, null); if (acc && acc['talento@demo.com.ar']) { delete acc['talento@demo.com.ar']; write(KACC, acc); }
+    const co = read(K.company, null); if (co && co.name === 'Talento Norte') { try { localStorage.removeItem(K.company); } catch (e) { /* sin storage */ } }
+    [KSP, KSV, KSAL].forEach(k => { const l = read(k, null); if (Array.isArray(l) && l.some(x => x && x.demo)) write(k, l.filter(x => !(x && x.demo))); });
+    const po = read(KPO, null), sp = new Set((typeof SEED_POSTS !== 'undefined' ? SEED_POSTS : []).map(p => p.id));
+    if (Array.isArray(po) && po.some(p => sp.has(p.id))) write(KPO, po.filter(p => !sp.has(p.id)));
+  }
   const lf = window.localforage ? localforage.createInstance({ name: 'emplea', storeName: 'cvs' }) : null;
   const mem = new Map();
 
@@ -379,7 +397,7 @@ const Store = (() => {
     addSpontCv(x) { const l = read(KSP, []).filter(o => !(x.phone && o.phone && o.phone.replace(/\D/g, '').slice(-10) === x.phone.replace(/\D/g, '').slice(-10))); l.unshift(x); write(KSP, l); },
     // Datos personales (Ley 25.326): pedidos de borrado y borrado de una persona
     // Charla de café: notas (las de ejemplo hasta que se guarde la primera)
-    posts() { const l = read(KPO, null); if (l) return l; const iso = d => new Date(Date.now() - d * 864e5).toISOString(); return (typeof SEED_POSTS !== 'undefined' ? SEED_POSTS : []).map(p => ({ ...p, date: iso(p.daysAgo || 0) })); },
+    posts() { const l = read(KPO, null); if (l) return l; const iso = d => new Date(Date.now() - d * 864e5).toISOString(); return (DEMO_DATA && typeof SEED_POSTS !== 'undefined' ? SEED_POSTS : []).map(p => ({ ...p, date: iso(p.daysAgo || 0) })); },
     savePost(p) { const l = this.posts(); const i = l.findIndex(x => x.id === p.id); if (i >= 0) l[i] = p; else l.unshift(p); write(KPO, l); },
     removePost(id) { write(KPO, this.posts().filter(x => x.id !== id)); },
     hubReqs() {

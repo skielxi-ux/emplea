@@ -1,5 +1,9 @@
 /* Datos de ejemplo del prototipo. En producción vendrían de la API / base de datos. */
 
+// Datos de ejemplo apagados para el lanzamiento: el sitio arranca sin avisos, empresas, CVs, encuestas, sueldos ni notas inventadas.
+// Para verlos en un navegador (pruebas o demos): localStorage.setItem('emplea.demo', '1') y recargar.
+const DEMO_DATA = (() => { try { return localStorage.getItem('emplea.demo') === '1'; } catch (e) { return false; } })();
+
 const PROVINCES = [
   'Buenos Aires', 'CABA', 'Catamarca', 'Chaco', 'Chubut', 'Córdoba', 'Corrientes', 'Entre Ríos',
   'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquén', 'Río Negro',
@@ -691,7 +695,7 @@ SEED_CANDIDATES.forEach(c => { c.comps = c.comps || []; });
 /* Logos de "Empresas que confían en +Humanos" (pasarela de la portada).
    Para usar una imagen, agregá src (ruta dentro de assets/img o URL), por ejemplo { name: 'Agro Pampa', src: 'assets/img/logos/agro-pampa.svg' }.
    Sin src se muestra el nombre con su ícono. */
-const TRUSTED = [
+const TRUSTED = !DEMO_DATA ? [] : [
   { name: 'Talento Norte' }, { name: 'Bit Solutions' }, { name: 'Clínica del Parque' }, { name: 'Agro Pampa' },
   { name: 'Selecta RRHH' }, { name: 'Retail Plus' }, { name: 'Grupo Andino' }, { name: 'Logística Federal' },
   { name: 'Sabores del Sur' }, { name: 'Andes Energía' }, { name: 'Instituto Horizonte' }
