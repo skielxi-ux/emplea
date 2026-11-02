@@ -1,0 +1,25 @@
+name: Correos publicados por las empresas
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['scraper/contactos.mjs']
+permissions:
+  contents: write
+concurrency: { group: scraper, cancel-in-progress: false }
+jobs:
+  contactos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scraper/contactos.mjs
+      - name: Guardar resultado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898341+github-actions[bot]@users.noreply.github.com"
+          git add scraper/contactos.json scraper/contactos.md
+          git diff --cached --quiet || git commit -m "Actualizar correos publicados por las empresas"
+          git pull --rebase origin main && git push

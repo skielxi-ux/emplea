@@ -17,8 +17,7 @@
  {
   "nombre": "Benito Santos",
   "dominios": [
-   "benitosantos.com.ar",
-   "benitosantos.com"
+   "benitosantos.com.ar"
   ],
   "rubro": "Comercio",
   "urlsEmpleo": []
@@ -231,28 +230,22 @@
  },
  {
   "nombre": "Rivolli",
-  "dominios": [
-   "rivolli.com.ar",
-   "rivolli.com"
-  ],
+  "dominios": [],
   "rubro": "A confirmar",
   "urlsEmpleo": []
  },
  {
   "nombre": "Deloitte",
-  "dominios": [
-   "deloitte.com"
-  ],
+  "dominios": [],
   "rubro": "Servicios profesionales",
   "urlsEmpleo": [
-   "https://www2.deloitte.com/ar/es/careers/careers.html"
+   "https://www.deloitte.com/ar/es/careers.html"
   ]
  },
  {
   "nombre": "Produnoa",
   "dominios": [
-   "produnoa.com.ar",
-   "produnoa.com"
+   "produnoa.com.ar"
   ],
   "rubro": "Agroindustria",
   "urlsEmpleo": []
@@ -370,8 +363,7 @@
  {
   "nombre": "Arbolar",
   "dominios": [
-   "arbolar.com.ar",
-   "arbolar.com"
+   "arbolar.com.ar"
   ],
   "rubro": "Agroindustria",
   "urlsEmpleo": []
@@ -387,10 +379,7 @@
  },
  {
   "nombre": "Terri Citrus",
-  "dominios": [
-   "terricitrus.com",
-   "terricitrus.com.ar"
-  ],
+  "dominios": [],
   "rubro": "Agroindustria",
   "urlsEmpleo": []
  },
@@ -490,9 +479,7 @@
  },
  {
   "nombre": "Control Union",
-  "dominios": [
-   "controlunion.com"
-  ],
+  "dominios": [],
   "rubro": "Servicios",
   "urlsEmpleo": []
  },
@@ -929,10 +916,7 @@
  },
  {
   "nombre": "Sanatorio del Norte",
-  "dominios": [
-   "sanatoriodelnorte.com.ar",
-   "sanatoriodelnorte.com"
-  ],
+  "dominios": [],
   "rubro": "Salud",
   "urlsEmpleo": []
  },
