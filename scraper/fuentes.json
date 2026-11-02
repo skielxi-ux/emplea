@@ -1,5 +1,5 @@
 {
- "revisado": "2026-11-02T13:31:06.846Z",
+ "revisado": "2026-11-02T13:37:21.516Z",
  "empresas": [
   {
    "nombre": "Mostaza",
@@ -32,15 +32,15 @@
   {
    "nombre": "Benito Santos",
    "rubro": "Comercio",
-   "web": "https://benitosantos.es/",
-   "tituloWeb": "Vinos con D.O. Rías Baixas y Monterrei - Bodegas Benito Santos",
+   "web": null,
+   "tituloWeb": null,
    "empleo": null,
    "tipo": null,
    "plataforma": null,
    "robotsOk": null,
    "avisosJsonLd": 0,
    "redes": [],
-   "nota": "No encontré página de empleo en la web."
+   "nota": "No respondió ninguno de los dominios probados."
   },
   {
    "nombre": "La Mariposa",
@@ -140,17 +140,15 @@
   {
    "nombre": "Cartón del Tucumán",
    "rubro": "Industria",
-   "web": "https://www.cartondeltucuman.com.ar/",
-   "tituloWeb": "Cartón del Tucumán",
+   "web": null,
+   "tituloWeb": null,
    "empleo": null,
    "tipo": null,
    "plataforma": null,
    "robotsOk": null,
    "avisosJsonLd": 0,
-   "redes": [
-    "LinkedIn"
-   ],
-   "nota": "No encontré página de empleo en la web."
+   "redes": [],
+   "nota": "No respondió ninguno de los dominios probados."
   },
   {
    "nombre": "Santander",
@@ -373,45 +371,41 @@
   {
    "nombre": "Rivolli",
    "rubro": "A confirmar",
-   "web": "https://www.brandbucket.com/names/rivolli",
-   "tituloWeb": "Rivolli.com is For Sale | BrandBucket",
-   "empleo": "https://www.brandbucket.com/careers",
-   "tipo": "solo formulario de CV",
-   "plataforma": null,
-   "robotsOk": true,
-   "avisosJsonLd": 0,
-   "redes": [
-    "LinkedIn"
-   ],
-   "nota": "\"Careers | BrandBucket\""
-  },
-  {
-   "nombre": "Deloitte",
-   "rubro": "Servicios profesionales",
-   "web": "https://www.deloitte.com/us/en.html",
-   "tituloWeb": "Deloitte US | Together Makes Progress",
-   "empleo": "https://www.deloitte.com/us/en/careers/deloitte-life/awards-and-recognition.html?icid=top_awards-and-recognition",
-   "tipo": "página informativa",
-   "plataforma": null,
-   "robotsOk": true,
-   "avisosJsonLd": 0,
-   "redes": [
-    "LinkedIn"
-   ],
-   "nota": "\"Awards and Recognition | Deloitte US\""
-  },
-  {
-   "nombre": "Produnoa",
-   "rubro": "Agroindustria",
-   "web": "https://www.produnoa.com/",
-   "tituloWeb": "OVO188 Situs Resmi Game Online Slot Deposit Emoney OVO Termurah 5000",
+   "web": null,
+   "tituloWeb": null,
    "empleo": null,
    "tipo": null,
    "plataforma": null,
    "robotsOk": null,
    "avisosJsonLd": 0,
    "redes": [],
-   "nota": "No encontré página de empleo en la web."
+   "nota": "Sin web conocida: falta el dominio."
+  },
+  {
+   "nombre": "Deloitte",
+   "rubro": "Servicios profesionales",
+   "web": null,
+   "tituloWeb": null,
+   "empleo": null,
+   "tipo": null,
+   "plataforma": null,
+   "robotsOk": null,
+   "avisosJsonLd": 0,
+   "redes": [],
+   "nota": "No respondió ninguno de los dominios probados."
+  },
+  {
+   "nombre": "Produnoa",
+   "rubro": "Agroindustria",
+   "web": null,
+   "tituloWeb": null,
+   "empleo": null,
+   "tipo": null,
+   "plataforma": null,
+   "robotsOk": null,
+   "avisosJsonLd": 0,
+   "redes": [],
+   "nota": "No respondió ninguno de los dominios probados."
   },
   {
    "nombre": "FGF Trapani",
@@ -599,15 +593,15 @@
   {
    "nombre": "Arbolar",
    "rubro": "Agroindustria",
-   "web": "https://arbolar.com/",
-   "tituloWeb": "Residencia de Ocio y Turismo Activo - Arbolar",
+   "web": null,
+   "tituloWeb": null,
    "empleo": null,
    "tipo": null,
    "plataforma": null,
    "robotsOk": null,
    "avisosJsonLd": 0,
    "redes": [],
-   "nota": "No encontré página de empleo en la web."
+   "nota": "No respondió ninguno de los dominios probados."
   },
   {
    "nombre": "Zamora Citrus",
@@ -625,15 +619,15 @@
   {
    "nombre": "Terri Citrus",
    "rubro": "Agroindustria",
-   "web": "https://www.terricitrus.com/",
-   "tituloWeb": "Tu hosting está listo | DonWeb",
+   "web": null,
+   "tituloWeb": null,
    "empleo": null,
    "tipo": null,
    "plataforma": null,
    "robotsOk": null,
    "avisosJsonLd": 0,
    "redes": [],
-   "nota": "No encontré página de empleo en la web."
+   "nota": "Sin web conocida: falta el dominio."
   },
   {
    "nombre": "Teleperformance",
@@ -783,17 +777,15 @@
   {
    "nombre": "Control Union",
    "rubro": "Servicios",
-   "web": "https://www.controlunion.com/",
-   "tituloWeb": "Control Union Global - Testing, Inspection &amp; Certification (TIC)",
-   "empleo": "https://uae.controlunion.com/",
-   "tipo": "página informativa",
+   "web": null,
+   "tituloWeb": null,
+   "empleo": null,
+   "tipo": null,
    "plataforma": null,
-   "robotsOk": true,
+   "robotsOk": null,
    "avisosJsonLd": 0,
-   "redes": [
-    "LinkedIn"
-   ],
-   "nota": "\"Control Union UAE\""
+   "redes": [],
+   "nota": "Sin web conocida: falta el dominio."
   },
   {
    "nombre": "Globant",
@@ -1148,15 +1140,15 @@
   {
    "nombre": "Cerámica Marcos Paz",
    "rubro": "Construcción",
-   "web": null,
-   "tituloWeb": null,
+   "web": "https://ceramicamarcospaz.com.ar/",
+   "tituloWeb": "Cerámica Marcos Paz &#8211; Cerámica Marcos Paz",
    "empleo": null,
    "tipo": null,
    "plataforma": null,
    "robotsOk": null,
    "avisosJsonLd": 0,
    "redes": [],
-   "nota": "No respondió ninguno de los dominios probados."
+   "nota": "No encontré página de empleo en la web."
   },
   {
    "nombre": "CB Developers",
@@ -1444,7 +1436,7 @@
    "rubro": "Construcción",
    "web": "https://www.maderplak.com/",
    "tituloWeb": "Maderplak - Home",
-   "empleo": "https://accounts.google.com/v3/signin/identifier?continue=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&followup=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&ltmpl=forms&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-2112402979:1793626245753326",
+   "empleo": "https://accounts.google.com/v3/signin/identifier?continue=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&followup=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&ltmpl=forms&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-2112402979:1793626619711760",
    "tipo": "solo formulario de CV",
    "plataforma": "Google Forms",
    "robotsOk": true,
@@ -1476,7 +1468,7 @@
    "robotsOk": null,
    "avisosJsonLd": 0,
    "redes": [],
-   "nota": "No respondió ninguno de los dominios probados."
+   "nota": "Sin web conocida: falta el dominio."
   },
   {
    "nombre": "Grupo ODSE",

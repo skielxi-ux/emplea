@@ -6,7 +6,7 @@ Revisado: 2026-11-02. Se respetó robots.txt de cada sitio.
 |---|---|---|---|---|---|
 | Mostaza | [Mostaza - NUNCA TE ACHIQUES](https://www.mostazaweb.com.ar/) | [link](https://videocv.mostazaweb.com.ar/) | solo formulario de CV | — | "Trabajá en Mostaza" Publica en: LinkedIn. |
 | La Argentina | — | — | — | — | Sin web conocida: falta el dominio. |
-| Benito Santos | [Vinos con D.O. Rías Baixas y Monterrei - Bodegas B](https://benitosantos.es/) | — | — | — | No encontré página de empleo en la web. |
+| Benito Santos | — | — | — | — | No respondió ninguno de los dominios probados. |
 | La Mariposa | — | — | — | — | Sin web conocida: falta el dominio. |
 | Naranja X | [Naranja X: una cuenta digital GRATIS para manejar ](https://www.naranjax.com/) | [link](https://careers.naranjax.com/) | solo formulario de CV | — | "Trabajá con nosotros / Hacé tu carrera en Naranja X" |
 | Tarjeta Su Crédito | [Tarjeta Sucrédito / La Tarjeta líder del Noroeste ](https://www.tarjetasucredito.com.ar/) | [link](https://www.tarjetasucredito.com.ar/sumate) | solo formulario de CV | — | "Sumate a nuestro equipo / Tarjeta Sucrédito" |
@@ -14,7 +14,7 @@ Revisado: 2026-11-02. Se respetó robots.txt de cada sitio.
 | Ava Seguros | [AVA Seguros &#8211; Generando Tranquilidad y Confi](https://avaseguros.com/) | — | — | — | No encontré página de empleo en la web. Publica en: LinkedIn. |
 | Acero del NOA | — | — | — | — | No respondió ninguno de los dominios probados. |
 | Hierronort | [HIERRONORT - PRÓXIMAMENTE](https://www.hierronort.com.ar/) | — | — | — | No encontré página de empleo en la web. Publica en: LinkedIn. |
-| Cartón del Tucumán | [Cartón del Tucumán](https://www.cartondeltucuman.com.ar/) | — | — | — | No encontré página de empleo en la web. Publica en: LinkedIn. |
+| Cartón del Tucumán | — | — | — | — | No respondió ninguno de los dominios probados. |
 | Santander | [Banco Santander Argentina](https://www.santander.com.ar/personas) | — | — | — | No encontré página de empleo en la web. |
 | Banco Hipotecario | [Banco Hipotecario](https://www.hipotecario.com.ar/) | [link](https://www.hipotecario.com.ar/nosotros/desarrollo-organizacional3/) | avisos (plataforma) | HiringRoom | "Desarrollo Organizacional - Banco Hipotecario" Publica en: LinkedIn. |
 | Petroarsa | — | — | — | — | No respondió ninguno de los dominios probados. |
@@ -31,9 +31,9 @@ Revisado: 2026-11-02. Se respetó robots.txt de cada sitio.
 | Arcos Dorados | [Arcos Dorados](https://www.arcosdorados.com/) | [link](https://www.arcosdorados.com/recetadelfuturo/empleo-joven/) | página informativa | — | "Empleo joven &#8211; Arcos Dorados" Publica en: LinkedIn. |
 | UNSTA | [Universidad del Norte Santo Tomás de Aquino &#8211](https://www.unsta.edu.ar/) | [link](https://docs.google.com/forms/d/e/1FAIpQLSenrPDBBKYnJ6JgTI-8sqpZr2gJ-agMMZhfYGW_UE4TKo1hdQ/viewform) | solo formulario de CV | Google Forms | "Buzón de Sugerencias" Publica en: LinkedIn. |
 | Universidad San Pablo-T | [Universidad de San Pablo – Tucumán / Educación de ](https://www.uspt.edu.ar/) | — | — | — | No encontré página de empleo en la web. |
-| Rivolli | [Rivolli.com is For Sale / BrandBucket](https://www.brandbucket.com/names/rivolli) | [link](https://www.brandbucket.com/careers) | solo formulario de CV | — | "Careers / BrandBucket" Publica en: LinkedIn. |
-| Deloitte | [Deloitte US / Together Makes Progress](https://www.deloitte.com/us/en.html) | [link](https://www.deloitte.com/us/en/careers/deloitte-life/awards-and-recognition.html?icid=top_awards-and-recognition) | página informativa | — | "Awards and Recognition / Deloitte US" Publica en: LinkedIn. |
-| Produnoa | [OVO188 Situs Resmi Game Online Slot Deposit Emoney](https://www.produnoa.com/) | — | — | — | No encontré página de empleo en la web. |
+| Rivolli | — | — | — | — | Sin web conocida: falta el dominio. |
+| Deloitte | — | — | — | — | No respondió ninguno de los dominios probados. |
+| Produnoa | — | — | — | — | No respondió ninguno de los dominios probados. |
 | FGF Trapani | [Home / FGF Trapani](https://fgftrapani.com/) | — | — | — | No encontré página de empleo en la web. Publica en: LinkedIn. |
 | CASS | — | — | — | — | Sin web conocida: falta el dominio. |
 | Arca Continental | [Inicio / Arca Continental](https://www.arcacontal.com/es) | [link](https://www.arcacontal.com/es/empleo/trabaja-en-arca-continental) | página informativa | — | "Trabaja en Arca Continental / Arca Continental" Publica en: LinkedIn. |
@@ -47,9 +47,9 @@ Revisado: 2026-11-02. Se respetó robots.txt de cada sitio.
 | Citromax | — | — | — | — | No respondió ninguno de los dominios probados. |
 | Grupo Lucci | [Grupo Lucci - Creciendo Responsablemente](https://grupolucci.com.ar/) | [link](https://grupolucci.com.ar/busquedas-laborales/) | página informativa | — | "Búsquedas Laborales / Grupo Lucci" Publica en: LinkedIn. |
 | Agrolajitas | — | — | — | — | No respondió ninguno de los dominios probados. |
-| Arbolar | [Residencia de Ocio y Turismo Activo - Arbolar](https://arbolar.com/) | — | — | — | No encontré página de empleo en la web. |
+| Arbolar | — | — | — | — | No respondió ninguno de los dominios probados. |
 | Zamora Citrus | [Zamora Citrus](https://www.zamoracitrus.com.ar/) | [link](https://www.zamoracitrus.com.ar/rrhh/) | página informativa | — | "Trabajá con nosotros &#8211; Zamora Citrus" |
-| Terri Citrus | [Tu hosting está listo / DonWeb](https://www.terricitrus.com/) | — | — | — | No encontré página de empleo en la web. |
+| Terri Citrus | — | — | — | — | Sin web conocida: falta el dominio. |
 | Teleperformance | [Home / Global Leader in Digital Business Services ](https://www.tp.com/en-us/) | [link](https://www.tp.com/en-us/careers/job-opportunities/) | solo formulario de CV | — | "Say &#39;Hello!&#39; to a Brighter Career / TP" Publica en: LinkedIn. |
 | Carlos V | — | — | — | — | Sin web conocida: falta el dominio. |
 | Hilton Garden Inn | — | [link](https://jobs.hilton.com/) | avisos (plataforma) | Oracle Cloud | "" |
@@ -61,7 +61,7 @@ Revisado: 2026-11-02. Se respetó robots.txt de cada sitio.
 | La Gaceta | [LA GACETA - Noticias y actualidad de Tucumán](https://www.lagaceta.com.ar/) | [link](https://www.whatsapp.com/channel/0029Va4oZZp8qIznopnM2M1a) | avisos (plataforma) | Workday | "LA GACETA - Canal de WhatsApp" |
 | Flash | — | — | — | — | Sin web conocida: falta el dominio. |
 | Discomef | [Discomef](https://www.discomef.com.ar/) | — | — | — | No encontré página de empleo en la web. |
-| Control Union | [Control Union Global - Testing, Inspection &amp; C](https://www.controlunion.com/) | [link](https://uae.controlunion.com/) | página informativa | — | "Control Union UAE" Publica en: LinkedIn. |
+| Control Union | — | — | — | — | Sin web conocida: falta el dominio. |
 | Globant | — | [link](https://career.globant.com/) | avisos (plataforma) | SuccessFactors | "Join our team / Globant Careers" |
 | Tresur | [Tresur.com is for sale / HugeDomains](https://www.hugedomains.com/domain_profile.cfm?d=tresur.com) | — | — | — | No encontré página de empleo en la web. |
 | Cencosud | [Cencosud / Cencosud](https://www.cencosud.com/) | [link](https://empleos.cencosud.com/) | avisos (plataforma) | Gupy | "Portal Laboral Cencosud" Publica en: LinkedIn. |
@@ -88,7 +88,7 @@ Revisado: 2026-11-02. Se respetó robots.txt de cada sitio.
 | Grupo Silva | — | — | — | — | Sin web conocida: falta el dominio. |
 | Liprandi | [https://www.liprandi.com/](https://www.liprandi.com/) | — | — | — | No encontré página de empleo en la web. |
 | Guzmán y Guzmán | [Guzmán & Guzmán / Inmuebles 100% Financiados e Inm](https://www.guzmanyguzman.com.ar/) | — | — | — | No encontré página de empleo en la web. Publica en: LinkedIn. |
-| Cerámica Marcos Paz | — | — | — | — | No respondió ninguno de los dominios probados. |
+| Cerámica Marcos Paz | [Cerámica Marcos Paz &#8211; Cerámica Marcos Paz](https://ceramicamarcospaz.com.ar/) | — | — | — | No encontré página de empleo en la web. |
 | CB Developers | [CB DEVELOPERS](https://www.cbdevelopers.com/) | — | — | — | No encontré página de empleo en la web. |
 | Gama SA | — | — | — | — | Sin web conocida: falta el dominio. |
 | Avanco | [Inicio - Avanco / Desarrollo Inmobiliario - Ing. R](https://www.avanco.com.ar/) | — | — | — | No encontré página de empleo en la web. |
@@ -110,9 +110,9 @@ Revisado: 2026-11-02. Se respetó robots.txt de cada sitio.
 | Tensolite | [Tensolite / Fábrica de Premoldeados y Pretensados ](https://tensolite.com/) | — | — | — | No encontré página de empleo en la web. |
 | Tecnopor | [ClickMateriales](https://www.clickmateriales.com/) | — | — | — | No encontré página de empleo en la web. Publica en: LinkedIn. |
 | Saiko | [SAIKO CONSTRUCTORA](https://saiko.com.ar/) | — | — | — | No encontré página de empleo en la web. Publica en: LinkedIn. |
-| Maderplak | [Maderplak - Home](https://www.maderplak.com/) | [link](https://accounts.google.com/v3/signin/identifier?continue=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&followup=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&ltmpl=forms&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-2112402979:1793626245753326) | solo formulario de CV | Google Forms | "Formularios de Google: Acceso" |
+| Maderplak | [Maderplak - Home](https://www.maderplak.com/) | [link](https://accounts.google.com/v3/signin/identifier?continue=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&followup=https://docs.google.com/forms/d/e/1FAIpQLSdNpYV7KZ9qsDV9oIirxLXNkbGfOohsCS5fqNY_x-aakMuN2g/closedform?pli%3D1&ltmpl=forms&osid=1&passive=1209600&service=wise&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-2112402979:1793626619711760) | solo formulario de CV | Google Forms | "Formularios de Google: Acceso" |
 | Sanatorio 9 de Julio | — | — | — | — | No respondió ninguno de los dominios probados. |
-| Sanatorio del Norte | — | — | — | — | No respondió ninguno de los dominios probados. |
+| Sanatorio del Norte | — | — | — | — | Sin web conocida: falta el dominio. |
 | Grupo ODSE | — | — | — | — | No respondió ninguno de los dominios probados. |
 | Méndez Collado | [Mendez Collado](https://www.mendezcollado.com/) | — | — | — | No encontré página de empleo en la web. |
 | Medifé | [Medifé - Medicina prepaga líder en Argentina / Med](https://www.medife.com.ar/) | [link](https://grupoaseconecta.hiringroom.com/jobs/microsite/medife) | avisos (plataforma) | HiringRoom | "¡Oportunidades de Empleo en Medifé!" Publica en: LinkedIn. |
