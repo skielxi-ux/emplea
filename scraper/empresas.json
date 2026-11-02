@@ -1,0 +1,999 @@
+[
+ {
+  "nombre": "Mostaza",
+  "dominios": [
+   "mostazaweb.com.ar",
+   "mostaza.com.ar"
+  ],
+  "rubro": "Gastronomía",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "La Argentina",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Benito Santos",
+  "dominios": [
+   "benitosantos.com.ar",
+   "benitosantos.com"
+  ],
+  "rubro": "Comercio",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "La Mariposa",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Naranja X",
+  "dominios": [
+   "naranjax.com"
+  ],
+  "rubro": "Finanzas",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Tarjeta Su Crédito",
+  "dominios": [
+   "sucredito.com.ar",
+   "tarjetasucredito.com.ar"
+  ],
+  "rubro": "Finanzas",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Gaman Brokers",
+  "dominios": [
+   "gamanbrokers.com",
+   "gamanbrokers.com.ar",
+   "gaman.com.ar"
+  ],
+  "rubro": "Seguros",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Ava Seguros",
+  "dominios": [
+   "avaseguros.com.ar",
+   "avaseguros.com"
+  ],
+  "rubro": "Seguros",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Acero del NOA",
+  "dominios": [
+   "acerodelnoa.com.ar",
+   "acerodelnoa.com"
+  ],
+  "rubro": "Industria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Hierronort",
+  "dominios": [
+   "hierronort.com.ar",
+   "hierronort.com"
+  ],
+  "rubro": "Industria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Cartón del Tucumán",
+  "dominios": [
+   "cartondeltucuman.com.ar",
+   "cartondeltucuman.com"
+  ],
+  "rubro": "Industria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Santander",
+  "dominios": [
+   "santander.com.ar"
+  ],
+  "rubro": "Banca",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Banco Hipotecario",
+  "dominios": [
+   "hipotecario.com.ar"
+  ],
+  "rubro": "Banca",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Petroarsa",
+  "dominios": [
+   "petroarsa.com.ar",
+   "petroarsa.com"
+  ],
+  "rubro": "Energía",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "YPF",
+  "dominios": [
+   "ypf.com"
+  ],
+  "rubro": "Energía",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Banco Macro",
+  "dominios": [
+   "macro.com.ar"
+  ],
+  "rubro": "Banca",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "BBVA",
+  "dominios": [
+   "bbva.com.ar"
+  ],
+  "rubro": "Banca",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Galicia",
+  "dominios": [
+   "galicia.ar",
+   "bancogalicia.com"
+  ],
+  "rubro": "Banca",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Refinor",
+  "dominios": [
+   "refinor.com",
+   "refinor.com.ar"
+  ],
+  "rubro": "Energía",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "EDET",
+  "dominios": [
+   "edetsa.com",
+   "edet.com.ar"
+  ],
+  "rubro": "Energía",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "GMKT",
+  "dominios": [
+   "gmkt.com.ar",
+   "gmkt.com"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Zingaras",
+  "dominios": [
+   "zingaras.com.ar",
+   "zingaras.com"
+  ],
+  "rubro": "Gastronomía",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Quilmes",
+  "dominios": [
+   "cerveceriaymalteriaquilmes.com",
+   "quilmes.com.ar"
+  ],
+  "rubro": "Consumo masivo",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Los Balcanes",
+  "dominios": [
+   "losbalcanes.com.ar",
+   "losbalcanes.com"
+  ],
+  "rubro": "Alimentos",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Arcos Dorados",
+  "dominios": [
+   "arcosdorados.com",
+   "mcdonalds.com.ar"
+  ],
+  "rubro": "Gastronomía",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "UNSTA",
+  "dominios": [
+   "unsta.edu.ar"
+  ],
+  "rubro": "Educación",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Universidad San Pablo-T",
+  "dominios": [
+   "uspt.edu.ar"
+  ],
+  "rubro": "Educación",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Rivolli",
+  "dominios": [
+   "rivolli.com.ar",
+   "rivolli.com"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Deloitte",
+  "dominios": [
+   "deloitte.com"
+  ],
+  "rubro": "Servicios profesionales",
+  "urlsEmpleo": [
+   "https://www2.deloitte.com/ar/es/careers/careers.html"
+  ]
+ },
+ {
+  "nombre": "Produnoa",
+  "dominios": [
+   "produnoa.com.ar",
+   "produnoa.com"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "FGF Trapani",
+  "dominios": [
+   "fgftrapani.com",
+   "fgftrapani.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "CASS",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Arca Continental",
+  "dominios": [
+   "arcacontal.com",
+   "arcacontinental.com.ar"
+  ],
+  "rubro": "Consumo masivo",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Alimentaria SA",
+  "dominios": [],
+  "rubro": "Alimentos",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Ledesma",
+  "dominios": [
+   "ledesma.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Vicente Trapani",
+  "dominios": [
+   "vicentetrapani.com",
+   "vicentetrapani.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "San Miguel",
+  "dominios": [
+   "sanmiguelglobal.com"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Budeguer",
+  "dominios": [
+   "budeguer.com",
+   "grupobudeguer.com",
+   "budeguer.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Latin Lemon",
+  "dominios": [
+   "latinlemon.com",
+   "latinlemon.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Mistol Ancho",
+  "dominios": [
+   "mistolancho.com",
+   "mistolancho.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Citromax",
+  "dominios": [
+   "citromax.com"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Lucci",
+  "dominios": [
+   "grupolucci.com",
+   "grupolucci.com.ar",
+   "lucci.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Agrolajitas",
+  "dominios": [
+   "agrolajitas.com",
+   "agrolajitas.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Arbolar",
+  "dominios": [
+   "arbolar.com.ar",
+   "arbolar.com"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Zamora Citrus",
+  "dominios": [
+   "zamoracitrus.com",
+   "zamoracitrus.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Terri Citrus",
+  "dominios": [
+   "terricitrus.com",
+   "terricitrus.com.ar"
+  ],
+  "rubro": "Agroindustria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Teleperformance",
+  "dominios": [
+   "teleperformance.com"
+  ],
+  "rubro": "Contact center",
+  "urlsEmpleo": [
+   "https://jobs.teleperformance.com/"
+  ]
+ },
+ {
+  "nombre": "Carlos V",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Hilton Garden Inn",
+  "dominios": [
+   "hilton.com"
+  ],
+  "rubro": "Hotelería",
+  "urlsEmpleo": [
+   "https://jobs.hilton.com/"
+  ]
+ },
+ {
+  "nombre": "Howard Johnson",
+  "dominios": [
+   "hjtucuman.com",
+   "howardjohnson.com.ar"
+  ],
+  "rubro": "Hotelería",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Garden Park",
+  "dominios": [
+   "gardenparkhotel.com.ar",
+   "gardenpark.com.ar"
+  ],
+  "rubro": "Hotelería",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Candy Viajes",
+  "dominios": [
+   "candyviajes.com",
+   "candyviajes.com.ar"
+  ],
+  "rubro": "Turismo",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Tucumán Center",
+  "dominios": [
+   "tucumancenter.com.ar",
+   "tucumancenter.com"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Tucumán BBS",
+  "dominios": [
+   "tucumanbbs.com.ar",
+   "tucumanbbs.com"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "La Gaceta",
+  "dominios": [
+   "lagaceta.com.ar"
+  ],
+  "rubro": "Medios",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Flash",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Discomef",
+  "dominios": [
+   "discomef.com.ar",
+   "discomef.com"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Control Union",
+  "dominios": [
+   "controlunion.com"
+  ],
+  "rubro": "Servicios",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Globant",
+  "dominios": [
+   "globant.com"
+  ],
+  "rubro": "Tecnología",
+  "urlsEmpleo": [
+   "https://career.globant.com/"
+  ]
+ },
+ {
+  "nombre": "Tresur",
+  "dominios": [
+   "tresur.com.ar",
+   "tresur.com"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Cencosud",
+  "dominios": [
+   "cencosud.com",
+   "cencosud.com.ar"
+  ],
+  "rubro": "Retail",
+  "urlsEmpleo": [
+   "https://www.cencosud.com/trabaja-con-nosotros"
+  ]
+ },
+ {
+  "nombre": "Yubrin",
+  "dominios": [
+   "yubrin.com.ar",
+   "yubrin.com"
+  ],
+  "rubro": "Comercio",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Yuhmak",
+  "dominios": [
+   "yuhmak.com.ar",
+   "yuhmak.com"
+  ],
+  "rubro": "Automotriz",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Paco García",
+  "dominios": [
+   "pacogarcia.com.ar",
+   "pacogarcia.com"
+  ],
+  "rubro": "Comercio",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Antonio Luquin",
+  "dominios": [
+   "antonioluquin.com.ar",
+   "luquin.com.ar"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Marathon",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Gómez Pardo",
+  "dominios": [
+   "gomezpardo.com.ar",
+   "gomezpardo.com"
+  ],
+  "rubro": "Comercio",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Castillo",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Oscar Barbieri",
+  "dominios": [
+   "oscarbarbieri.com.ar",
+   "oscarbarbieri.com"
+  ],
+  "rubro": "Comercio",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Andreani",
+  "dominios": [
+   "andreani.com"
+  ],
+  "rubro": "Logística",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Cruz del Sur",
+  "dominios": [
+   "cruzdelsur.com",
+   "cruzdelsur.com.ar"
+  ],
+  "rubro": "Logística",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Belgrano",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Romar",
+  "dominios": [
+   "gruporomar.com.ar",
+   "gruporomar.com"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Fortunato Fortino",
+  "dominios": [
+   "fortunatofortino.com.ar",
+   "fortunatofortino.com"
+  ],
+  "rubro": "Comercio",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Lineup SA",
+  "dominios": [
+   "lineup.com.ar",
+   "lineupsa.com.ar"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Scania",
+  "dominios": [
+   "scania.com"
+  ],
+  "rubro": "Automotriz",
+  "urlsEmpleo": [
+   "https://www.scania.com/ar/es/home/about-scania/career.html"
+  ]
+ },
+ {
+  "nombre": "Taldo Distribuciones",
+  "dominios": [
+   "taldo.com.ar",
+   "taldodistribuciones.com.ar"
+  ],
+  "rubro": "Distribución",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Ruiz Automotores",
+  "dominios": [
+   "ruizautomotores.com.ar",
+   "ruizautomotores.com"
+  ],
+  "rubro": "Automotriz",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Indiana Peugeot",
+  "dominios": [
+   "indianapeugeot.com.ar",
+   "indiana.com.ar"
+  ],
+  "rubro": "Automotriz",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Pueble",
+  "dominios": [
+   "grupopueble.com",
+   "grupopueble.com.ar",
+   "pueble.com.ar"
+  ],
+  "rubro": "Automotriz",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "AGN Naun",
+  "dominios": [
+   "agnnaun.com.ar",
+   "naun.com.ar"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Silva",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Liprandi",
+  "dominios": [
+   "liprandi.com.ar",
+   "liprandi.com"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Guzmán y Guzmán",
+  "dominios": [
+   "guzmanyguzman.com.ar",
+   "guzmanyguzman.com"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Cerámica Marcos Paz",
+  "dominios": [
+   "ceramicamarcospaz.com.ar",
+   "ceramicamarcospaz.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "CB Developers",
+  "dominios": [
+   "cbdevelopers.com.ar",
+   "cbdevelopers.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Gama SA",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Avanco",
+  "dominios": [
+   "avanco.com.ar",
+   "avanco.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Galindo",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Abalum",
+  "dominios": [
+   "abalum.com.ar",
+   "abalum.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Forma Emprendimientos",
+  "dominios": [
+   "formaemprendimientos.com.ar",
+   "formaemprendimientos.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Link",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Uniber",
+  "dominios": [
+   "grupouniber.com",
+   "grupouniber.com.ar",
+   "uniber.com.ar"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Rosso Materiales",
+  "dominios": [
+   "rossomateriales.com.ar",
+   "rossomateriales.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Zeramiki",
+  "dominios": [
+   "zeramiki.com.ar",
+   "grupozeramiki.com",
+   "zeramiki.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Santiago Kohn",
+  "dominios": [
+   "santiagokohn.com.ar",
+   "kohn.com.ar"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Ituarte",
+  "dominios": [
+   "ituarte.com.ar",
+   "ituarte.com"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Bercovich",
+  "dominios": [
+   "grupobercovich.com",
+   "grupobercovich.com.ar",
+   "bercovich.com.ar"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Swiss Medical",
+  "dominios": [
+   "swissmedical.com.ar"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Sancor Salud",
+  "dominios": [
+   "sancorsalud.com.ar"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "EMI",
+  "dominios": [
+   "emi.com.ar"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Red de Seguro Médico",
+  "dominios": [
+   "rsmsalud.com.ar",
+   "redsm.com.ar"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "RE/MAX",
+  "dominios": [
+   "remax.com.ar"
+  ],
+  "rubro": "Inmobiliaria",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Tensolite",
+  "dominios": [
+   "tensolite.com.ar",
+   "tensolite.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Tecnopor",
+  "dominios": [
+   "tecnopor.com.ar",
+   "tecnopor.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Saiko",
+  "dominios": [
+   "saiko.com.ar"
+  ],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Maderplak",
+  "dominios": [
+   "maderplak.com.ar",
+   "maderplak.com"
+  ],
+  "rubro": "Construcción",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Sanatorio 9 de Julio",
+  "dominios": [
+   "sanatorio9dejulio.com.ar",
+   "sanatorio9dejulio.com"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Sanatorio del Norte",
+  "dominios": [
+   "sanatoriodelnorte.com.ar",
+   "sanatoriodelnorte.com"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo ODSE",
+  "dominios": [
+   "odse.com.ar",
+   "grupoodse.com.ar",
+   "grupoodse.com"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Méndez Collado",
+  "dominios": [
+   "mendezcollado.com",
+   "mendezcollado.com.ar"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Medifé",
+  "dominios": [
+   "medife.com.ar"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Grupo Flores",
+  "dominios": [],
+  "rubro": "A confirmar",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Cofaral",
+  "dominios": [
+   "cofaral.com.ar",
+   "cofaral.com"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Boreal",
+  "dominios": [
+   "borealsalud.com.ar",
+   "boreal.com.ar"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ },
+ {
+  "nombre": "Farmacias del Pueblo",
+  "dominios": [
+   "farmaciasdelpueblo.com.ar",
+   "farmaciasdelpueblo.com"
+  ],
+  "rubro": "Salud",
+  "urlsEmpleo": []
+ }
+]
